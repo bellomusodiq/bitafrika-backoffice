@@ -1,0 +1,12 @@
+.container {
+  background-color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding-top: 98px;
+}
+.cardContainer {
+  width: 30%;
+}
+.signinForm {
+}
