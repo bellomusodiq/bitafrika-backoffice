@@ -9,4 +9,14 @@
   width: 30%;
 }
 .signinForm {
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo {
+  width: 105px;
+  margin-bottom: 24px;
+}
+.header {
 }
