@@ -5,14 +5,15 @@ import { InputProps } from "./types";
 const Input: React.FC<InputProps> = ({
   onChange,
   value,
-  type,
+  type="text",
   placeholder,
+  className,
 }) => (
   <input
     type={type}
     value={value}
     onChange={onChange}
-    className={styles.input}
+    className={`${styles.input} ${className}`}
     placeholder={placeholder}
   />
 );
