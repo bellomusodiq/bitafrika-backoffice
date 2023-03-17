@@ -10,3 +10,9 @@
   line-height: 24px;
   color: #667085;
 }
+.leftIconContainer {
+  position: relative;
+  left: 10px;
+  top: 35px;
+  width: fit-content;
+}

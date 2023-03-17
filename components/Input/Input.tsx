@@ -5,17 +5,22 @@ import { InputProps } from "./types";
 const Input: React.FC<InputProps> = ({
   onChange,
   value,
-  type="text",
+  type = "text",
   placeholder,
   className,
+  leftIcon,
 }) => (
-  <input
-    type={type}
-    value={value}
-    onChange={onChange}
-    className={`${styles.input} ${className}`}
-    placeholder={placeholder}
-  />
+  <div className={styles.inputContainer}>
+    {leftIcon && <div className={styles.leftIconContainer}>{leftIcon}</div>}
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      className={`${styles.input} ${className}`}
+      placeholder={placeholder}
+      style={{ paddingLeft: leftIcon ? 35 : 10 }}
+    />
+  </div>
 );
 
 export default Input;

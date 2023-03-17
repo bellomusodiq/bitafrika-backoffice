@@ -5,6 +5,8 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+  width: calc(100vw - 282px);
+  margin-left: 282px;
 }
 
 .description {
