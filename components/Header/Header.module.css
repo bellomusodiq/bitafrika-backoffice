@@ -1,0 +1,37 @@
+.headerContainer {
+  border-bottom: 1px solid #eaecf0;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.headerLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.divider {
+  align-self: stretch;
+  background-color: #98a2b3;
+  width: 1px;
+}
+.text {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #667085;
+}
+.headerRight {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.country {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #475467;
+  margin-left: 10px;
+  margin-right: 24px;
+}
