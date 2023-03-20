@@ -1,0 +1,55 @@
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: #f0f0f0;
+}
+.coinItem {
+  display: flex;
+  align-items: center;
+  padding: 22px 0;
+}
+.coinName {
+  flex: 1;
+  margin: 0 16px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #000000;
+}
+.coinBalance {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #000000;
+}
+.indicator {
+  width: 6px;
+  height: 6px;
+  background: #099250;
+  border-radius: 6px;
+  margin-right: 5px;
+}
+.status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 2px 12px;
+  background: #f6fef9;
+  mix-blend-mode: multiply;
+  border-radius: 16px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #099250;
+}

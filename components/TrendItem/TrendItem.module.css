@@ -1,0 +1,76 @@
+.trendItem {
+  padding: 24px;
+  width: 100%;
+  /* border-style: solid;
+  border-color: #eaecf0; */
+}
+.titleContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.title {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #475467;
+  margin-right: 16px;
+}
+.numbersContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.trendNumber {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  color: #101828;
+  margin-right: 18px;
+}
+.trendIndicator {
+  padding: 2px 10px 2px 8px;
+  border-radius: 16px;
+}
+.subTitle {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #98a2b3;
+}
+.lineChartContainer {
+  height: 200px;
+  width: 100%;
+}
+.dateContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
+  justify-content: space-between;
+}
+.dateContainer > span {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #98a2b3;
+}
+.titleIcon {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  margin-right: 24px;
+}
+.viewTransactionsButton {
+  width: fit-content;
+}

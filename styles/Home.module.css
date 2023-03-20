@@ -6,3 +6,151 @@
   width: calc(100vw - 272px);
   margin-left: 272px;
 }
+.homeContainer {
+  padding: 0 32px;
+}
+.header {
+  font-size: 20px;
+  line-height: 30px;
+  margin-top: 24px;
+  color: #101828;
+  margin-bottom: 8px;
+}
+.subHeader {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #98a2b3;
+  margin-bottom: 22.5px;
+}
+.divider {
+  height: 1px;
+  width: 100%;
+  background-color: #eaecf0;
+}
+.statsContainer {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.statsContainer > div {
+  width: calc(50% - 12px);
+}
+.statsCardContainer {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+}
+.statsTextContainer {
+  margin-left: 24px;
+  flex: 1;
+}
+.statsTextGray {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  color: #98a2b3;
+  margin-bottom: 8px;
+}
+.statsTextBold {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  color: #101828;
+}
+.statsTextNormal {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #101828;
+}
+.statsCardFooter {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.spacer {
+  margin-bottom: 24px;
+}
+.trendHeader {
+  margin-top: 60px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  color: #101828;
+}
+.trendsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.trendsContainer > div {
+  width: calc(100% / 3);
+}
+.infoContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.infoContainer > p {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #98a2b3;
+  margin-left: 5px;
+}
+.cardsContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.cardsContainer > div {
+  width: calc(50% - 12px);
+}
+.cardsContainer > div > div {
+  margin-bottom: 20px;
+}
+.utilitiesContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.utilitiesContainer > div {
+  width: calc(50% - 12px);
+}
+.utilitiesContainer > div > div {
+  margin-bottom: 20px;
+}
+.tabletsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+.tablet {
+  padding: 8px 16px;
+  background: #f9fafb;
+  border-radius: 200px;
+  display: flex;
+  align-items: center;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #101828;
+  margin-right: 5px;
+  margin-bottom: 40px;
+}
+.tablet > img {
+  margin-right: 5px;
+}

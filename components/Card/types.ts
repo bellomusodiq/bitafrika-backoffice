@@ -1,3 +1,8 @@
 export interface CardProps {
-    children: JSX.Element
+  children: JSX.Element;
+}
+
+export interface StatsCardProps {
+  children: JSX.Element;
+  headerTitle: string;
 }
