@@ -1,0 +1,11 @@
+.navigationStep {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.navItems {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  margin-right: 24px;
+}
