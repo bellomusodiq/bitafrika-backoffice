@@ -10,13 +10,13 @@ const Input: React.FC<InputProps> = ({
   className,
   leftIcon,
 }) => (
-  <div className={styles.inputContainer}>
+  <div className={`${styles.inputContainer} ${className}`}>
     {leftIcon && <div className={styles.leftIconContainer}>{leftIcon}</div>}
     <input
       type={type}
       value={value}
       onChange={onChange}
-      className={`${styles.input} ${className}`}
+      className={styles.input}
       placeholder={placeholder}
       style={{ paddingLeft: leftIcon ? 35 : 10 }}
     />

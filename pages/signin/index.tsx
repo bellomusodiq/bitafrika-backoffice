@@ -11,7 +11,7 @@ const Signin: React.FC<NextPage> = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [verificationCode, setVerificationCode] = useState<string>("");
-  const [showModal, setShowModal] = useState<boolean>(true);
+  const [showModal, setShowModal] = useState<boolean>(false);
   return (
     <div className={styles.container}>
       <Modal

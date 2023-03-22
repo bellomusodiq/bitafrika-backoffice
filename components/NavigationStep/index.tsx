@@ -12,12 +12,14 @@ const NavigationStep: React.FC = () => {
         <img src="/icons/arrow-right2.svg" />
         <span>Bitcoin</span>
       </div>
-      <Button color="white">
-        <>
-          <img src="/icons/arrow-left.svg" />
-          Back to overview
-        </>
-      </Button>
+      <div>
+        <Button color="white">
+          <>
+            <img src="/icons/arrow-left.svg" />
+            Back to overview
+          </>
+        </Button>
+      </div>
     </div>
   );
 };

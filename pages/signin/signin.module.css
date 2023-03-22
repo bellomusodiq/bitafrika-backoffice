@@ -30,6 +30,8 @@
 }
 .input {
   margin-bottom: 20px;
+  width: 100%;
+  align-self: stretch;
 }
 .rememberContainer {
   display: flex;
@@ -109,7 +111,7 @@
   width: 100%;
 }
 .footerButton {
- width: calc(50% - 5px) !important;
+  width: calc(50% - 5px) !important;
 }
 @media screen and (max-width: 500px) {
   .cardContainer {

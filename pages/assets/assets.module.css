@@ -1,0 +1,275 @@
+.assetTitleContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 49px;
+  padding: 0 24px;
+}
+.assetTitleContainer > h1 {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 38px;
+  color: #101828;
+  margin-right: 33px;
+}
+.assetTitleContainer > span {
+  padding: 8px 14px;
+  width: 135px;
+  height: 36px;
+  background: #ffffff;
+  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  border-radius: 200px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #099250;
+}
+.assetTitleContainer > span > img {
+  margin-right: 12px;
+}
+.welcomeCard {
+  background: linear-gradient(30.63deg, #5a37c8 -40.62%, #194afa 100%);
+  border-radius: 8px;
+  padding: 21px 23px;
+  margin: 0 24px;
+  color: white;
+  display: flex;
+  margin-bottom: 53px;
+}
+.welcomeTextContainer {
+  flex: 1;
+}
+.welcomeButtons {
+  display: flex;
+}
+.welcomeButton {
+  margin-right: 24px;
+}
+.welcomeTextContainer > p {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+.welcomeTextContainer > h3 {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 30px;
+  color: #ffffff;
+}
+.assetsBody {
+  background: #fcfcfd;
+  border: 1px solid #eaecf0;
+  box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  margin: 0 24px;
+}
+.balanceItems {
+  padding: 24px;
+  display: flex;
+  background-color: white;
+  border-bottom: 1px solid #eaecf0;
+  margin-bottom: 64px;
+}
+.balanceItem {
+  width: calc(100% / 4 - 3px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.divider {
+  width: 1px;
+  background-color: #eaecf0;
+  align-self: stretch;
+}
+.balanceTitle {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #98a2b3;
+}
+.balanceAmount {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 30px;
+  color: #101828;
+}
+.balanceAmount {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+.balanceAmount > p {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  color: #475467;
+  margin-right: 8px;
+}
+.balanceAmount > span {
+  padding: 2px 10px 2px 8px;
+  background: #ecfdf3;
+  mix-blend-mode: multiply;
+  border-radius: 16px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  color: #12b76a;
+}
+.tradesTitle {
+  border-top: 1px solid #eaecf0;
+  background-color: white;
+  padding: 24px;
+  display: flex;
+}
+.tradesTextContainer {
+  flex: 1;
+  margin-right: 24px;
+}
+.tradesTextContainer > h3 {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 30px;
+  color: #101828;
+}
+.tradesTextContainer > p {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #98a2b3;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+.tradesTextContainer > p > img {
+  margin-right: 5px;
+  margin-top: -5px;
+}
+.filterDays {
+  display: flex;
+  padding: 0px;
+  border: 1px solid #d0d5dd;
+  filter: drop-shadow(0px 1px 2px rgba(16, 24, 40, 0.05));
+  border-radius: 8px;
+  align-items: stretch;
+}
+.filterDays > a {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+}
+.filterActive {
+  background-color: #3861fb;
+  color: white;
+  overflow-x: hidden;
+  border-radius: 0 8px 8px 0;
+}
+.border {
+  border-bottom: 1px solid #eaecf0;
+  margin: 24px;
+}
+.tradesCharts {
+  margin: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+}
+.tradesCharts > div {
+  background-color: #fcfcfd;
+  padding: 8px;
+}
+.balanceFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 8px;
+}
+.balanceFooter > p {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #98a2b3;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 24px;
+  margin-bottom: 26px;
+}
+.legend > p {
+  margin-right: 24px;
+  display: flex;
+  margin-bottom: 24px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: #000000;
+}
+.legend > p > div {
+  width: 14px;
+  height: 14px;
+  border-radius: 14px;
+  margin-right: 8px;
+}
+.pieTitle {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  color: #101828;
+  margin-top: 50px;
+}
+.summaryTexts {
+  background-color: white;
+  padding-top: 33px;
+  padding-bottom: 27px;
+  padding-left: 24px;
+  padding-right: 24px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 64px;
+  border-bottom: 1px solid #eaecf0;
+}
+.summaryTexts > p {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #344054;
+  margin-right: 60px;
+}
+.inLastDays {
+  color: #98a2b3 !important;
+}
