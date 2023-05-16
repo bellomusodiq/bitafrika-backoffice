@@ -1,6 +1,6 @@
 export interface ServicesListingProps {
   title: string;
-  services: {
+  services?: {
     icon: string;
     name: string;
     status: "Active" | "Disabled";

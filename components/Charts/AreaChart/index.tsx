@@ -81,6 +81,7 @@ const CustomAreaChart = () => {
         />
         <Area
           type="monotone"
+          dataKey="mvp"
           stackId="1"
           stroke="#ffc658"
           fill="#ffc658"

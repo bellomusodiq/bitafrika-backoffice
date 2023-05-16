@@ -18,37 +18,37 @@ const COIN_LISTING = [
     name: "Bitcoin",
     currency: "BTC",
     icon: "/icons/BTC.svg",
-    balance: 0,
+    balance: "0",
   },
   {
     name: "Bitcoin",
     currency: "BTC",
     icon: "/icons/BTC.svg",
-    balance: 0,
+    balance: "0",
   },
   {
     name: "Bitcoin",
     currency: "BTC",
     icon: "/icons/BTC.svg",
-    balance: 0,
+    balance: "0",
   },
   {
     name: "Bitcoin",
     currency: "BTC",
     icon: "/icons/BTC.svg",
-    balance: 0,
+    balance: "0",
   },
   {
     name: "Bitcoin",
     currency: "BTC",
     icon: "/icons/BTC.svg",
-    balance: 0,
+    balance: "0",
   },
   {
     name: "Bitcoin",
     currency: "BTC",
     icon: "/icons/BTC.svg",
-    balance: 0,
+    balance: "0",
   },
 ];
 
@@ -90,7 +90,7 @@ const CARD_LISTING = [
   },
 ];
 
-const SERVICES_LISTING = [
+const SERVICES_LISTING: any = [
   {
     name: "Airtime Purchase",
     icon: "/icons/phone-call-large.svg",

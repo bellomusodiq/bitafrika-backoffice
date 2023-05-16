@@ -1,5 +1,5 @@
 export interface ButtonProps {
-  children: JSX.Element | string;
+  children: any;
   onClick?: () => void;
   disabled?: boolean;
   className?: string;

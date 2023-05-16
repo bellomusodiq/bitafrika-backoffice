@@ -2,7 +2,7 @@ export interface TrendItemProps {
   title: string;
   number: string;
   trend?: "up" | "down";
-  subTitle: string;
+  subTitle?: string;
   trendNumber: number;
   borderTop?: boolean;
   borderRight?: boolean;

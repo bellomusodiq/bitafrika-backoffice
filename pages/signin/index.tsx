@@ -38,7 +38,9 @@ const Signin: React.FC<NextPage> = () => {
           />
           <div className={styles.footerContainer}>
             <Button className={styles.footerButton}>Cancel</Button>
-            <Button color="white" className={styles.footerButton}>Confirm</Button>
+            <Button color="white" className={styles.footerButton}>
+              Confirm
+            </Button>
           </div>
         </div>
       </Modal>
@@ -71,12 +73,7 @@ const Signin: React.FC<NextPage> = () => {
             </div>
             <div className={styles.divider} />
             <div className={styles.dropdownContainer}>
-              <Dropdown>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                Impedit, voluptatum magnam fugit natus nobis repellendus ex
-                alias explicabo quidem distinctio fugiat accusantium consectetur
-                eligendi eos veritatis, voluptatem assumenda non odio?
-              </Dropdown>
+              <Dropdown />
             </div>
           </div>
         </Card>

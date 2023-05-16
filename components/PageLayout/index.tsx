@@ -6,7 +6,10 @@ import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function PageLayout({ title, children }) {
+const PageLayout: React.FC<{ title?: string; children: any }> = ({
+  title,
+  children,
+}) => {
   return (
     <>
       <Head>
@@ -24,4 +27,6 @@ export default function PageLayout({ title, children }) {
       </main>
     </>
   );
-}
+};
+
+export default PageLayout;
