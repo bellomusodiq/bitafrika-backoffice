@@ -2,7 +2,7 @@ import React from "react";
 import Button from "../Button";
 import styles from "./NavigationStep.module.css";
 
-const NavigationStep: React.FC = () => {
+const NavigationStep: React.FC<{ hideButton?: boolean }> = ({ hideButton }) => {
   return (
     <div className={styles.navigationStep}>
       <div className={styles.navItems}>
@@ -12,14 +12,16 @@ const NavigationStep: React.FC = () => {
         <img src="/icons/arrow-right2.svg" />
         <span>Bitcoin</span>
       </div>
-      <div>
-        <Button color="white">
-          <>
-            <img src="/icons/arrow-left.svg" />
-            Back to overview
-          </>
-        </Button>
-      </div>
+      {!hideButton && (
+        <div>
+          <Button color="white">
+            <>
+              <img src="/icons/arrow-left.svg" />
+              Back to overview
+            </>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
