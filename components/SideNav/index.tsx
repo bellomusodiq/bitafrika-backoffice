@@ -102,7 +102,47 @@ const SideNav: React.FC = () => {
           },
         ]}
       />
-      <SideNavItem title="Transactions" icon="/icons/transactions.svg" />
+      <SideNavItem
+        title="Transactions"
+        icon="/icons/transactions.svg"
+        childrenItem={[
+          {
+            title: "Buy (Momo Topup)",
+            url: "/transactions/buy-momo",
+            isActive: router.route === "/transactions/buy-momo",
+          },
+          {
+            title: "Sell (Momo withdrawal)",
+            url: "/transactions/sell-momo",
+            isActive: router.route === "/transactions/sell-momo",
+          },
+          {
+            title: "Deposit (crypto)",
+            url: "/transactions/deposit-crypto",
+            isActive: router.route === "/transactions/deposit-crypto",
+          },
+          {
+            title: "Withdrawal (crypto)",
+            url: "/transactions/withdrawal-crypto",
+            isActive: router.route === "/transactions/withdrawal-crypto",
+          },
+          {
+            title: "Swap",
+            url: "/transactions/swap",
+            isActive: router.route === "/transactions/swap",
+          },
+          {
+            title: "Utility",
+            url: "/transactions/utility",
+            isActive: router.route === "/transactions/utility",
+          },
+          {
+            title: "Cards",
+            url: "/transactions/cards",
+            isActive: router.route === "/transactions/cards",
+          },
+        ]}
+      />
       <SideNavItem title="Users" icon="/icons/users-01.svg" />
       <SideNavItem
         title="Manual approvals"
