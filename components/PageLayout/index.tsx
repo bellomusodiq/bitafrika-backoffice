@@ -6,10 +6,11 @@ import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
-const PageLayout: React.FC<{ title?: string; children: any }> = ({
-  title,
-  children,
-}) => {
+const PageLayout: React.FC<{
+  title?: string;
+  children: any;
+  noHeader?: boolean;
+}> = ({ title, children, noHeader }) => {
   return (
     <>
       <Head>
@@ -21,7 +22,7 @@ const PageLayout: React.FC<{ title?: string; children: any }> = ({
       <main className={styles.main}>
         <SideNav />
         <div className={styles.container}>
-          <Header />
+          {!noHeader && <Header />}
           <div className={styles.body}>{children}</div>
         </div>
       </main>

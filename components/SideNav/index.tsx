@@ -143,17 +143,58 @@ const SideNav: React.FC = () => {
           },
         ]}
       />
-      <SideNavItem title="Users" icon="/icons/users-01.svg" />
+      <SideNavItem
+        title="Users"
+        icon="/icons/users-01.svg"
+        childrenItem={[
+          {
+            title: "Registered",
+            url: "/users/registered",
+          },
+          {
+            title: "Unverified KYC",
+            url: "/users/unverfied-kyc",
+          },
+          {
+            title: "Disabled",
+            url: "/users/disabled",
+          },
+        ]}
+      />
       <SideNavItem
         title="Manual approvals"
         icon="/icons/manual-approvals.svg"
+        childrenItem={[
+          {
+            title: "Withdrawals",
+            url: "/manual-approvals/withdrawals",
+          },
+          {
+            title: "KYC",
+            url: "/manual-approvals/withdrawals",
+          },
+        ]}
       />
-      <SideNavItem title="Reports" icon="/icons/reports.svg" />
+      <SideNavItem
+        title="Reports"
+        icon="/icons/reports.svg"
+        childrenItem={[
+          {
+            title: "User reports",
+            url: "/reports/users",
+          },
+          {
+            title: "Transactions reports",
+            url: "/reports/transactions",
+          },
+        ]}
+      />
       <SideNavItem title="Broadcasts" icon="/icons/broadcasts.svg" />
       <SideNavItem title="Rates" icon="/icons/rates.svg" />
       <SideNavItem
         title="Country settings"
         icon="/icons/country-settings.svg"
+        url="/country-settings"
       />
       <div style={{ marginBottom: 70 }} />
       <SideNavItem title="Site settings" icon="/icons/site-settings.svg" />

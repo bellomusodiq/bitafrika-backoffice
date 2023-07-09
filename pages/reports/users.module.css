@@ -1,0 +1,319 @@
+.container {
+  margin: 24px 32px;
+}
+.header {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 38px;
+  color: #101828;
+  margin-bottom: 50px;
+}
+.tabContainer {
+  display: flex;
+  border-bottom: 2px solid #eaecf0;
+  padding-bottom: 16px;
+}
+.tabItem {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #3861fb;
+  border-bottom: 2px solid #3861fb;
+  padding: 0 16px;
+  padding-bottom: 16px;
+  margin-bottom: -18px;
+}
+.searchContainer {
+  margin-top: 24px;
+  background: #ffffff;
+  border: 1px solid #eaecf0;
+  border-radius: 12px;
+  min-height: 400px;
+}
+.searchHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9fafb;
+  padding: 0 24px;
+  border: 1px solid #eaecf0;
+  border-radius: 8px 8px 0px 0px;
+}
+.input {
+  flex: 1;
+  margin: 10px 16px;
+  padding: 8px 0px;
+  color: #475467;
+  outline: none;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  background-color: inherit;
+  border: none;
+  cursor: text;
+}
+.input::placeholder {
+  color: #667085;
+}
+.searchHint {
+  margin: 16px 0;
+  text-align: center;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: #98a2b3;
+}
+.searchHint > span {
+  color: #475467;
+}
+.searchButton {
+  height: 36px;
+}
+.resultText {
+  margin: 16px 24px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 18px;
+  color: #98a2b3;
+}
+.actionButton {
+  display: flex;
+  justify-content: flex-start;
+  flex: 1;
+}
+.modalContainer {
+  width: 400px;
+}
+.modalHeader {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  color: #101828;
+  text-align: center;
+}
+.divider {
+  height: 1px;
+  background-color: #eaecf0;
+  margin: 20px 0;
+}
+.keyValue {
+  display: flex;
+  justify-content: space-between;
+}
+.key {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #667085;
+}
+.value {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: #101828;
+}
+.valueStatus {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: #099250;
+  padding: 2px 8px;
+  background-color: #f6fef9;
+  border-radius: 16px;
+}
+.date {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  color: #a3a3a3;
+}
+.modalButton {
+  margin-top: 56px;
+}
+.filterByContainer {
+  width: 100%;
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--gray-200, #eaecf0);
+  background: var(--gray-25, #fcfcfd);
+}
+.filterByHeader {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  margin-bottom: 8px;
+}
+.filterContainer {
+  display: flex;
+  width: 100%;
+}
+.inputContainer {
+  width: 25%;
+  margin-right: 20px;
+}
+.inputContainer > p {
+  color: var(--gray-400, #98a2b3);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+}
+.filterByFooter {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.printButton {
+  display: flex;
+  align-items: center;
+}
+.printButton > img {
+  margin-right: 10px;
+}
+.sellTransactions {
+  display: flex;
+  padding: 24px;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  border: 1px solid var(--gray-200, #eaecf0);
+  background: var(--gray-blue-25, #fcfcfd);
+}
+.header2 {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.sellTransaction {
+  width: calc((100% / 4) - 30px);
+}
+.verticalDivider {
+  height: 100px;
+  width: 1px;
+  background: #eaecf0;
+}
+.sellTransactionTitle {
+  color: var(--gray-600, #475467);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  margin-bottom: 8px;
+}
+.sellTransactionValue {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 30px;
+  margin-bottom: 8px;
+}
+.sellTransactionSubValue {
+  color: var(--gray-700, #344054);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+}
+.transactionId {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.transactionId > p {
+  color: var(--blue-500, #2e90fa);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  margin-right: 5px;
+}
+.buySellOrders {
+  display: flex;
+  justify-content: space-between;
+  margin: 24px 0;
+}
+.buySellOrder {
+  width: calc(50% - 15px);
+  display: flex;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  flex-shrink: 0;
+  border: 1px solid var(--gray-200, #eaecf0);
+  background: var(--base-white, #fff);
+}
+.buySellTitle {
+  color: var(--gray-900, #101828);
+  text-align: center;
+  font-family: "PP Telegraf";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
+}
+.buySellItemTitle {
+  color: var(--gray-400, #98a2b3);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  margin-bottom: 8px;
+}
+.buySellItemValue {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px;
+}
+.buySellGreen {
+  color: #16b364;
+  font-family: "PP Telegraf";
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px;
+}
+.buySellCurrency {
+  color: #98A2B3;
+  font-size: 12px;
+}

@@ -2,15 +2,22 @@ import React from "react";
 import Button from "../Button";
 import styles from "./NavigationStep.module.css";
 
-const NavigationStep: React.FC<{ hideButton?: boolean }> = ({ hideButton }) => {
+const NavigationStep: React.FC<{
+  hideButton?: boolean;
+  color?: string;
+  noPadding?: boolean;
+}> = ({ hideButton, color = "none", noPadding = false }) => {
   return (
-    <div className={styles.navigationStep}>
-      <div className={styles.navItems}>
-        <span>Overview</span>
+    <div
+      style={{ padding: noPadding ? 0 : "0 32px" }}
+      className={styles.navigationStep}
+    >
+      <div style={{ color }} className={styles.navItems}>
+        <span style={{ color }}>Overview</span>
         <img src="/icons/arrow-right2.svg" />
-        <span>Available balances</span>
+        <span style={{ color }}>Available balances</span>
         <img src="/icons/arrow-right2.svg" />
-        <span>Bitcoin</span>
+        <span style={{ color }}>Bitcoin</span>
       </div>
       {!hideButton && (
         <div>

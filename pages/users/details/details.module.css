@@ -1,0 +1,291 @@
+.header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(
+    --linear-test,
+    linear-gradient(35deg, #5a37c8 0%, #194afa 100%)
+  );
+  padding-bottom: 50px;
+  padding-right: 32px;
+}
+.headerText {
+  color: var(--base-white, #fff);
+  font-size: 30px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 38px;
+  margin: 0;
+  padding-left: 32px;
+}
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.profileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -40px;
+}
+.profileHeader > img {
+  width: 160px;
+  height: 160px;
+  border-radius: 80px;
+  overflow: hidden;
+}
+.profileNameContainer {
+  flex: 1;
+  margin: 0 20px;
+}
+.profileActions {
+  display: flex;
+  align-items: center;
+}
+.profileActionBtns {
+  width: fit-content;
+  margin: 0 7.5px;
+}
+.container {
+  padding: 0 32px;
+}
+.profileDetailsContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.profileDetails {
+  width: 55%;
+}
+.profileStatus {
+  margin-left: 20px;
+  flex: 1;
+}
+.kycStatus {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 12px 4px 10px;
+  align-items: center;
+  gap: 6px;
+  border-radius: 16px;
+  background: var(--green-50, #edfcf2);
+  width: fit-content;
+}
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #16b364;
+}
+.kycStatus > span {
+  color: var(--green-700, #087443);
+  text-align: center;
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-weight: 500;
+  line-height: 20px;
+}
+.progressContainer {
+  display: flex;
+  align-items: center;
+}
+.progress {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #eaecf0;
+  flex: 1;
+  margin-right: 10px;
+}
+.fill {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #2251fa;
+}
+.progressContainer > span {
+  color: var(--gray-700, #344054);
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-weight: 500;
+  line-height: 20px;
+}
+.footer {
+  display: flex;
+  border-right: 1px solid var(--gray-200, #eaecf0);
+  border-bottom: 1px solid var(--gray-200, #eaecf0);
+  border-left: 1px solid var(--gray-200, #eaecf0);
+  background: var(--gray-25, #fcfcfd);
+  padding: 12px 16px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+}
+.footerBtns {
+  width: fit-content;
+  display: none;
+}
+.title {
+  margin-bottom: 20px;
+}
+.tabContainer {
+  width: 100%;
+  padding: 4px;
+  overflow-x: scroll;
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--gray-50, #f9fafb);
+  margin-bottom: 32px;
+}
+.tabItem {
+  color: var(--gray-700, #344054);
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 20px;
+  display: flex;
+  padding: 8px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  background: #eff8ff;
+  color: var(--blue-500, #2e90fa);
+  font-size: 16px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 24px;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.tableRow {
+  cursor: pointer;
+}
+.nameContainer {
+  display: flex;
+  align-items: center;
+}
+.actionButton {
+  display: flex;
+  justify-content: flex-start;
+  flex: 1;
+}
+.walletContainer {
+}
+.walletTitle {
+  color: var(--gray-500, #667085);
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 20px;
+}
+.walletAddress {
+  color: #000;
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 20px;
+  margin: 16px 0;
+}
+.statusContainer {
+  display: flex;
+  padding: 4px 14px;
+  align-items: center;
+  gap: 6px;
+  border-radius: 16px;
+  background: var(--green-50, #edfcf2);
+  width: fit-content;
+}
+.statusIndicator {
+  background-color: #087443;
+  width: 7px;
+  height: 7px;
+  border-radius: 3.5px;
+  margin-right: 6px;
+}
+.statusContainer > span {
+  color: var(--green-700, #087443);
+  text-align: center;
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+}
+.cardContainer {
+  display: flex;
+}
+.cardImage {
+  width: 50px;
+  margin-right: 12px;
+}
+.bluetext {
+  color: #98a2b3;
+}
+.cardType {
+  color: var(--base-black, #000);
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+}
+.modalContainer {
+  flex-direction: column;
+}
+.cardNameContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.inputContainerLeft {
+  width: 80%;
+  margin-right: 16px;
+}
+.inputContainer {
+  margin-bottom: 16px;
+}
+.inputContainer > p,
+.inputContainerLeft > p {
+  color: var(--gray-700, #344054);
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+}
+.otherDetails {
+  color: var(--gray-900, #101828);
+  font-size: 18px;
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+.modalFooter {
+  display: flex;
+  justify-content: space-between;
+}
+.modalFooter > div {
+  width: 47.5%;
+  margin-top: 20px;
+}
+.redText {
+  color: #f04438;
+}
+

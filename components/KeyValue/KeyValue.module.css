@@ -1,0 +1,36 @@
+.keyValueContainer {
+  border-radius: 12px;
+  border: 1px solid var(--gray-200, #eaecf0);
+}
+.keyValueHeader {
+  background: var(--gray-25, #fcfcfd);
+  display: flex;
+  align-items: center;
+}
+.keyValue {
+  display: flex;
+  align-items: center;
+}
+.keyContainer {
+  border-right: 1px solid var(--gray-200, #eaecf0);
+  width: 30%;
+  padding: 10px 24px;
+}
+.valueContainer {
+  flex: 1;
+  padding: 10px 24px;
+}
+.key {
+  color: var(--gray-500, #667085);
+  font-size: 14px;
+  font-family: "PP Telegraf";
+  font-weight: 500;
+  line-height: 20px;
+}
+.value {
+  color: var(--base-black, #000);
+  font-size: 16px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 24px;
+}
