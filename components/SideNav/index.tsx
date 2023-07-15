@@ -197,7 +197,11 @@ const SideNav: React.FC = () => {
         url="/country-settings"
       />
       <div style={{ marginBottom: 70 }} />
-      <SideNavItem title="Site settings" icon="/icons/site-settings.svg" />
+      <SideNavItem
+        title="Site settings"
+        url="/site-settings"
+        icon="/icons/site-settings.svg"
+      />
       <div className={styles.divider} />
       <div className={styles.profileContainer}>
         <img src="/images/Avatar.png" className={styles.profileAvatar} />
