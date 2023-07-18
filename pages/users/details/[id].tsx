@@ -599,7 +599,7 @@ const CardsTable: React.FC = () => {
 const UserDetails: NextPage = () => {
   const [currentTab, setCurrentTab] = useState<string>("paymentAccounts");
   return (
-    <PageLayout noHeader title="User Details">
+    <PageLayout title="User Details">
       <div className={styles.header}>
         <NavigationStep color="white" hideButton />
         <div className={styles.headerContainer}>
