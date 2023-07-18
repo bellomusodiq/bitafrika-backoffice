@@ -17,7 +17,7 @@ const Modal: React.FC<ModalProps> = ({
       />
       <div
         style={{
-          transform: openModal ? "translateY(0)" : "translateY(-100vh)",
+          transform: openModal ? "translateY(0)" : "translateY(-150vh)",
         }}
         className={styles.cardContainer}
       >
