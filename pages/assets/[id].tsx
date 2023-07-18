@@ -4,10 +4,11 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import NavigationStep from "@/components/NavigationStep";
 import PageLayout from "@/components/PageLayout";
 import { NextPage } from "next";
-import React from "react";
+import React, { useState } from "react";
 import styles from "./assets.module.css";
 
 const AssetsDetail: NextPage = () => {
+  const [filter, setFilter] = useState<string>("30d");
   return (
     <PageLayout>
       <NavigationStep />
@@ -84,14 +85,36 @@ const AssetsDetail: NextPage = () => {
             </p>
           </div>
           <div className={styles.filterDays}>
-            <a>30d</a>
+            <a
+              className={filter === "30d" ? styles.filterActiveLeft : ""}
+              onClick={() => setFilter("30d")}
+            >
+              30d
+            </a>
             <div className={styles.divider} />
-            <a className={styles.filterMiddle}>7d</a>
+            <a
+              className={
+                filter === "7d"
+                  ? `${styles.filterActive} ${styles.filterMiddle}`
+                  : styles.filterMiddle
+              }
+              onClick={() => setFilter("7d")}
+            >
+              7d
+            </a>
             <div className={styles.divider} />
-            <a className={styles.filterActive}>24h</a>
+            <a
+              className={filter === "24h" ? styles.filterActiveRight : ""}
+              onClick={() => setFilter("24h")}
+            >
+              24h
+            </a>
           </div>
         </div>
         <div className={styles.border} />
+
+        <div className={styles.blankDivider} />
+
         <div className={styles.tradesCharts}>
           <div style={{ width: "60%" }}>
             <div
@@ -185,46 +208,78 @@ const AssetsDetail: NextPage = () => {
             </p>
           </div>
           <div className={styles.filterDays}>
-            <a>30d</a>
+            <a
+              className={filter === "30d" ? styles.filterActiveLeft : ""}
+              onClick={() => setFilter("30d")}
+            >
+              30d
+            </a>
             <div className={styles.divider} />
-            <a className={styles.filterMiddle}>7d</a>
+            <a
+              className={
+                filter === "7d"
+                  ? `${styles.filterActive} ${styles.filterMiddle}`
+                  : styles.filterMiddle
+              }
+              onClick={() => setFilter("7d")}
+            >
+              7d
+            </a>
             <div className={styles.divider} />
-            <a className={styles.filterActive}>24h</a>
+            <a
+              className={filter === "24h" ? styles.filterActiveRight : ""}
+              onClick={() => setFilter("24h")}
+            >
+              24h
+            </a>
           </div>
         </div>
-        <div
-          className={styles.balanceItems}
-          style={{
-            backgroundColor: "#FCFCFD",
-            justifyContent: "space-between",
-          }}
-        >
+        <div className={styles.border} />
+        <div style={{ backgroundColor: "white", padding: 25 }}>
           <div
-            className={styles.balanceItem}
-            style={{ width: "calc(100% / 2 - 2px)" }}
+            className={styles.balanceItems}
+            style={{
+              backgroundColor: "#FCFCFD",
+              justifyContent: "space-between",
+              border: "1px solid #eaecf0",
+            }}
           >
-            <div>
-              <p className={styles.balanceTitle}>Sent</p>
-              <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
-              <div className={styles.balanceFooter}>
-                <p>$12,000</p>
-                <div className={styles.divider} style={{ margin: "0 10px" }} />
-                <p>~GHC 1,900.00</p>
+            <div
+              className={styles.balanceItem}
+              style={{
+                width: "calc(100% / 2 - 2px)",
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+              }}
+            >
+              <div>
+                <p className={styles.balanceTitle}>Sent</p>
+                <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
+                <div className={styles.balanceFooter}>
+                  <p>$12,000</p>
+                  <div className={styles.divider} />
+                  <p>~GHC 1,900.00</p>
+                </div>
               </div>
             </div>
-          </div>
-          <div className={styles.divider} />
-          <div
-            className={styles.balanceItem}
-            style={{ width: "calc(100% / 2 - 2px)" }}
-          >
-            <div>
-              <p className={styles.balanceTitle}>Received</p>
-              <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
-              <div className={styles.balanceFooter}>
-                <p>$12,000.000</p>
-                <div className={styles.divider} style={{ margin: "0 10px" }} />
-                <p>~GHC 1,900.00</p>
+            <div className={styles.divider} />
+            <div
+              className={styles.balanceItem}
+              style={{ width: "calc(100% / 2 - 2px)" }}
+            >
+              <div>
+                <p className={styles.balanceTitle}>Received</p>
+                <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
+                <div className={styles.balanceFooter}>
+                  <p>$12,000.000</p>
+                  <div
+                    className={styles.divider}
+                    style={{ margin: "0 10px" }}
+                  />
+                  <p>~GHC 1,900.00</p>
+                </div>
               </div>
             </div>
           </div>

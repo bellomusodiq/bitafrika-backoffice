@@ -1,0 +1,18 @@
+.toggleContainer {
+  display: flex;
+  padding: 16px;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--gray-50, #f9fafb);
+  align-items: center;
+  width: fit-content;
+}
+.toggleContainer > span {
+  color: var(--gray-700, #344054);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
+  margin-left: 8px;
+}

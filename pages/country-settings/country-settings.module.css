@@ -361,8 +361,6 @@
   font-style: normal;
   font-weight: 600;
   line-height: 28px;
-  margin-bottom: -12px;
-  margin-left: -15px;
 }
 .ratesInputContainer > p {
   color: var(--gray-700, #344054);
@@ -371,10 +369,11 @@
   font-style: normal;
   font-weight: 600;
   line-height: 24px;
-  margin-bottom: -20px;
+  margin-bottom: 10px;
 }
 .ratesFooter {
   width: 100%;
   display: flex;
   justify-content: flex-end;
+  margin-top: 32px;
 }

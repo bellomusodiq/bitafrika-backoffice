@@ -9,8 +9,8 @@ const inter = Inter({ subsets: ["latin"] });
 const PageLayout: React.FC<{
   title?: string;
   children: any;
-  noHeader?: boolean;
-}> = ({ title, children, noHeader }) => {
+  showHeader?: boolean;
+}> = ({ title, children, showHeader }) => {
   return (
     <>
       <Head>
@@ -22,7 +22,7 @@ const PageLayout: React.FC<{
       <main className={styles.main}>
         <SideNav />
         <div className={styles.container}>
-          {!noHeader && <Header />}
+          {showHeader && <Header />}
           <div className={styles.body}>{children}</div>
         </div>
       </main>

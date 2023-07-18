@@ -3,6 +3,7 @@ import Input from "../Input/Input";
 import styles from "./SideNav.module.css";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
 
 const SideNavItem: React.FC<{
   title: string;
@@ -69,12 +70,8 @@ const SideNav: React.FC = () => {
 
   return (
     <nav className={styles.sideNavContainer}>
-      <img src="/images/logo.png" className={styles.logo} />
-      <Input
-        leftIcon={<img src="/icons/search.svg" className={styles.searchIcon} />}
-        placeholder="Search"
-        className={styles.searchInput}
-      />
+      <Image alt="" src="/images/logo.png" width={400} height={20} className={styles.logo} />
+
       <SideNavItem title="Overview" icon="/icons/overview.svg" isActive />
       <SideNavItem
         title="Search"
@@ -190,7 +187,6 @@ const SideNav: React.FC = () => {
         ]}
       />
       <SideNavItem title="Broadcasts" icon="/icons/broadcasts.svg" />
-      <SideNavItem title="Rates" icon="/icons/rates.svg" />
       <SideNavItem
         title="Country settings"
         icon="/icons/country-settings.svg"

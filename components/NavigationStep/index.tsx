@@ -1,12 +1,14 @@
 import React from "react";
 import Button from "../Button";
 import styles from "./NavigationStep.module.css";
+import { useRouter } from "next/router";
 
 const NavigationStep: React.FC<{
   hideButton?: boolean;
   color?: string;
   noPadding?: boolean;
 }> = ({ hideButton, color = "none", noPadding = false }) => {
+  const router = useRouter();
   return (
     <div
       style={{ padding: noPadding ? 0 : "0 32px" }}
@@ -21,7 +23,7 @@ const NavigationStep: React.FC<{
       </div>
       {!hideButton && (
         <div>
-          <Button color="white">
+          <Button onClick={() => router.back()} color="white">
             <>
               <img src="/icons/arrow-left.svg" />
               Back to overview

@@ -79,76 +79,76 @@ export default function Search() {
             Rates
           </div>
         </div>
-        <div className={styles.body}>
-          {currentTab === "basicInformation" && (
-            <>
-              <p className={styles.bodyHeader}>Name</p>
-              <p className={styles.bodySubHeader}>
-                Select a country to automatically fill the field or enter
-                details manually
-              </p>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Country</p>
+        {currentTab === "basicInformation" && (
+          <div className={styles.body}>
+            <p className={styles.bodyHeader}>Name</p>
+            <p className={styles.bodySubHeader}>
+              Select a country to automatically fill the field or enter details
+              manually
+            </p>
+            <Divider style={{ margin: 0 }} />
+            <div className={styles.bodyInputContainer}>
+              <p>Country</p>
+              <div>
+                <Dropdown
+                  options={[
+                    { title: "Ghana", value: "Ghana" },
+                    { title: "Cameroon", value: "Cameroon" },
+                    { title: "Nigeria", value: "Nigeria" },
+                  ]}
+                  onChange={() => {}}
+                />
+              </div>
+            </div>
+            <Divider style={{ margin: 0 }} />
+            <div className={styles.bodyInputContainer}>
+              <p>Country annotation (eg. USA)</p>
+              <div>
+                <Input />
+              </div>
+            </div>
+            <Divider style={{ margin: 0 }} />
+            <div className={styles.bodyInputContainer}>
+              <p>Currency</p>
+              <div>
+                <Input />
+              </div>
+            </div>
+            <Divider style={{ margin: 0 }} />
+            <div className={styles.bodyInputContainer}>
+              <p>Currency code (eg. USD)</p>
+              <div>
+                <Input />
+              </div>
+            </div>
+            <Divider style={{ margin: 0 }} />
+            <div className={styles.bodyInputContainer}>
+              <p>Phone code</p>
+              <div>
+                <Input />
+              </div>
+            </div>
+            <Divider style={{ margin: 0 }} />
+            <div className={styles.bodyFooter}>
+              <div>
+                <Button color="white">
+                  <span style={{ color: "red" }}>Delete country</span>
+                </Button>
+              </div>
+              <div className={styles.cancelBtns}>
+                <div style={{ marginRight: 12 }}>
+                  <Button color="white">Cancel</Button>
+                </div>
                 <div>
-                  <Dropdown
-                    options={[
-                      { title: "Ghana", value: "Ghana" },
-                      { title: "Cameroon", value: "Cameroon" },
-                      { title: "Nigeria", value: "Nigeria" },
-                    ]}
-                    onChange={() => {}}
-                  />
+                  <Button>Save</Button>
                 </div>
               </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Country annotation (eg. USA)</p>
-                <div>
-                  <Input />
-                </div>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Currency</p>
-                <div>
-                  <Input />
-                </div>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Currency code (eg. USD)</p>
-                <div>
-                  <Input />
-                </div>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Phone code</p>
-                <div>
-                  <Input />
-                </div>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyFooter}>
-                <div>
-                  <Button color="white">
-                    <span style={{ color: "red" }}>Delete country</span>
-                  </Button>
-                </div>
-                <div className={styles.cancelBtns}>
-                  <div style={{ marginRight: 12 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Save</Button>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-          {currentTab === "paymentMethods" && (
-            <>
+            </div>
+          </div>
+        )}
+        {currentTab === "paymentMethods" && (
+          <>
+            <div className={styles.body}>
               <div className={styles.bodyInputContainer}>
                 <p>Mobile money</p>
                 <div>
@@ -169,16 +169,24 @@ export default function Search() {
                   <Switch />
                 </div>
               </div>
-              <Divider style={{ margin: 0 }} />
-              <div>
-                <Button onClick={() => setOpenModal(true)}>
-                  Add new payment method
-                </Button>
-              </div>
-            </>
-          )}
-          {currentTab === "rates" && (
-            <>
+            </div>
+            <Divider />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                width: "fit-content",
+              }}
+            >
+              <Button onClick={() => setOpenModal(true)}>
+                Add new payment method
+              </Button>
+            </div>
+          </>
+        )}
+        {currentTab === "rates" && (
+          <>
+            <div className={styles.body}>
               <div className={styles.ratesTab}>
                 <a
                   onClick={() => setRatesTab("BTC")}
@@ -234,25 +242,25 @@ export default function Search() {
               <Divider style={{ margin: 0 }} />
               <div className={styles.ratesContainer}>
                 <div className={styles.ratesInputContainer}>
-                  <p>USD Buy Rate</p>
+                  <p>{ratesTab} Buy Rate</p>
                   <Input leftIcon={<div className={styles.leftIcon}>$</div>} />
                 </div>
                 <div className={styles.ratesInputContainer}>
-                  <p>USD Sell Rate</p>
+                  <p>{ratesTab} Sell Rate</p>
                   <Input leftIcon={<div className={styles.leftIcon}>$</div>} />
                 </div>
               </div>
-              <div className={styles.ratesFooter}>
-                <div style={{ marginRight: 10 }}>
-                  <Button color="white">Cancel</Button>
-                </div>
-                <div>
-                  <Button>Update</Button>
-                </div>
+            </div>
+            <div className={styles.ratesFooter}>
+              <div style={{ marginRight: 10 }}>
+                <Button color="white">Cancel</Button>
               </div>
-            </>
-          )}
-        </div>
+              <div>
+                <Button>Update</Button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </PageLayout>
   );

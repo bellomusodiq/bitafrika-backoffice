@@ -74,6 +74,7 @@
 .balanceItems {
   padding: 24px;
   display: flex;
+  justify-content: space-between;
   background-color: white;
   border-bottom: 1px solid #eaecf0;
   margin-bottom: 64px;
@@ -140,6 +141,10 @@
   padding: 24px;
   display: flex;
 }
+.blankDivider {
+  height: 24px;
+  background-color: white;
+}
 .tradesTextContainer {
   flex: 1;
   margin-right: 24px;
@@ -178,17 +183,30 @@
 .filterDays > a {
   padding: 10px 16px;
   display: flex;
+  justify-content: center;
   align-items: center;
+  cursor: pointer;
+  width: 70px;
 }
 .filterActive {
   background-color: #3861fb;
   color: white;
   overflow-x: hidden;
+}
+.filterActiveRight {
+  background-color: #3861fb;
+  color: white;
+  overflow-x: hidden;
   border-radius: 0 8px 8px 0;
+}
+.filterActiveLeft {
+  background-color: #3861fb;
+  color: white;
+  overflow-x: hidden;
+  border-radius: 8px 0px 0px 8px;
 }
 .border {
   border-bottom: 1px solid #eaecf0;
-  margin: 24px;
 }
 .tradesCharts {
   margin: 0 24px;
@@ -199,6 +217,7 @@
 .tradesCharts > div {
   background-color: #fcfcfd;
   padding: 8px;
+  border: 1px solid var(--gray-200, #eaecf0);
 }
 .balanceFooter {
   display: flex;

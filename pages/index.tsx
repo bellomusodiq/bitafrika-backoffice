@@ -120,7 +120,7 @@ const SERVICES_LISTING: any = [
 
 export default function Home() {
   return (
-    <PageLayout title="Hone">
+    <PageLayout showHeader title="Hone">
       <div className={styles.homeContainer}>
         <h1 className={styles.header}>Dashboard Overview</h1>
         <p className={styles.subHeader}>
@@ -208,6 +208,7 @@ export default function Home() {
             </StatsCard>
           </div>
         </div>
+        {/* 
         <h3 className={styles.trendHeader}>Trends</h3>
         <div className={styles.infoContainer}>
           <img src="/icons/info-circle.svg" />
@@ -215,7 +216,7 @@ export default function Home() {
         </div>
         <div className={styles.trendsContainer}>
           <TrendItem
-            showGraph
+            // showGraph
             title="Transaction completion rate"
             trend="up"
             trendNumber={3.4}
@@ -228,7 +229,7 @@ export default function Home() {
             dateTo="05 May"
           />
           <TrendItem
-            showGraph
+            // showGraph
             title="New user sign ups"
             trend="up"
             trendNumber={3.4}
@@ -240,31 +241,9 @@ export default function Home() {
             dateFrom="04 Feb"
             dateTo="05 May"
           />
+
           <TrendItem
-            showGraph
-            title="Utility payments"
-            trend="up"
-            trendNumber={3.4}
-            number="80000"
-            subTitle="vs. 75000 last month"
-            borderTop
-            borderBottom
-            dateFrom="04 Feb"
-            dateTo="05 May"
-          />
-          <TrendItem
-            showGraph
-            title="Active users"
-            trend="up"
-            trendNumber={3.4}
-            number="100004"
-            subTitle="vs.90000 last month"
-            borderRight
-            dateFrom="04 Feb"
-            dateTo="05 May"
-          />
-          <TrendItem
-            showGraph
+            // showGraph
             title="Total users"
             trend="up"
             trendNumber={3.4}
@@ -274,16 +253,7 @@ export default function Home() {
             dateFrom="04 Feb"
             dateTo="05 May"
           />
-          <TrendItem
-            showGraph
-            title="App downloads"
-            trend="down"
-            trendNumber={3.4}
-            number="1200"
-            subTitle="vs. 900 last month"
-            dateFrom="04 Feb"
-            dateTo="05 May"
-          />
+          
         </div>
         <h3 className={styles.trendHeader}>Cards</h3>
         <div className={styles.infoContainer}>
@@ -380,6 +350,7 @@ export default function Home() {
           </div>
           <ServicesListing title="Service status" services={SERVICES_LISTING} />
         </div>
+        */}
       </div>
     </PageLayout>
   );

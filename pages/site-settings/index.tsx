@@ -9,6 +9,7 @@ import Modal from "@/components/Modal";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
+import Toggle from "@/components/Toggle";
 
 export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -51,10 +52,13 @@ export default function Search() {
         <p className={styles.subHeader}></p>
         <div className={styles.siteSettingsContainer}>
           <div className={styles.navBar}>
-            <Input
-              leftIcon={<img src="/icons/search.svg" />}
-              placeholder="Search"
-            />
+            <div className={styles.searchContainer}>
+              <Input
+                leftIcon={<img src="/icons/search.svg" />}
+                placeholder="Search"
+                noBorder
+              />
+            </div>
             <div
               className={currentTab === "fees" ? styles.tabActive : styles.tab}
               onClick={() => setCurrentTab("fees")}
@@ -256,7 +260,6 @@ export default function Search() {
                     />
                   </div>
                 </div>
-                <Divider style={{ margin: 0 }} />
                 <div className={styles.ratesContainer}>
                   <div className={styles.ratesInputContainer}>
                     <p>Percentage fee for withdrawals</p>
@@ -294,7 +297,11 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
                 <Divider />
@@ -326,15 +333,6 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
-                  </div>
-                </div>
               </>
             )}
             {currentTab === "sms" && (
@@ -364,16 +362,6 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
-                  </div>
-                </div>
               </>
             )}
             {currentTab === "confirmations" && (
@@ -393,7 +381,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -409,7 +397,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -425,7 +413,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -441,7 +429,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -457,17 +445,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
-
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
-                  </div>
-                </div>
+                <div className={styles.spacer} />
               </>
             )}
             {currentTab === "networkFees" && (
@@ -486,7 +464,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -501,7 +479,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -516,7 +494,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -534,16 +512,18 @@ export default function Search() {
                 <Divider />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
-                    <p className={styles.keyText}>
-                      Number of fee types used for -{" "}
-                      <span className={styles.blueText}>Tron</span>
-                    </p>
+                    <p className={styles.keyText}>NETWORK FEE PRIORITY TYPE</p>
                     <p className={styles.keySubText}>
-                      network block estimation value for Tron
+                      Transfer mode determines the priority of the network fee
+                      for a network. Options are CONSERVATIVE and ECONOMICAL
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      placeholder=""
+                      className={styles.valueInput}
+                      onUpdate={() => {}}
+                    />
                   </div>
                 </div>
                 <Divider />
@@ -558,7 +538,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <div className={styles.keyValue}>
@@ -584,7 +566,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <div className={styles.keyValue}>
@@ -612,7 +596,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <div className={styles.keyValue}>
@@ -627,16 +613,6 @@ export default function Search() {
                   </div>
                   <div className={styles.value}>
                     <Input placeholder="" className={styles.valueInput} />
-                  </div>
-                </div>
-                <Divider />
-
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
                   </div>
                 </div>
               </>
@@ -655,10 +631,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -672,10 +650,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -687,16 +667,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
-                  </div>
-                </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
               </>
@@ -716,10 +689,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -731,10 +706,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -746,10 +723,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -761,16 +740,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
-                  </div>
-                </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
               </>
@@ -789,10 +761,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -805,10 +779,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -821,10 +797,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -837,10 +815,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -853,10 +833,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -869,16 +851,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
-                  </div>
-                </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
               </>
@@ -897,10 +872,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -913,10 +890,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -929,10 +908,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -945,10 +926,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -961,10 +944,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -977,18 +962,99 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
+              </>
+            )}
+            {currentTab === "limits" && (
+              <>
+                <div className={styles.keyValue}>
+                  <div className={styles.key}>
+                    <p className={styles.keyText}>Daily buying limit in USD</p>
+                    <p className={styles.keySubText}>
+                      Daily buying limit quoted in USD - Master
+                    </p>
                   </div>
-                  <div>
-                    <Button>Update</Button>
+                  <div className={styles.value}>
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
+                <div className={styles.spacer} />
+                <div className={styles.keyValue}>
+                  <div className={styles.key}>
+                    <p className={styles.keyText}>Daily sell limit in USD</p>
+                    <p className={styles.keySubText}>
+                      Daily selling limit quoted in USD - Master
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
+                  </div>
+                </div>
+                <div className={styles.spacer} />
+                <div className={styles.keyValue}>
+                  <div className={styles.key}>
+                    <p className={styles.keyText}>
+                      Daily buying limit in USD for USDT - Tron
+                    </p>
+                    <p className={styles.keySubText}>
+                      Daily buying limit quoted in USD - Master
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
+                  </div>
+                </div>
+                <div className={styles.spacer} />
+                <div className={styles.keyValue}>
+                  <div className={styles.key}>
+                    <p className={styles.keyText}>
+                      Daily selling limit in USD for USDT - Tron
+                    </p>
+                    <p className={styles.keySubText}>
+                      Daily selling limit quoted in USD - Master
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
+                  </div>
+                </div>
+                <div className={styles.spacer} />
+                <div className={styles.keyValue}>
+                  <div className={styles.key}>
+                    <p className={styles.keyText}>Daily buying limit in USD</p>
+                    <p className={styles.keySubText}>
+                      Daily buying limit quoted in USD - Master
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
+                  </div>
+                </div>
+                <div className={styles.spacer} />
               </>
             )}
             {currentTab === "tron" && (
@@ -1005,7 +1071,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1035,7 +1101,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1050,7 +1116,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1065,7 +1131,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1081,8 +1147,6 @@ export default function Search() {
                   </div>
                 </div>
                 <Divider />
-
-                <Divider />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1094,10 +1158,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1109,7 +1175,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <Divider />
@@ -1124,10 +1192,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1139,7 +1209,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <Divider />
@@ -1154,10 +1226,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1169,7 +1243,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <Divider />
@@ -1181,10 +1257,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>TRX Service fee - Tron</p>
@@ -1193,10 +1273,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1207,10 +1291,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1225,7 +1313,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1240,7 +1328,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>TRX fee for sending TRX</p>
@@ -1253,7 +1341,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>TRX fee for selling USDT</p>
@@ -1279,10 +1367,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>TRON SWEEP STATE</p>
@@ -1292,7 +1382,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>TRON SWEEPING FEE CONTRACT</p>
@@ -1302,16 +1392,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
-
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
-                  </div>
-                </div>
+                <div className={styles.spacer} />
               </>
             )}
             {currentTab === "ethereum" && (
@@ -1340,10 +1421,12 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1355,16 +1438,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
-                  </div>
-                </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
               </>
@@ -1380,7 +1456,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>SUPPORT WHATSAPP</p>
@@ -1401,10 +1477,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>TELEGRAM CHAT IDENTIFIER</p>
@@ -1413,21 +1493,16 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
-                  </div>
-                </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
               </>
             )}
-            {currentTab === "support" && (
+            {/* {currentTab === "moreSettings" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1478,17 +1553,8 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
-                  </div>
-                </div>
               </>
-            )}
+            )} */}
             {currentTab === "maintenance" && (
               <>
                 <div className={styles.keyValue}>
@@ -1504,10 +1570,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1520,10 +1590,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1535,10 +1609,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1551,10 +1629,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>
@@ -1567,10 +1649,14 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Input placeholder="" className={styles.valueInput} />
+                    <Input
+                      onUpdate={() => {}}
+                      placeholder=""
+                      className={styles.valueInput}
+                    />
                   </div>
                 </div>
-                <Divider />
+                <div className={styles.spacer} />
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
                     <p className={styles.keyText}>USDT Exchange price</p>
@@ -1580,15 +1666,6 @@ export default function Search() {
                   </div>
                   <div className={styles.value}>
                     <Input placeholder="" className={styles.valueInput} />
-                  </div>
-                </div>
-                <Divider />
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
                   </div>
                 </div>
               </>
@@ -1631,7 +1708,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <Divider />
@@ -1646,7 +1725,9 @@ export default function Search() {
                     </p>
                   </div>
                   <div className={styles.value}>
-                    <Switch />
+                    <div className={styles.switchContainer}>
+                      <Toggle />
+                    </div>
                   </div>
                 </div>
                 <Divider />
@@ -1661,16 +1742,7 @@ export default function Search() {
                     <Input placeholder="" className={styles.valueInput} />
                   </div>
                 </div>
-                <Divider />
-
-                <div className={styles.ratesFooter}>
-                  <div style={{ marginRight: 10 }}>
-                    <Button color="white">Cancel</Button>
-                  </div>
-                  <div>
-                    <Button>Update</Button>
-                  </div>
-                </div>
+                <div className={styles.spacer} />
               </>
             )}
           </div>
