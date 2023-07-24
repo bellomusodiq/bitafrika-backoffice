@@ -80,10 +80,15 @@ const SideNav: React.FC = () => {
         />
       </div>
 
-      <SideNavItem title="Overview" icon="/icons/overview.svg" isActive />
+      <SideNavItem
+        title="Overview"
+        icon="/icons/overview.svg"
+        isActive={router.route === "/"}
+      />
       <SideNavItem
         title="Search"
         icon="/icons/search.svg"
+        isActive={router.route.split("/")[1] === "search"}
         childrenItem={[
           {
             title: "User",
@@ -110,6 +115,7 @@ const SideNav: React.FC = () => {
       <SideNavItem
         title="Transactions"
         icon="/icons/transactions.svg"
+        isActive={router.route.split("/")[1] === "transactions"}
         childrenItem={[
           {
             title: "Buy (Momo Topup)",
@@ -147,6 +153,7 @@ const SideNav: React.FC = () => {
       <SideNavItem
         title="Users"
         icon="/icons/users-01.svg"
+        isActive={router.route.split("/")[1] === "users"}
         childrenItem={[
           {
             title: "Registered",
@@ -165,6 +172,7 @@ const SideNav: React.FC = () => {
       <SideNavItem
         title="Manual approvals"
         icon="/icons/manual-approvals.svg"
+        isActive={router.route.split("/")[1] === "manual-approvals"}
         childrenItem={[
           {
             title: "Withdrawals",
@@ -183,6 +191,7 @@ const SideNav: React.FC = () => {
       <SideNavItem
         title="Reports"
         icon="/icons/reports.svg"
+        isActive={router.route.split("/")[1] === "reports"}
         childrenItem={[
           {
             title: "User reports",
@@ -197,6 +206,7 @@ const SideNav: React.FC = () => {
       <SideNavItem
         title="Broadcasts"
         icon="/icons/broadcasts.svg"
+        isActive={router.route.split("/")[1] === "broadcast"}
         childrenItem={[
           {
             title: "SMS broadcast",
@@ -214,11 +224,13 @@ const SideNav: React.FC = () => {
       />
       <SideNavItem
         title="Country settings"
+        isActive={router.route.split("/")[1] === "country-settings"}
         icon="/icons/country-settings.svg"
         url="/country-settings"
       />
       <div style={{ marginBottom: 70 }} />
       <SideNavItem
+        isActive={router.route.split("/")[1] === "site-settings"}
         title="Site settings"
         url="/site-settings"
         icon="/icons/site-settings.svg"

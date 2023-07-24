@@ -9,10 +9,11 @@ import Modal from "@/components/Modal";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
+import Toggle from "@/components/Toggle";
 
 export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [currentTab, setCurrentTab] = useState<string>("basicInformation");
+  const [currentTab, setCurrentTab] = useState<string>("Basic Information");
   const [ratesTab, setRatesTab] = useState<string>("BTC");
 
   return (
@@ -45,15 +46,18 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep
+        hideButton
+        navigation={["Home", "Country Settings", currentTab]}
+      />
       <div className={styles.container}>
-        <h3 className={styles.header}>Users</h3>
-        <p className={styles.subHeader}>1000 Total users</p>
+        <h3 className={styles.header}>Country Settings</h3>
+        <p className={styles.subHeader}></p>
         <div className={styles.tabContainer}>
           <div
-            onClick={() => setCurrentTab("basicInformation")}
+            onClick={() => setCurrentTab("Basic Information")}
             className={
-              currentTab === "basicInformation"
+              currentTab === "Basic Information"
                 ? styles.tabItemActive
                 : styles.tabItem
             }
@@ -61,9 +65,9 @@ export default function Search() {
             Basic Information
           </div>
           <div
-            onClick={() => setCurrentTab("paymentMethods")}
+            onClick={() => setCurrentTab("Payment methods")}
             className={
-              currentTab === "paymentMethods"
+              currentTab === "Payment methods"
                 ? styles.tabItemActive
                 : styles.tabItem
             }
@@ -71,22 +75,26 @@ export default function Search() {
             Payment methods
           </div>
           <div
-            onClick={() => setCurrentTab("rates")}
+            onClick={() => setCurrentTab("Payout methods")}
             className={
-              currentTab === "rates" ? styles.tabItemActive : styles.tabItem
+              currentTab === "Payout methods"
+                ? styles.tabItemActive
+                : styles.tabItem
+            }
+          >
+            Payout methods
+          </div>
+          <div
+            onClick={() => setCurrentTab("Rates")}
+            className={
+              currentTab === "Rates" ? styles.tabItemActive : styles.tabItem
             }
           >
             Rates
           </div>
         </div>
-        {currentTab === "basicInformation" && (
+        {currentTab === "Basic Information" && (
           <div className={styles.body}>
-            <p className={styles.bodyHeader}>Name</p>
-            <p className={styles.bodySubHeader}>
-              Select a country to automatically fill the field or enter details
-              manually
-            </p>
-            <Divider style={{ margin: 0 }} />
             <div className={styles.bodyInputContainer}>
               <p>Country</p>
               <div>
@@ -130,11 +138,7 @@ export default function Search() {
             </div>
             <Divider style={{ margin: 0 }} />
             <div className={styles.bodyFooter}>
-              <div>
-                <Button color="white">
-                  <span style={{ color: "red" }}>Delete country</span>
-                </Button>
-              </div>
+              <div></div>
               <div className={styles.cancelBtns}>
                 <div style={{ marginRight: 12 }}>
                   <Button color="white">Cancel</Button>
@@ -146,100 +150,86 @@ export default function Search() {
             </div>
           </div>
         )}
-        {currentTab === "paymentMethods" && (
+        {currentTab === "Payment methods" && (
           <>
             <div className={styles.body}>
               <div className={styles.bodyInputContainer}>
                 <p>Mobile money</p>
                 <div>
-                  <Switch />
+                  <Toggle />
                 </div>
               </div>
               <Divider style={{ margin: 0 }} />
               <div className={styles.bodyInputContainer}>
                 <p>Bank Transfer</p>
                 <div>
-                  <Switch />
+                  <Toggle />
                 </div>
               </div>
               <Divider style={{ margin: 0 }} />
               <div className={styles.bodyInputContainer}>
                 <p>Chipper cash</p>
                 <div>
-                  <Switch />
+                  <Toggle />
                 </div>
               </div>
-            </div>
-            <Divider />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                width: "fit-content",
-              }}
-            >
-              <Button onClick={() => setOpenModal(true)}>
-                Add new payment method
-              </Button>
             </div>
           </>
         )}
-        {currentTab === "rates" && (
+        {currentTab === "Rates" && (
           <>
+            <div className={styles.ratesTab}>
+              <a
+                onClick={() => setRatesTab("BTC")}
+                style={{
+                  color: ratesTab === "BTC" ? "#3861FB" : "#d0d5dd",
+                  borderRight: "1px solid var(--gray-300, #d0d5dd)",
+                }}
+                className={styles.ratesTabItem}
+              >
+                {ratesTab === "BTC" && (
+                  <div className={styles.ratesIndicator} />
+                )}
+                BTC
+              </a>
+              <a
+                onClick={() => setRatesTab("USDT")}
+                style={{
+                  color: ratesTab === "USDT" ? "#3861FB" : "#d0d5dd",
+                  borderRight: "1px solid var(--gray-300, #d0d5dd)",
+                }}
+                className={styles.ratesTabItem}
+              >
+                {ratesTab === "USDT" && (
+                  <div className={styles.ratesIndicator} />
+                )}
+                USDT
+              </a>
+              <a
+                onClick={() => setRatesTab("TRX")}
+                style={{
+                  color: ratesTab === "TRX" ? "#3861FB" : "#d0d5dd",
+                  borderRight: "1px solid var(--gray-300, #d0d5dd)",
+                }}
+                className={styles.ratesTabItem}
+              >
+                {ratesTab === "TRX" && (
+                  <div className={styles.ratesIndicator} />
+                )}
+                TRX
+              </a>
+              <a
+                onClick={() => setRatesTab("BNB")}
+                style={{ color: ratesTab === "BNB" ? "#3861FB" : "#d0d5dd" }}
+                className={styles.ratesTabItem}
+              >
+                {ratesTab === "BNB" && (
+                  <div className={styles.ratesIndicator} />
+                )}
+                BNB
+              </a>
+            </div>
             <div className={styles.body}>
-              <div className={styles.ratesTab}>
-                <a
-                  onClick={() => setRatesTab("BTC")}
-                  style={{ color: ratesTab === "BTC" ? "#3861FB" : "#d0d5dd" }}
-                  className={styles.ratesTabItem}
-                >
-                  {ratesTab === "BTC" && (
-                    <div className={styles.ratesIndicator} />
-                  )}
-                  BTC
-                </a>
-                <a
-                  onClick={() => setRatesTab("USDT")}
-                  style={{ color: ratesTab === "USDT" ? "#3861FB" : "#d0d5dd" }}
-                  className={styles.ratesTabItem}
-                >
-                  {ratesTab === "USDT" && (
-                    <div className={styles.ratesIndicator} />
-                  )}
-                  USDT
-                </a>
-                <a
-                  onClick={() => setRatesTab("TRX")}
-                  style={{ color: ratesTab === "TRX" ? "#3861FB" : "#d0d5dd" }}
-                  className={styles.ratesTabItem}
-                >
-                  {ratesTab === "TRX" && (
-                    <div className={styles.ratesIndicator} />
-                  )}
-                  TRX
-                </a>
-                <a
-                  onClick={() => setRatesTab("BNB")}
-                  style={{ color: ratesTab === "BNB" ? "#3861FB" : "#d0d5dd" }}
-                  className={styles.ratesTabItem}
-                >
-                  {ratesTab === "BNB" && (
-                    <div className={styles.ratesIndicator} />
-                  )}
-                  BNB
-                </a>
-              </div>
-              <div className={styles.ratesContainer}>
-                <div className={styles.ratesInputContainer}>
-                  <p>Buy Rate</p>
-                  <Input leftIcon={<div className={styles.leftIcon}>$</div>} />
-                </div>
-                <div className={styles.ratesInputContainer}>
-                  <p>Sell/withdrawal Rate</p>
-                  <Input leftIcon={<div className={styles.leftIcon}>$</div>} />
-                </div>
-              </div>
-              <Divider style={{ margin: 0 }} />
               <div className={styles.ratesContainer}>
                 <div className={styles.ratesInputContainer}>
                   <p>{ratesTab} Buy Rate</p>
@@ -257,6 +247,36 @@ export default function Search() {
               </div>
               <div>
                 <Button>Update</Button>
+              </div>
+            </div>
+          </>
+        )}
+        {currentTab === "Payout methods" && (
+          <>
+            <div className={styles.body}>
+              <div className={styles.bodyInputContainer2}>
+                <p style={{ marginRight: 64 }}>Figo</p>
+                <Toggle />
+              </div>
+              <Divider style={{ margin: 0 }} />
+              <div className={styles.bodyInputContainer2}>
+                <p style={{ marginRight: 64 }}>Thepeer</p>
+                <Toggle />
+              </div>
+              <Divider style={{ margin: 0 }} />
+              <div className={styles.bodyInputContainer2}>
+                <p style={{ marginRight: 64 }}>P2P</p>
+                <Toggle />
+              </div>
+              <Divider style={{ margin: 0 }} />
+              <div className={styles.bodyInputContainer2}>
+                <p style={{ marginRight: 64 }}>Vella</p>
+                <Toggle />
+              </div>
+              <Divider style={{ margin: 0 }} />
+              <div className={styles.bodyInputContainer2}>
+                <p style={{ marginRight: 64 }}>Opay</p>
+                <Toggle />
               </div>
             </div>
           </>

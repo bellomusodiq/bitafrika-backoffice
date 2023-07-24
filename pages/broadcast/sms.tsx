@@ -8,10 +8,10 @@ import Button from "@/components/Button";
 export default function Search() {
   return (
     <PageLayout title="Hone">
-      <NavigationStep navigation={["Home", "Broadcast", "SMS"]} />
+      <NavigationStep hideButton navigation={["Home", "Broadcast", "SMS"]} />
       <div className={styles.container}>
         <h3 className={styles.header}>SMS Broadcasts</h3>
-        <p className={styles.label}>SMS broadcast</p>
+        <p className={styles.label}></p>
         <textarea className={styles.textArea}></textarea>
         <p className={styles.hint}>
           Each SMS has a message limit of 160 characters. Messages with more

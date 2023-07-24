@@ -13,7 +13,7 @@ import Toggle from "@/components/Toggle";
 
 export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [currentTab, setCurrentTab] = useState<string>("fees");
+  const [currentTab, setCurrentTab] = useState<string>("Fees");
   const [ratesTab, setRatesTab] = useState<string>("BTC");
 
   return (
@@ -46,198 +46,207 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep
+        hideButton
+        navigation={["Home", "Site Settings", currentTab]}
+      />
       <div className={styles.container}>
-        <h3 className={styles.header}>Site settings</h3>
+        <h3 className={styles.header}>
+          Site settings - <span style={{ color: "#98A2B3" }}>{currentTab}</span>
+        </h3>
         <p className={styles.subHeader}></p>
         <div className={styles.siteSettingsContainer}>
           <div className={styles.navBar}>
             <div
-              className={currentTab === "fees" ? styles.tabActive : styles.tab}
-              onClick={() => setCurrentTab("fees")}
+              className={currentTab === "Fees" ? styles.tabActive : styles.tab}
+              onClick={() => setCurrentTab("Fees")}
             >
-              {currentTab === "fees" && <div className={styles.indicator} />}{" "}
+              {currentTab === "Fees" && <div className={styles.indicator} />}{" "}
               Fees
             </div>
             <div
               className={
-                currentTab === "paymentMethods" ? styles.tabActive : styles.tab
+                currentTab === "Payment methods" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("paymentMethods")}
+              onClick={() => setCurrentTab("Payment methods")}
             >
-              {currentTab === "paymentMethods" && (
+              {currentTab === "Payment methods" && (
                 <div className={styles.indicator} />
               )}{" "}
               Payment methods
             </div>
             <div
-              className={currentTab === "sms" ? styles.tabActive : styles.tab}
-              onClick={() => setCurrentTab("sms")}
+              className={currentTab === "SMS" ? styles.tabActive : styles.tab}
+              onClick={() => setCurrentTab("SMS")}
             >
-              {currentTab === "sms" && <div className={styles.indicator} />} SMS
+              {currentTab === "SMS" && <div className={styles.indicator} />} SMS
             </div>
             <div
               className={
-                currentTab === "confirmations" ? styles.tabActive : styles.tab
+                currentTab === "Confirmations" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("confirmations")}
+              onClick={() => setCurrentTab("Confirmations")}
             >
-              {currentTab === "confirmations" && (
+              {currentTab === "Confirmations" && (
                 <div className={styles.indicator} />
               )}{" "}
               Confirmations
             </div>
             <div
               className={
-                currentTab === "networkFees" ? styles.tabActive : styles.tab
+                currentTab === "Network fees/Types"
+                  ? styles.tabActive
+                  : styles.tab
               }
-              onClick={() => setCurrentTab("networkFees")}
+              onClick={() => setCurrentTab("Network fees/Types")}
             >
-              {currentTab === "networkFees" && (
+              {currentTab === "Network fees/Types" && (
                 <div className={styles.indicator} />
               )}{" "}
               Network fees/Types
             </div>
             <div
               className={
-                currentTab === "systemStatus" ? styles.tabActive : styles.tab
+                currentTab === "System status" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("systemStatus")}
+              onClick={() => setCurrentTab("System status")}
             >
-              {currentTab === "systemStatus" && (
+              {currentTab === "System status" && (
                 <div className={styles.indicator} />
               )}{" "}
               System status
             </div>
             <div
               className={
-                currentTab === "manualMomoDeposit"
+                currentTab === "Manual Momo Deposit"
                   ? styles.tabActive
                   : styles.tab
               }
-              onClick={() => setCurrentTab("manualMomoDeposit")}
+              onClick={() => setCurrentTab("Manual Momo Deposit")}
             >
-              {currentTab === "manualMomoDeposit" && (
+              {currentTab === "Manual Momo Deposit" && (
                 <div className={styles.indicator} />
               )}{" "}
               Manual Momo Deposit
             </div>
             <div
               className={
-                currentTab === "depositStatusMomo"
+                currentTab === "Deposit status (Momo)"
                   ? styles.tabActive
                   : styles.tab
               }
-              onClick={() => setCurrentTab("depositStatusMomo")}
+              onClick={() => setCurrentTab("Deposit status (Momo)")}
             >
-              {currentTab === "depositStatusMomo" && (
+              {currentTab === "Deposit status (Momo)" && (
                 <div className={styles.indicator} />
               )}{" "}
               Deposit status (Momo)
             </div>
             <div
               className={
-                currentTab === "withdrawalStatusMomo"
+                currentTab === "Withdrawal status (Momo)"
                   ? styles.tabActive
                   : styles.tab
               }
-              onClick={() => setCurrentTab("withdrawalStatusMomo")}
+              onClick={() => setCurrentTab("Withdrawal status (Momo)")}
             >
-              {currentTab === "withdrawalStatusMomo" && (
+              {currentTab === "Withdrawal status (Momo)" && (
                 <div className={styles.indicator} />
               )}{" "}
               Withdrawal status (Momo)
             </div>
             <div
               className={
-                currentTab === "sendingStatus" ? styles.tabActive : styles.tab
+                currentTab === "Sending status (Crypto)"
+                  ? styles.tabActive
+                  : styles.tab
               }
-              onClick={() => setCurrentTab("sendingStatus")}
+              onClick={() => setCurrentTab("Sending status (Crypto)")}
             >
-              {currentTab === "sendingStatus" && (
+              {currentTab === "Sending status (Crypto)" && (
                 <div className={styles.indicator} />
               )}{" "}
               Sending status (Crypto)
             </div>
             <div
               className={
-                currentTab === "utilities" ? styles.tabActive : styles.tab
+                currentTab === "Utilities" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("utilities")}
+              onClick={() => setCurrentTab("Utilities")}
             >
-              {currentTab === "utilities" && (
+              {currentTab === "Utilities" && (
                 <div className={styles.indicator} />
               )}{" "}
               Utilities
             </div>
             <div
-              className={currentTab === "swap" ? styles.tabActive : styles.tab}
-              onClick={() => setCurrentTab("swap")}
+              className={currentTab === "Swap" ? styles.tabActive : styles.tab}
+              onClick={() => setCurrentTab("Swap")}
             >
-              {currentTab === "swap" && <div className={styles.indicator} />}{" "}
+              {currentTab === "Swap" && <div className={styles.indicator} />}{" "}
               Swap
             </div>
             <div
               className={
-                currentTab === "limits" ? styles.tabActive : styles.tab
+                currentTab === "Limits" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("limits")}
+              onClick={() => setCurrentTab("Limits")}
             >
-              {currentTab === "limits" && <div className={styles.indicator} />}{" "}
+              {currentTab === "Limits" && <div className={styles.indicator} />}{" "}
               Limits
             </div>
             <div
-              className={currentTab === "tron" ? styles.tabActive : styles.tab}
-              onClick={() => setCurrentTab("tron")}
+              className={currentTab === "Tron" ? styles.tabActive : styles.tab}
+              onClick={() => setCurrentTab("Tron")}
             >
-              {currentTab === "tron" && <div className={styles.indicator} />}{" "}
+              {currentTab === "Tron" && <div className={styles.indicator} />}{" "}
               Tron
             </div>
             <div
               className={
-                currentTab === "ethereum" ? styles.tabActive : styles.tab
+                currentTab === "Ethereum/EVM" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("ethereum")}
+              onClick={() => setCurrentTab("Ethereum/EVM")}
             >
-              {currentTab === "ethereum" && (
+              {currentTab === "Ethereum/EVM" && (
                 <div className={styles.indicator} />
               )}{" "}
               Ethereum/EVM
             </div>
             <div
               className={
-                currentTab === "support" ? styles.tabActive : styles.tab
+                currentTab === "Support" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("support")}
+              onClick={() => setCurrentTab("Support")}
             >
-              {currentTab === "support" && <div className={styles.indicator} />}{" "}
+              {currentTab === "Support" && <div className={styles.indicator} />}{" "}
               Support
             </div>
             <div
               className={
-                currentTab === "maintenance" ? styles.tabActive : styles.tab
+                currentTab === "Maintenance" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("maintenance")}
+              onClick={() => setCurrentTab("Maintenance")}
             >
-              {currentTab === "maintenance" && (
+              {currentTab === "Maintenance" && (
                 <div className={styles.indicator} />
               )}{" "}
               Maintenance
             </div>
             <div
               className={
-                currentTab === "moreSettings" ? styles.tabActive : styles.tab
+                currentTab === "More settings" ? styles.tabActive : styles.tab
               }
-              onClick={() => setCurrentTab("moreSettings")}
+              onClick={() => setCurrentTab("More settings")}
             >
-              {currentTab === "moreSettings" && (
+              {currentTab === "More settings" && (
                 <div className={styles.indicator} />
               )}{" "}
               More settings
             </div>
           </div>
           <div className={styles.siteSettingsMain}>
-            {currentTab === "fees" && (
+            {currentTab === "Fees" && (
               <>
                 <div className={styles.ratesContainer}>
                   <div className={styles.ratesInputContainer}>
@@ -263,7 +272,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "paymentMethods" && (
+            {currentTab === "Payment methods" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -328,7 +337,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "sms" && (
+            {currentTab === "SMS" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -357,7 +366,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "confirmations" && (
+            {currentTab === "Confirmations" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -441,7 +450,7 @@ export default function Search() {
                 <div className={styles.spacer} />
               </>
             )}
-            {currentTab === "networkFees" && (
+            {currentTab === "Network fees/Types" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -610,7 +619,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "systemStatus" && (
+            {currentTab === "System status" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -667,7 +676,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "manualMomoDeposit" && (
+            {currentTab === "Manual Momo Deposit" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -740,7 +749,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "depositStatusMomo" && (
+            {currentTab === "Deposit status (Momo)" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -851,7 +860,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "withdrawalStatusMomo" && (
+            {currentTab === "Withdrawal status (Momo)" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -962,7 +971,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "limits" && (
+            {currentTab === "Limits" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1050,7 +1059,7 @@ export default function Search() {
                 <div className={styles.spacer} />
               </>
             )}
-            {currentTab === "tron" && (
+            {currentTab === "Tron" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1388,7 +1397,7 @@ export default function Search() {
                 <div className={styles.spacer} />
               </>
             )}
-            {currentTab === "ethereum" && (
+            {currentTab === "Ethereum/EVM" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1438,7 +1447,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "support" && (
+            {currentTab === "Support" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1495,7 +1504,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {/* {currentTab === "moreSettings" && (
+            {/* {currentTab === "More settings" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1548,7 +1557,7 @@ export default function Search() {
                 </div>
               </>
             )} */}
-            {currentTab === "maintenance" && (
+            {currentTab === "Maintenance" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>
@@ -1663,7 +1672,7 @@ export default function Search() {
                 </div>
               </>
             )}
-            {currentTab === "moreSettings" && (
+            {currentTab === "More settings" && (
               <>
                 <div className={styles.keyValue}>
                   <div className={styles.key}>

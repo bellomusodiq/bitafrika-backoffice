@@ -8,10 +8,10 @@ import Button from "@/components/Button";
 export default function Search() {
   return (
     <PageLayout title="Hone">
-      <NavigationStep navigation={["Home", "Broadcast", "SMS"]} />
+      <NavigationStep hideButton navigation={["Home", "Broadcast", "SMS"]} />
       <div className={styles.container}>
         <h3 className={styles.header}>Push broadcasts</h3>
-        <p className={styles.label}>Push notification</p>
+        <p className={styles.label}></p>
         <textarea className={styles.textArea}></textarea>
         <p className={styles.hint}>
         </p>
