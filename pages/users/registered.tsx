@@ -149,88 +149,43 @@ export default function Search() {
           </Button>
         </div>
       </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep hideButton navigation={["Home", "Users", "Registered"]} />
       <div className={styles.container}>
-        <h3 className={styles.header}>Users</h3>
+        <div className={styles.headerContainer}>
+          <h3 className={styles.header}>Users</h3>
+          <div className={styles.headerButtons}>
+            <div>
+              <Button color="white">
+                <div className={styles.printButton}>
+                  <img src="/icons/download.svg" />
+                  Download CSV
+                </div>
+              </Button>
+            </div>
+          </div>
+        </div>
         <p className={styles.subHeader}>1000 Total users</p>
         <div className={styles.tabContainer}>
-          <div className={styles.tabItem}>Registered</div>
+          <div className={styles.tabItem}>
+            Registered <span>200,000</span>
+          </div>
         </div>
 
-        <Divider />
-        <DropModal
-          open={openFilter}
-          onToggle={setOpenFilter}
-          title={
-            <div className={styles.dropModal}>
-              <img
-                src="/icons/plus.svg"
-                width={14}
-                height={14}
-                style={{ marginTop: -5, marginRight: 10 }}
-              />
-              Add filter
-            </div>
-          }
-        >
-          <div className={styles.dropModalContainer}>
-            <p className={styles.filterTitle}>status</p>
-            <Checkbox className={styles.checkbox}>Successful</Checkbox>
-            <Checkbox className={styles.checkbox}>Failed</Checkbox>
-            <Checkbox className={styles.checkbox}>Pending</Checkbox>
-            <Divider />
-            <p className={styles.filterTitle}>Period</p>
-            <DatePicker.RangePicker style={{ marginTop: 10 }} direction="rtl" />
-            <Divider />
-            <p className={styles.filterTitle}>Users</p>
-            <Input className={styles.nameInput} placeholder="name" />
-            <Divider style={{ marginTop: 30 }} />
-            <div className={styles.dropModalFooter}>
-              <Button className={styles.dropModalButton} color="white">
-                Clear
-              </Button>
-              <Button className={styles.dropModalButton2}>Apply filter</Button>
-            </div>
-          </div>
-        </DropModal>
         <div className={styles.searchContainer}>
-          <div className={styles.searchHeader}>
-            <img src="/icons/search.svg" />
-            <input
-              className={styles.input}
-              placeholder="Type transaction reference"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+          <div className={styles.table}>
+            <Table
+              onRow={(record, rowIndex) => {
+                return {
+                  onClick: (event) => {
+                    router.push("/users/details/1", "/users/details/1");
+                  },
+                };
+              }}
+              rowClassName={styles.tableRow}
+              dataSource={dataSource}
+              columns={columns}
             />
-            <div>
-              <Button className={styles.searchButton}>Search</Button>
-            </div>
           </div>
-          {!search ? (
-            <p className={styles.searchHint}>
-              Search hint:{" "}
-              <span>
-                Enter up to 10 search items , separated by comma (,) to search
-                multiple items
-              </span>
-            </p>
-          ) : (
-            <div className={styles.table}>
-              <p className={styles.resultText}>5 result found!</p>
-              <Table
-                onRow={(record, rowIndex) => {
-                  return {
-                    onClick: (event) => {
-                      router.push("/users/details/1", "/users/details/1");
-                    },
-                  };
-                }}
-                rowClassName={styles.tableRow}
-                dataSource={dataSource}
-                columns={columns}
-              />
-            </div>
-          )}
         </div>
       </div>
     </PageLayout>

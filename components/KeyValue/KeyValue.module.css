@@ -1,6 +1,5 @@
 .keyValueContainer {
   border-radius: 12px;
-  border: 1px solid var(--gray-200, #eaecf0);
 }
 .keyValueHeader {
   background: var(--gray-25, #fcfcfd);

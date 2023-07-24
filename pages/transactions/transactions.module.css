@@ -3,13 +3,13 @@
 }
 .header {
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 30px;
   line-height: 38px;
   color: #101828;
 }
 .subHeader {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   font-family: "PP Telegraf";
   font-style: normal;
   font-weight: 600;
@@ -33,6 +33,17 @@
   padding: 0 16px;
   padding-bottom: 16px;
   margin-bottom: -18px;
+  display: flex;
+  align-items: center;
+}
+.tabItem > span {
+  display: flex;
+  padding: 2px 10px;
+  align-items: center;
+  border-radius: 16px;
+  background: var(--primary-25, #f1f4ff);
+  mix-blend-mode: multiply;
+  margin-left: 8px;
 }
 .searchContainer {
   margin-top: 24px;
@@ -97,15 +108,7 @@
   flex: 1;
 }
 .modalContainer {
-  width: 400px;
-}
-.modalHeader {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 28px;
-  color: #101828;
-  text-align: center;
+  width: 500px;
 }
 .divider {
   height: 1px;
@@ -195,16 +198,165 @@
 .nameInput {
   margin: 5px 0;
 }
-.dropModalFooter{ 
+.dropModalFooter {
   display: flex;
 }
 .dropModalButton {
   margin-right: 10px;
 }
 .dropModalButton2 {
-  flex: 1,
+  flex: 1;
 }
 .dropdownContainer {
   width: fit-content;
   margin-top: 24px;
+}
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.printButton {
+  display: flex;
+  align-items: center;
+}
+.printButton > img {
+  margin-right: 10px;
+}
+.headerButtons {
+  display: flex;
+  align-items: center;
+}
+.headerButtons > div:first {
+  margin-right: 24px;
+}
+.filterActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+.recordTransaction {
+  display: flex;
+  align-items: center;
+  color: var(--primary-500, #3861fb);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 142.857% */
+}
+.recordTransaction > img {
+  margin-right: 8px;
+}
+.transactionId > p {
+  color: var(--blue-500, #2e90fa);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  margin-right: 5px;
+}
+.receiptContainer {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 12px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 28px;
+  border: 6px solid var(--gray-50, #f9fafb);
+  background: var(--gray-100, #f2f4f7);
+}
+.modalHeader {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px; /* 150% */
+  display: flex;
+}
+.modalHeader > span {
+  display: flex;
+  padding: 2px 8px;
+  align-items: center;
+  border-radius: 16px;
+  background: var(--gray-300, #d0d5dd);
+  mix-blend-mode: multiply;
+  color: var(--gray-700, #344054);
+  text-align: center;
+
+  /* Text xs/Medium */
+  font-family: "PP Telegraf";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+  margin-left: 16px;
+}
+.content {
+  display: flex;
+  justify-content: space-between;
+}
+.modalText {
+  color: var(--gray-400, #98a2b3);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+}
+.modalText > span {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 142.857% */
+  margin-left: 8px;
+}
+.success {
+  display: flex;
+  padding: 2px 8px 2px 6px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 16px;
+  background: var(--green-50, #edfcf2);
+  mix-blend-mode: multiply;
+  margin-left: 10px;
+  color: var(--green-700, #087443);
+}
+.success > div {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #16b364;
+  text-align: center;
+
+  /* Text xs/Medium */
+  font-family: "PP Telegraf";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+}
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.closeDownloadButtons {
+  display: flex;
+  align-items: center;
+}
+.buttonContainer {
+  display: flex;
+  align-items: center;
+}
+.buttonContainer > img {
+  margin-left: 8px;
 }

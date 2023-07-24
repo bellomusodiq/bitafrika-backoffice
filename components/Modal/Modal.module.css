@@ -45,3 +45,7 @@
   justify-self: flex-end;
   cursor: pointer;
 }
+.headerCenter {
+  flex: 1;  
+  margin: 0 16px;
+}

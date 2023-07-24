@@ -9,7 +9,7 @@
   color: #101828;
 }
 .subHeader {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   font-family: "PP Telegraf";
   font-style: normal;
   font-weight: 600;
@@ -33,8 +33,17 @@
   padding: 0 16px;
   padding-bottom: 16px;
   margin-bottom: -18px;
-  cursor: pointer;
-  margin: 0 10px;
+  display: flex;
+  align-items: center;
+}
+.tabItem > span {
+  display: flex;
+  padding: 2px 10px;
+  align-items: center;
+  border-radius: 16px;
+  background: var(--primary-25, #f1f4ff);
+  mix-blend-mode: multiply;
+  margin-left: 8px;
 }
 .searchContainer {
   margin-top: 24px;
@@ -287,4 +296,62 @@
   line-height: 20px;
   margin-bottom: 6px;
 }
-
+.modalTitle {
+  font-size: 18px;
+  line-height: 28px;
+  color: #101828;
+}
+.modalText {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #475467;
+  margin-top: 4px;
+}
+.qrImage {
+  width: 128px;
+  margin: 36px 0;
+}
+.verificationText {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: #344054;
+  align-self: flex-start;
+  margin-bottom: 6px;
+}
+.footerContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 34px;
+  width: 100%;
+}
+.footerButton {
+  width: calc(50% - 5px) !important;
+}
+.codeContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.code {
+  display: flex;
+  width: 80px;
+  padding: 10px 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300, #d0d5dd);
+  background: var(--base-white, #fff);
+  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  color: var(--gray-300, #d0d5dd);
+  text-align: center;
+  font-family: 'PP Telegraf';
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 60px; /* 125% */
+  letter-spacing: -0.96px;
+}

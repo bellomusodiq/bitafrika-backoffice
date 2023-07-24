@@ -29,6 +29,11 @@ const columns = [
     key: "amount",
   },
   {
+    title: "Topup Amount (C)",
+    dataIndex: "topupAmount",
+    key: "topupAmount",
+  },
+  {
     title: "Actions",
     dataIndex: "action",
     render: (_: any, { action }: any) => (
@@ -52,7 +57,8 @@ export default function Search() {
       transactionId: "#22002200002",
       phoneNumber: "+234812325600",
       amountUSD: "$400",
-      amount: "GHS",
+      amount: "GHS 1,500",
+      topupAmount: "0.0051BTC",
       action: () => setOpenModal(true),
     },
     {
@@ -61,7 +67,8 @@ export default function Search() {
       transactionId: "#22002200002",
       phoneNumber: "+234812325600",
       amountUSD: "$400",
-      amount: "GHS",
+      amount: "GHS 1,500",
+      topupAmount: "0.0051BTC",
       action: () => setOpenModal(true),
     },
     {
@@ -70,7 +77,8 @@ export default function Search() {
       transactionId: "#22002200002",
       phoneNumber: "+234812325600",
       amountUSD: "$400",
-      amount: "GHS",
+      amount: "GHS 1,500",
+      topupAmount: "0.0051BTC",
       action: () => setOpenModal(true),
     },
     {
@@ -79,7 +87,8 @@ export default function Search() {
       transactionId: "#22002200002",
       phoneNumber: "+234812325600",
       amountUSD: "$400",
-      amount: "GHS",
+      amount: "GHS 1,500",
+      topupAmount: "0.0051BTC",
       action: () => setOpenModal(true),
     },
     {
@@ -88,7 +97,8 @@ export default function Search() {
       transactionId: "#22002200002",
       phoneNumber: "+234812325600",
       amountUSD: "$400",
-      amount: "GHS",
+      amount: "GHS 1,500",
+      topupAmount: "0.0051BTC",
       action: () => setOpenModal(true),
     },
   ];
@@ -138,7 +148,10 @@ export default function Search() {
           </Button>
         </div>
       </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep
+        hideButton
+        navigation={["Home", "Search", "Momo Topup"]}
+      />
       <div className={styles.container}>
         <h3 className={styles.header}>Search</h3>
         <div className={styles.tabContainer}>
@@ -149,7 +162,7 @@ export default function Search() {
             <img src="/icons/search.svg" />
             <input
               className={styles.input}
-              placeholder="Type transaction reference"
+              placeholder="Search by Transaction ID"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -168,7 +181,7 @@ export default function Search() {
           ) : (
             <div className={styles.table}>
               <p className={styles.resultText}>5 result found!</p>
-              <Table dataSource={dataSource} columns={columns} />
+              <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
             </div>
           )}
         </div>

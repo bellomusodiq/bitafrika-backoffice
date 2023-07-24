@@ -77,6 +77,8 @@ export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
+  const [openFilter, setOpenFilter] = useState<boolean>(false);
+  const [codeIndex, setCodeIndex] = useState<number>(0);
   const [pin, setPin] = useState<string>("");
 
   const dataSource = [
@@ -374,7 +376,10 @@ export default function Search() {
               Cancel
             </Button>
             <Button
-              onClick={() => setOpenAddModal(false)}
+              onClick={() => {
+                setOpenAddModal(false);
+                setOpenCodeModal(true);
+              }}
               className={styles.modalButton}
             >
               Add to queue
@@ -391,7 +396,14 @@ export default function Search() {
         <p className={styles.subHeader}>120 Total pending</p>
         <div className={styles.tabContainer}>
           <div className={styles.tabItem}>
-            Withdrawals <span>200,200</span>
+            Topups <span>200,200</span>
+          </div>
+          <div className={styles.topUpButton}>
+            <div>
+              <Button onClick={() => setOpenAddModal(true)} color="white">
+                <img src="/icons/plus.svg" /> Manual account Top-Up
+              </Button>
+            </div>
           </div>
         </div>
 

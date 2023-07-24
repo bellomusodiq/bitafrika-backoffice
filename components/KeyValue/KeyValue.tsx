@@ -17,10 +17,10 @@ const KeyValue: React.FC<KeyValueProps> = ({ items, noFooterBoder }) => (
         key={item.key}
         className={index === 0 ? styles.keyValueHeader : styles.keyValue}
         style={{
-          border:
-            index !== items.length - 1 || !noFooterBoder
-              ? "1px solid var(--gray-200, #eaecf0)"
-              : "",
+          borderBottom: "1px solid var(--gray-200, #eaecf0)",
+          borderLeft: "1px solid var(--gray-200, #eaecf0)",
+          borderRight: "1px solid var(--gray-200, #eaecf0)",
+          borderTop: index === 0 ? "1px solid var(--gray-200, #eaecf0)" : "",
         }}
       >
         <div className={styles.keyContainer}>

@@ -52,13 +52,6 @@ export default function Search() {
         <p className={styles.subHeader}></p>
         <div className={styles.siteSettingsContainer}>
           <div className={styles.navBar}>
-            <div className={styles.searchContainer}>
-              <Input
-                leftIcon={<img src="/icons/search.svg" />}
-                placeholder="Search"
-                noBorder
-              />
-            </div>
             <div
               className={currentTab === "fees" ? styles.tabActive : styles.tab}
               onClick={() => setCurrentTab("fees")}

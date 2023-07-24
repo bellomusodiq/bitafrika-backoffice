@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "@/pages/users/details/details.module.css";
 import { NextPage } from "next";
 import PageLayout from "@/components/PageLayout";
@@ -83,7 +83,13 @@ const PaymentAccountsTable: React.FC = () => {
     },
   ];
 
-  return <Table dataSource={dataSource} columns={columns} />;
+  return (
+    <Table
+      style={{ fontFamily: "PP Telegraf" }}
+      dataSource={dataSource}
+      columns={columns}
+    />
+  );
 };
 
 const KYCVerificationTable: React.FC = () => {
@@ -170,12 +176,30 @@ const KYCVerificationTable: React.FC = () => {
     },
   ];
 
-  return <Table dataSource={dataSource} columns={columns} />;
+  return (
+    <Table
+      style={{ fontFamily: "PP Telegraf" }}
+      dataSource={dataSource}
+      columns={columns}
+    />
+  );
 };
 
 const AccountBalanceTable: React.FC = () => {
+  const code1 = useRef(null);
+  const code2 = useRef(null);
+  const code3 = useRef(null);
+  const code4 = useRef(null);
+  const codeMap: { [k: number]: any } = {
+    0: code1,
+    1: code2,
+    2: code3,
+    3: code4,
+  };
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
   const [deduct, setDeduct] = useState<boolean>(false);
+  const [pin, setPin] = useState<string>("");
   const columns: any = [
     {
       title: "",
@@ -221,12 +245,12 @@ const AccountBalanceTable: React.FC = () => {
       render: (_: any, { action }: any) => (
         <div className={styles.actionButton}>
           <div style={{ marginRight: 10 }}>
-            <Button color="white" onClick={action}>
+            <Button color="white" onClick={() => action(true)}>
               Deduct
             </Button>
           </div>
           <div>
-            <Button onClick={action}>{deduct ? "Deduct" : "Add"}</Button>
+            <Button onClick={action}>Add</Button>
           </div>
         </div>
       ),
@@ -240,7 +264,10 @@ const AccountBalanceTable: React.FC = () => {
       email: "EmmanuelNkrumah@email.com",
       biller: "MTN Ghana",
       phonenumber: "0708 000 0000",
-      action: () => setOpenModal(true),
+      action: (deduct: boolean) => {
+        setOpenModal(true);
+        setDeduct(deduct);
+      },
     },
     {
       key: "2",
@@ -248,7 +275,10 @@ const AccountBalanceTable: React.FC = () => {
       email: "EmmanuelNkrumah@email.com",
       biller: "MTN Ghana",
       phonenumber: "0708 000 0000",
-      action: () => setOpenModal(true),
+      action: (deduct: boolean) => {
+        setOpenModal(true);
+        setDeduct(deduct);
+      },
     },
     {
       key: "3",
@@ -256,7 +286,10 @@ const AccountBalanceTable: React.FC = () => {
       email: "EmmanuelNkrumah@email.com",
       biller: "MTN Ghana",
       phonenumber: "0708 000 0000",
-      action: () => setOpenModal(true),
+      action: (deduct: boolean) => {
+        setOpenModal(true);
+        setDeduct(deduct);
+      },
     },
     {
       key: "4",
@@ -264,7 +297,10 @@ const AccountBalanceTable: React.FC = () => {
       email: "EmmanuelNkrumah@email.com",
       biller: "MTN Ghana",
       phonenumber: "0708 000 0000",
-      action: () => setOpenModal(true),
+      action: (deduct: boolean) => {
+        setOpenModal(true);
+        setDeduct(deduct);
+      },
     },
     {
       key: "5",
@@ -272,16 +308,50 @@ const AccountBalanceTable: React.FC = () => {
       email: "EmmanuelNkrumah@email.com",
       biller: "MTN Ghana",
       phonenumber: "0708 000 0000",
-      action: () => setOpenModal(true),
+      action: (deduct: boolean) => {
+        setOpenModal(true);
+        setDeduct(deduct);
+      },
     },
   ];
+
+  const updatePin = (digit: string) => {
+    if (pin.length < 4) {
+      codeMap[pin.length + 1]?.current?.focus();
+      setPin(`${pin}${digit}`);
+    }
+  };
+
+  const deletePin = () => {
+    if (pin.length > 0) {
+      codeMap[pin.length - 1]?.current?.focus();
+      if (codeMap[pin.length - 1]) {
+        codeMap[pin.length - 1].current.value = "";
+      }
+      setPin(pin.slice(0, pin.length - 1));
+    }
+  };
+
+  const changeCode = (e: any) => {
+    if (e.key === "Backspace") {
+      deletePin();
+    } else {
+      updatePin(e.target.value);
+    }
+  };
 
   return (
     <>
       <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
-        headerLeft={<p style={{ width: 300 }}>Add crypto to user balance</p>}
+        headerLeft={
+          <p style={{ width: 300 }}>
+            {deduct
+              ? "Deduct Crypto from user balance"
+              : "Add crypto to user balance"}
+          </p>
+        }
       >
         <div className={styles.modalContainer}>
           <div className={styles.inputContainer}>
@@ -315,16 +385,71 @@ const AccountBalanceTable: React.FC = () => {
             </div>
             <div>
               <Button
-                onClick={() => setOpenModal(false)}
+                onClick={() => {
+                  setOpenModal(false);
+                  setOpenCodeModal(true);
+                }}
                 className={styles.modalButton}
               >
-                Add
+                {deduct ? "Deduct" : "Add"}
               </Button>
             </div>
           </div>
         </div>
       </Modal>
-      <Table dataSource={dataSource} columns={columns} />
+      <Modal
+        headerLeft={
+          <div className={styles.lockContainer}>
+            <img src="/icons/lock.svg" />
+          </div>
+        }
+        onClose={() => setOpenCodeModal(false)}
+        openModal={openCodeModal}
+      >
+        <div className={styles.modalContainer}>
+          <h3 className={styles.modalTitle}>Enter email verificaiton code</h3>
+          <p className={styles.modalText}>
+            Check your email for a 4-Digit verification code to continue
+          </p>
+          <div className={styles.codeContainer}>
+            <input
+              ref={code1}
+              onKeyUp={(e) => changeCode(e)}
+              className={styles.code}
+            />
+            <input
+              ref={code2}
+              onKeyUp={(e) => changeCode(e)}
+              className={styles.code}
+            />
+            <input
+              ref={code3}
+              onKeyUp={(e) => changeCode(e)}
+              className={styles.code}
+            />
+            <input
+              ref={code4}
+              onKeyUp={(e) => changeCode(e)}
+              className={styles.code}
+            />
+          </div>
+          <div className={styles.footerContainer}>
+            <Button className={styles.footerButton}>Cancel</Button>
+            <Button
+              onClick={() => setOpenCodeModal(false)}
+              color="white"
+              className={styles.footerButton}
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Table
+        style={{ fontFamily: "PP Telegraf" }}
+        dataSource={dataSource}
+        columns={columns}
+      />
     </>
   );
 };
@@ -332,7 +457,7 @@ const AccountBalanceTable: React.FC = () => {
 const CardsTable: React.FC = () => {
   const [modalType, setModalType] = useState<
     "cardDetails" | "add" | "deduct" | null
-  >("cardDetails");
+  >(null);
   const columns: any = [
     {
       title: "Name",
@@ -374,17 +499,27 @@ const CardsTable: React.FC = () => {
       render: (_: any, { action }: any) => (
         <div className={styles.actionButton}>
           <div style={{ marginRight: 10 }}>
-            <Button color="white" onClick={() => action("cardDetails")}>
+            <Button
+              className={styles.cardBtns}
+              color="white"
+              onClick={() => action("cardDetails")}
+            >
               View card details
             </Button>
           </div>
           <div style={{ marginRight: 10 }}>
-            <Button color="white" onClick={() => action("deduct")}>
+            <Button
+              className={styles.cardBtns}
+              color="white"
+              onClick={() => action("deduct")}
+            >
               Deduct
             </Button>
           </div>
           <div>
-            <Button onClick={() => action("add")}>Add</Button>
+            <Button className={styles.cardBtns} onClick={() => action("add")}>
+              Add
+            </Button>
           </div>
         </div>
       ),
@@ -591,7 +726,11 @@ const CardsTable: React.FC = () => {
           </div>
         </div>
       </Modal>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table
+        style={{ fontFamily: "PP Telegraf" }}
+        dataSource={dataSource}
+        columns={columns}
+      />
     </>
   );
 };
@@ -787,7 +926,7 @@ const UserDetails: NextPage = () => {
           >
             KYC Verification
           </button>
-          <button
+          {/* <button
             onClick={() => setCurrentTab("cards")}
             style={{
               background: currentTab === "cards" ? "white" : "none",
@@ -803,7 +942,7 @@ const UserDetails: NextPage = () => {
             className={styles.tabItem}
           >
             Cards
-          </button>
+          </button> */}
         </div>
         {currentTab === "accountBalance" && <AccountBalanceTable />}
         {currentTab === "kycVerification" && <KYCVerificationTable />}

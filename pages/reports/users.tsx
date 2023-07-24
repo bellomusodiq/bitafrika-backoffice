@@ -134,10 +134,12 @@ export default function Search() {
           </Button>
         </div>
       </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep
+        hideButton
+        navigation={["Home", "Reports", "User reports"]}
+      />
       <div className={styles.container}>
         <h3 className={styles.header}>User reports</h3>
-        <Divider />
         <div className={styles.filterByContainer}>
           <p className={styles.filterByHeader}>Filter result by</p>
           <div className={styles.filterContainer}>
@@ -165,7 +167,7 @@ export default function Search() {
         </div>
         <div className={styles.searchContainer}>
           <div className={styles.table}>
-            <Table dataSource={dataSource} columns={columns} />
+            <Table style={{fontFamily: "PP Telegraf"}} dataSource={[]} columns={columns}  />
           </div>
         </div>
       </div>

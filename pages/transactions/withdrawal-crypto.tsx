@@ -220,7 +220,7 @@ export default function Search() {
           ) : (
             <div className={styles.table}>
               <p className={styles.resultText}>5 result found!</p>
-              <Table dataSource={dataSource} columns={columns} />
+              <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
             </div>
           )}
         </div>

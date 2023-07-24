@@ -11,6 +11,11 @@
 .logo {
   width: 70px;
   margin-bottom: 24px;
+  align-self: center;
+}
+.logoContainer {
+  display: flex;
+  justify-content: center;
 }
 .searchInput {
   margin-bottom: 24px;

@@ -410,7 +410,7 @@ export default function Search() {
         )}
         <div className={styles.searchContainer}>
           <div className={styles.table}>
-            <Table dataSource={dataSource} columns={columns} />
+            <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
           </div>
         </div>
       </div>

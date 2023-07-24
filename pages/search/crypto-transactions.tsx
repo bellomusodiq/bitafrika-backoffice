@@ -163,7 +163,10 @@ export default function Search() {
           </Button>
         </div>
       </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep
+        hideButton
+        navigation={["Home", "Search", "Crypto Transactions"]}
+      />
       <div className={styles.container}>
         <h3 className={styles.header}>Search</h3>
         <div className={styles.tabContainer}>
@@ -174,7 +177,7 @@ export default function Search() {
             <img src="/icons/search.svg" />
             <input
               className={styles.input}
-              placeholder="Type transaction reference"
+              placeholder="Search by Transaction ID or receipent address"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -193,7 +196,7 @@ export default function Search() {
           ) : (
             <div className={styles.table}>
               <p className={styles.resultText}>5 result found!</p>
-              <Table dataSource={dataSource} columns={columns} />
+              <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
             </div>
           )}
         </div>

@@ -7,7 +7,8 @@ const NavigationStep: React.FC<{
   hideButton?: boolean;
   color?: string;
   noPadding?: boolean;
-}> = ({ hideButton, color = "none", noPadding = false }) => {
+  navigation?: string[];
+}> = ({ hideButton, color = "none", noPadding = false, navigation }) => {
   const router = useRouter();
   return (
     <div
@@ -15,11 +16,14 @@ const NavigationStep: React.FC<{
       className={styles.navigationStep}
     >
       <div style={{ color }} className={styles.navItems}>
-        <span style={{ color }}>Overview</span>
-        <img src="/icons/arrow-right2.svg" />
-        <span style={{ color }}>Available balances</span>
-        <img src="/icons/arrow-right2.svg" />
-        <span style={{ color }}>Bitcoin</span>
+        {navigation?.map((n, i) => (
+          <React.Fragment key={n}>
+            <span style={{ color }}>{n}</span>
+            {i !== navigation.length - 1 && (
+              <img src="/icons/arrow-right2.svg" />
+            )}
+          </React.Fragment>
+        ))}
       </div>
       {!hideButton && (
         <div>

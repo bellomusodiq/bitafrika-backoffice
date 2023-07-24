@@ -349,7 +349,7 @@ export default function Search() {
           ) : (
             <div className={styles.table}>
               <p className={styles.resultText}>5 result found!</p>
-              <Table dataSource={getDataSource()} columns={getColumns()} />
+              <Table style={{fontFamily: "PP Telegraf"}} dataSource={getDataSource()} columns={getColumns()} />
             </div>
           )}
         </div>

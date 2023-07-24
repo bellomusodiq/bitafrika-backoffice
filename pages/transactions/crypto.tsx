@@ -16,24 +16,31 @@ const columns = [
     key: "username",
   },
   {
+    title: "From",
+    dataIndex: "from",
+    key: "from",
+    render: (_: any, { from, onCopy }: any) => (
+      <div onClick={onCopy} className={styles.transactionId}>
+        <p>
+          {from?.slice(0, 8)} . . .{from?.slice(from?.length - 5)}
+        </p>
+      </div>
+    ),
+  },
+  {
     title: "Asset",
     dataIndex: "asset",
     key: "asset",
   },
   {
+    title: "Asset amount",
+    dataIndex: "assetAmount",
+    key: "assetAmount",
+  },
+  {
     title: "Amount",
     dataIndex: "amount",
     key: "amount",
-  },
-  {
-    title: "Rate",
-    dataIndex: "rate",
-    key: "rate",
-  },
-  {
-    title: "Total (GHS)",
-    dataIndex: "total",
-    key: "total",
   },
   {
     title: "Date",
@@ -64,8 +71,8 @@ export default function Search() {
       username: "@username",
       asset: "Bitcoin",
       amount: "$7500.99",
-      rate: "100",
-      total: "GHS 750,099.00",
+      from: "TRX123456TRX123",
+      assetAmount: "1.23455678 BTC",
       date: "Thur 23 Feb, 2023",
       action: () => setOpenModal(true),
     },
@@ -74,8 +81,8 @@ export default function Search() {
       username: "@username",
       asset: "Bitcoin",
       amount: "$7500.99",
-      rate: "100",
-      total: "GHS 750,099.00",
+      from: "TRX123456TRX123",
+      assetAmount: "1.23455678 BTC",
       date: "Thur 23 Feb, 2023",
       action: () => setOpenModal(true),
     },
@@ -84,8 +91,8 @@ export default function Search() {
       username: "@username",
       asset: "Bitcoin",
       amount: "$7500.99",
-      rate: "100",
-      total: "GHS 750,099.00",
+      from: "TRX123456TRX123",
+      assetAmount: "1.23455678 BTC",
       date: "Thur 23 Feb, 2023",
       action: () => setOpenModal(true),
     },
@@ -94,8 +101,8 @@ export default function Search() {
       username: "@username",
       asset: "Bitcoin",
       amount: "$7500.99",
-      rate: "100",
-      total: "GHS 750,099.00",
+      from: "TRX123456TRX123",
+      assetAmount: "1.23455678 BTC",
       date: "Thur 23 Feb, 2023",
       action: () => setOpenModal(true),
     },
@@ -104,8 +111,8 @@ export default function Search() {
       username: "@username",
       asset: "Bitcoin",
       amount: "$7500.99",
-      rate: "100",
-      total: "GHS 750,099.00",
+      from: "TRX123456TRX123",
+      assetAmount: "1.23455678 BTC",
       date: "Thur 23 Feb, 2023",
       action: () => setOpenModal(true),
     },
@@ -123,7 +130,7 @@ export default function Search() {
         }
         headerCenter={
           <div className={styles.modalHeader}>
-            Transaction details <span>Buy (Momo Top-Up)</span>
+            Transaction details <span>Sell (Momo withdrawal)</span>
           </div>
         }
       >
@@ -144,7 +151,7 @@ export default function Search() {
             </p>
             <Divider style={{ margin: 0 }} />
             <p className={styles.modalText}>
-              Transaction type: <span>Buy (Momo Top-Up)</span>
+              Transaction type: <span>Sell (Momo Withdrawal)</span>
             </p>
             <p className={styles.modalText}>
               Transaction Status:{" "}
@@ -160,7 +167,7 @@ export default function Search() {
             <Divider style={{ margin: 0 }} />
             <p className={styles.modalText}>
               Asset amount:{" "}
-              <span style={{ color: "#16B364" }}>+0.001234 BTC</span>
+              <span style={{ color: "#F79009" }}>-0.001234 BTC</span>
             </p>
             <Divider style={{ margin: 0 }} />
             <p className={styles.modalText}>
@@ -169,6 +176,10 @@ export default function Search() {
             <Divider style={{ margin: 0 }} />
             <p className={styles.modalText}>
               Rate: <span>100 ghs per Dollar</span>
+            </p>
+            <Divider style={{ margin: 0 }} />
+            <p className={styles.modalText}>
+              Fees: <span>$1.20 (~200 GHS)</span>
             </p>
             <Divider style={{ margin: 0 }} />
             <p className={styles.modalText}>
@@ -203,7 +214,7 @@ export default function Search() {
       </Modal>
       <NavigationStep
         hideButton
-        navigation={["Home", "Transactions", "Buy (Momo topup)"]}
+        navigation={["Home", "Transactions", "Crypto Transactions"]}
       />
       <div className={styles.container}>
         <div className={styles.headerContainer}>
@@ -221,7 +232,7 @@ export default function Search() {
               <Button color="white">
                 <div className={styles.printButton}>
                   <img src="/icons/download.svg" />
-                  Download CSV
+                  Download
                 </div>
               </Button>
             </div>
@@ -230,7 +241,7 @@ export default function Search() {
         <p className={styles.subHeader}>1000 Total transactions</p>
         <div className={styles.tabContainer}>
           <div className={styles.tabItem}>
-            Buy <span>900</span>
+            Crypto transactions <span>300</span>
           </div>
         </div>
         <div className={styles.filterActions}>
@@ -285,6 +296,7 @@ export default function Search() {
         </div>
         <div className={styles.searchContainer}>
           <div className={styles.table}>
+            <p className={styles.resultText}>5 result found!</p>
             <Table
               style={{ fontFamily: "PP Telegraf" }}
               dataSource={dataSource}
