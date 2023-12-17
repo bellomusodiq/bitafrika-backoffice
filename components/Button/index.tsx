@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Button.module.css";
 import { ButtonProps } from "./types";
+import Spinner from "../Spinner";
 
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -8,15 +9,16 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   className,
   color,
+  loading,
 }) => (
   <button
     onClick={onClick}
-    disabled={disabled}
+    disabled={disabled || loading}
     className={`${
       color === "white" ? styles.buttonWhite : styles.button
     } ${className}`}
   >
-    {children}
+    {loading ? <Spinner /> : children}
   </button>
 );
 

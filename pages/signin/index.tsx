@@ -6,12 +6,57 @@ import Modal from "@/components/Modal";
 import { NextPage } from "next";
 import React, { useState } from "react";
 import styles from "./signin.module.css";
+import axios from "axios";
+import { BASE_URL } from "../../CONFIG";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 const Signin: React.FC<NextPage> = () => {
-  const [email, setEmail] = useState<string>("");
+  const router = useRouter();
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [country, setCountry] = useState<any>({});
   const [verificationCode, setVerificationCode] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
+
+  const signIn = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/signIn`, { username, password })
+      .then((res) => {
+        setLoading(false);
+        if (res.data.success) {
+          localStorage.setItem("auth", JSON.stringify(res.data.account));
+          router.replace("/", "/");
+        } else {
+          setLoading(false);
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+        }
+      })
+      .catch(() => {
+        setLoading(false);
+        toast.error("Something went wrong, try again", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      });
+  };
   return (
     <div className={styles.container}>
       <Modal
@@ -52,9 +97,9 @@ const Signin: React.FC<NextPage> = () => {
             <h4 className={styles.header}>Welcome back</h4>
             <p className={styles.title}>Please enter your details.</p>
             <Input
-              placeholder="Enter you email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter you username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className={styles.input}
             />
             <Input
@@ -69,11 +114,16 @@ const Signin: React.FC<NextPage> = () => {
               <p className={styles.rememberText}>Remember for 30 days</p>
             </div>
             <div className={styles.buttonContainer}>
-              <Button onClick={() => setShowModal(true)}>Sign in</Button>
+              <Button loading={loading} onClick={signIn}>
+                Sign in
+              </Button>
             </div>
             <div className={styles.divider} />
             <div className={styles.dropdownContainer}>
-              <Dropdown options={[]} onChange={() => {}} />
+              <Dropdown
+                options={[{ value: "GH", title: "Ghana" }]}
+                onChange={setCountry}
+              />
             </div>
           </div>
         </Card>

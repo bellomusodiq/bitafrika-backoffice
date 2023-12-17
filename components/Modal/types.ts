@@ -4,4 +4,5 @@ export interface ModalProps {
   headerCenter?: JSX.Element;
   openModal?: boolean;
   onClose: () => void;
+  customStyles?: any;
 }

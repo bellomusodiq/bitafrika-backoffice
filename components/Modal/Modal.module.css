@@ -30,6 +30,7 @@
   transition: all 0.4s ease;
   z-index: 3;
   overflow-y: auto;
+  width: 45%;
 }
 .header {
   width: 100%;
@@ -48,4 +49,6 @@
 .headerCenter {
   flex: 1;  
   margin: 0 16px;
+}
+.body {
 }

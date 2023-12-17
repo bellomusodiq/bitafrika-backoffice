@@ -10,6 +10,9 @@ import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { BASE_URL } from "@/CONFIG";
+import getToken from "@/utils/getToken";
 
 const columns: any = [
   {
@@ -60,6 +63,24 @@ export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openFilter, setOpenFilter] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [users, setUsers] = useState<any>([]);
+  const [currentUser, setCurrentUser] = useState<any>({});
+
+  const searchUser = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/searchUser`, {
+        token: getToken(),
+        state: "active",
+      })
+      .then((res: any) => {
+        setUsers(res.data.users);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const dataSource = [
     {

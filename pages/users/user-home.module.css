@@ -35,9 +35,10 @@
   align-items: flex-start;
 }
 .searchCard {
+  flex: 1;
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: flex-end;
 }
 .searchHeader {
   display: flex;
@@ -86,8 +87,28 @@
   color: #475467;
 }
 .dropdownContainer {
-  width: 175px;
+  min-width: 200px;
+  margin-right: 16px;
 }
+.filterTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px; /* 190% */
+  margin-bottom: 24px;
+}
+.dropdownTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px; /* 175% */
+  margin-bottom: 8px;
+}
+
 .searchButton {
   height: 48px;
 }
@@ -231,6 +252,25 @@
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background-color: #16B364;
+  background-color: #16b364;
   margin-right: 2px;
+}
+.nameContainer {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 40px;
+  background: #eff8ff;
+  color: var(--blue-500, #2e90fa);
+  font-size: 16px;
+  font-family: "PP Telegraf";
+  font-weight: 600;
+  line-height: 24px;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

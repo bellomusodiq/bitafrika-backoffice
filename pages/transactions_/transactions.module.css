@@ -3,18 +3,19 @@
 }
 .header {
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 30px;
   line-height: 38px;
   color: #101828;
 }
 .subHeader {
+  margin-bottom: 20px;
   font-family: "PP Telegraf";
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 20px;
-  color: #000;
+  color: #667085;
   margin-top: 16px;
 }
 .tabContainer {
@@ -45,7 +46,7 @@
   margin-left: 8px;
 }
 .searchContainer {
-  margin-top: 8px;
+  margin-top: 24px;
   background: #ffffff;
   border: 1px solid #eaecf0;
   border-radius: 12px;
@@ -107,17 +108,7 @@
   flex: 1;
 }
 .modalContainer {
-  width: 100%;
-  overflow-y: auto;
-  max-height: 75vh;
-}
-.modalHeader {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 28px;
-  color: #101828;
-  text-align: center;
+  width: 500px;
 }
 .divider {
   height: 1px;
@@ -220,32 +211,42 @@
   width: fit-content;
   margin-top: 24px;
 }
-.nameContainer {
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.printButton {
   display: flex;
   align-items: center;
 }
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 40px;
-  background: #eff8ff;
-  color: var(--blue-500, #2e90fa);
-  font-size: 16px;
-  font-family: "PP Telegraf";
-  font-weight: 600;
-  line-height: 24px;
+.printButton > img {
   margin-right: 10px;
+}
+.headerButtons {
   display: flex;
-  justify-content: center;
   align-items: center;
 }
-.tableRow {
-  cursor: pointer;
+.headerButtons > div:first {
+  margin-right: 24px;
 }
-.transactionId {
+.filterActions {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+  margin-top: 24px;
+}
+.recordTransaction {
+  display: flex;
+  align-items: center;
+  color: var(--primary-500, #3861fb);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 142.857% */
+}
+.recordTransaction > img {
+  margin-right: 8px;
 }
 .transactionId > p {
   color: var(--blue-500, #2e90fa);
@@ -256,114 +257,34 @@
   line-height: 20px;
   margin-right: 5px;
 }
-.currency {
+.receiptContainer {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 12px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 28px;
+  border: 6px solid var(--gray-50, #f9fafb);
+  background: var(--gray-100, #f2f4f7);
+}
+.modalHeader {
   color: var(--gray-900, #101828);
   font-family: "PP Telegraf";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 20px;
-}
-.crypto {
-  color: var(--gray-400, #98a2b3);
-  font-family: "PP Telegraf";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 18px;
-  margin-top: 8px;
-}
-.topUpButton {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-}
-.modalFooter {
-  display: flex;
-  justify-content: space-between;
-}
-.modalFooter > * {
-  width: 47.5%;
-}
-.inputContainer {
-  margin-top: 24px;
-}
-.inputContainer > p {
-  color: var(--gray-700, #344054);
-  font-family: "PP Telegraf";
-  font-size: 14px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 500;
-  line-height: 20px;
-  margin-bottom: 6px;
-}
-.modalTitle {
-  font-size: 18px;
-  line-height: 28px;
-  color: #101828;
-}
-.modalText {
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  color: #475467;
-  margin-top: 4px;
-}
-.qrImage {
-  width: 128px;
-  margin: 36px 0;
-}
-.verificationText {
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 20px;
-  color: #344054;
-  align-self: flex-start;
-  margin-bottom: 6px;
-}
-.footerContainer {
+  line-height: 24px; /* 150% */
   display: flex;
-  justify-content: space-between;
-  margin-top: 34px;
-  width: 100%;
 }
-.footerButton {
-  width: calc(50% - 5px) !important;
-}
-.codeContainer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-.code {
-  display: flex;
-  width: 80px;
-  padding: 10px 8px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  border: 1px solid var(--gray-300, #d0d5dd);
-  background: var(--base-white, #fff);
-  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
-  color: var(--gray-300, #d0d5dd);
-  text-align: center;
-  font-family: "PP Telegraf";
-  font-size: 48px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 60px; /* 125% */
-  letter-spacing: -0.96px;
-}
-.breadCrumb {
+.modalHeader > span {
   display: flex;
   padding: 2px 8px;
   align-items: center;
   border-radius: 16px;
-  background: var(--Gray-300, #d0d5dd);
+  background: var(--gray-300, #d0d5dd);
   mix-blend-mode: multiply;
-  color: var(--Gray-700, #344054);
+  color: var(--gray-700, #344054);
   text-align: center;
 
   /* Text xs/Medium */
@@ -372,5 +293,70 @@
   font-style: normal;
   font-weight: 500;
   line-height: 18px; /* 150% */
-  margin-right: 15px;
+  margin-left: 16px;
+}
+.content {
+  display: flex;
+  justify-content: space-between;
+}
+.modalText {
+  color: var(--gray-400, #98a2b3);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 16px 0;
+  display: flex;
+  align-items: center;
+}
+.modalText > span {
+  color: var(--gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px; /* 142.857% */
+  margin-left: 8px;
+}
+.success {
+  display: flex;
+  padding: 2px 8px 2px 6px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 16px;
+  background: var(--green-50, #edfcf2);
+  mix-blend-mode: multiply;
+  margin-left: 10px;
+  color: var(--green-700, #087443);
+}
+.success > div {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #16b364;
+  text-align: center;
+
+  /* Text xs/Medium */
+  font-family: "PP Telegraf";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+}
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.closeDownloadButtons {
+  display: flex;
+  align-items: center;
+}
+.buttonContainer {
+  display: flex;
+  align-items: center;
+}
+.buttonContainer > img {
+  margin-left: 8px;
 }

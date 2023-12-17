@@ -7,16 +7,7 @@
   font-size: 30px;
   line-height: 38px;
   color: #101828;
-}
-.subHeader {
   margin-bottom: 20px;
-  font-family: "PP Telegraf";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 20px;
-  color: #667085;
-  margin-top: 16px;
 }
 .tabContainer {
   display: flex;
@@ -33,34 +24,38 @@
   padding: 0 16px;
   padding-bottom: 16px;
   margin-bottom: -18px;
-  display: flex;
-  align-items: center;
-}
-.tabItem > span {
-  display: flex;
-  padding: 2px 10px;
-  align-items: center;
-  border-radius: 16px;
-  background: var(--primary-25, #f1f4ff);
-  mix-blend-mode: multiply;
-  margin-left: 8px;
 }
 .searchContainer {
   margin-top: 24px;
-  background: #ffffff;
-  border: 1px solid #eaecf0;
   border-radius: 12px;
-  min-height: 400px;
+  border: 1px solid var(--Gray-200, #eaecf0);
+  background: var(--Gray-25, #fcfcfd);
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.searchCard {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
 }
 .searchHeader {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  height: 48px;
+  padding: 16px 24px;
   align-items: center;
-  background: #f9fafb;
-  padding: 0 24px;
-  border: 1px solid #eaecf0;
-  border-radius: 8px 8px 0px 0px;
+  gap: 12px;
+  flex-shrink: 0;
+  flex: 1;
+  border-radius: 8px;
+  border: 1px solid var(--Gray-300, #d0d5dd);
+  background: var(--Base-White, #fff);
+
+  /* Shadow/xs */
+  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  margin-right: 24px;
+  margin-left: 5px;
 }
 .input {
   flex: 1;
@@ -91,8 +86,31 @@
 .searchHint > span {
   color: #475467;
 }
+.dropdownContainer {
+  min-width: 200px;
+  margin-right: 16px;
+}
+.filterTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px; /* 190% */
+  margin-bottom: 24px;
+}
+.dropdownTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px; /* 175% */
+  margin-bottom: 8px;
+}
+
 .searchButton {
-  height: 36px;
+  height: 48px;
 }
 .resultText {
   margin: 16px 24px;
@@ -108,7 +126,41 @@
   flex: 1;
 }
 .modalContainer {
-  width: 500px;
+  width: 100%;
+}
+.modalHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.modalHeader > p {
+  color: var(--Gray-900, #101828);
+
+  /* Text md/Medium */
+  font-family: "PP Telegraf";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px; /* 150% */
+  margin-right: 15px;
+}
+.breadCrumb {
+  display: flex;
+  padding: 2px 8px;
+  align-items: center;
+  border-radius: 16px;
+  background: var(--Gray-300, #d0d5dd);
+  mix-blend-mode: multiply;
+  color: var(--Gray-700, #344054);
+  text-align: center;
+
+  /* Text xs/Medium */
+  font-family: "PP Telegraf";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+  margin-right: 15px;
 }
 .divider {
   height: 1px;
@@ -155,109 +207,17 @@
 .modalButton {
   margin-top: 56px;
 }
-.dropModal {
-  cursor: pointer;
-  width: fit-content;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  color: #475467;
-  padding: 20px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.filterTitle {
-  font-family: "PP Telegraf";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 18px;
-  color: #98a2b3;
-}
-.dropModalContainer {
-  background: #ffffff;
-  border: 1px solid #eaecf0;
-  box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.08),
-    0px 8px 8px -4px rgba(16, 24, 40, 0.03);
-  border-radius: 8px;
-  width: 350px;
-  padding: 10px 16px;
-  display: flex;
-  flex-direction: column;
-}
-.checkbox {
-  margin: 10px 0;
-  font-family: "PP Telegraf";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 15px;
-  line-height: 18px;
-  color: #344054;
-}
-.nameInput {
-  margin: 5px 0;
-}
-.dropModalFooter {
-  display: flex;
-}
-.dropModalButton {
-  margin-right: 10px;
-}
-.dropModalButton2 {
-  flex: 1;
-}
-.dropdownContainer {
-  width: fit-content;
-  margin-top: 24px;
-}
-.headerContainer {
-  display: flex;
-  justify-content: space-between;
-}
-.printButton {
-  display: flex;
-  align-items: center;
-}
-.printButton > img {
-  margin-right: 10px;
-}
-.headerButtons {
-  display: flex;
-  align-items: center;
-}
-.headerButtons > div:first {
-  margin-right: 24px;
-}
-.filterActions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 24px;
-}
-.recordTransaction {
-  display: flex;
-  align-items: center;
-  color: var(--primary-500, #3861fb);
+.username {
+  color: var(--Blue-500, #2e90fa);
+
+  /* Text sm/Medium */
   font-family: "PP Telegraf";
   font-size: 14px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 20px; /* 142.857% */
 }
-.recordTransaction > img {
-  margin-right: 8px;
-}
-.transactionId > p {
-  color: var(--blue-500, #2e90fa);
-  font-family: "PP Telegraf";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 20px;
-  margin-right: 5px;
-}
-.receiptContainer {
+.iconContainer {
   display: flex;
   width: 40px;
   height: 40px;
@@ -265,76 +225,20 @@
   justify-content: center;
   align-items: center;
   border-radius: 28px;
-  border: 6px solid var(--gray-50, #f9fafb);
-  background: var(--gray-100, #f2f4f7);
+  border: 6px solid var(--Gray-50, #f9fafb);
+  background: var(--Gray-100, #f2f4f7);
 }
-.modalHeader {
-  color: var(--gray-900, #101828);
-  font-family: "PP Telegraf";
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 24px; /* 150% */
+.statusContainer {
   display: flex;
-}
-.modalHeader > span {
-  display: flex;
-  padding: 2px 8px;
-  align-items: center;
-  border-radius: 16px;
-  background: var(--gray-300, #d0d5dd);
-  mix-blend-mode: multiply;
-  color: var(--gray-700, #344054);
-  text-align: center;
-
-  /* Text xs/Medium */
-  font-family: "PP Telegraf";
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 18px; /* 150% */
-  margin-left: 16px;
-}
-.content {
-  display: flex;
-  justify-content: space-between;
-}
-.modalText {
-  color: var(--gray-400, #98a2b3);
-  font-family: "PP Telegraf";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 20px;
-  margin: 16px 0;
-  display: flex;
-  align-items: center;
-}
-.modalText > span {
-  color: var(--gray-900, #101828);
-  font-family: "PP Telegraf";
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 20px; /* 142.857% */
-  margin-left: 8px;
-}
-.success {
-  display: flex;
+  flex-direction: row;
   padding: 2px 8px 2px 6px;
   align-items: center;
   gap: 4px;
   border-radius: 16px;
-  background: var(--green-50, #edfcf2);
+  background: var(--Green-50, #edfcf2);
   mix-blend-mode: multiply;
-  margin-left: 10px;
-  color: var(--green-700, #087443);
-}
-.success > div {
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  background-color: #16b364;
+
+  color: var(--Green-700, #087443);
   text-align: center;
 
   /* Text xs/Medium */
@@ -344,19 +248,10 @@
   font-weight: 500;
   line-height: 18px; /* 150% */
 }
-.modalFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.closeDownloadButtons {
-  display: flex;
-  align-items: center;
-}
-.buttonContainer {
-  display: flex;
-  align-items: center;
-}
-.buttonContainer > img {
-  margin-left: 8px;
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #16b364;
+  margin-right: 2px;
 }

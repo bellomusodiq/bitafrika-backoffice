@@ -67,19 +67,34 @@
 }
 .assetsBody {
   background: #fcfcfd;
-  border: 1px solid #eaecf0;
   box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
   margin: 0 24px;
 }
 .balanceItems {
-  padding: 24px;
+  padding: 24px 0;
   display: flex;
   justify-content: space-between;
   background-color: white;
-  border-bottom: 1px solid #eaecf0;
-  margin-bottom: 64px;
 }
 .balanceItem {
+  width: calc(100% / 4 - 3px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+  width: 259px;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 12px;
+  border: 1px solid var(--Gray-200, #eaecf0);
+  background: #fff;
+
+  /* new */
+  box-shadow: 0px 7px 37px -15px rgba(0, 0, 0, 0.09);
+}
+.balanceItem2 {
   width: calc(100% / 4 - 3px);
   display: flex;
   flex-direction: column;
@@ -136,9 +151,8 @@
   color: #12b76a;
 }
 .tradesTitle {
-  border-top: 1px solid #eaecf0;
   background-color: white;
-  padding: 24px;
+  padding-bottom: 24px;
   display: flex;
 }
 .blankDivider {
@@ -209,13 +223,12 @@
   border-bottom: 1px solid #eaecf0;
 }
 .tradesCharts {
-  margin: 0 24px;
   display: flex;
   justify-content: space-between;
   background-color: white;
 }
 .tradesCharts > div {
-  background-color: #fcfcfd;
+  background-color: #fff;
   padding: 8px;
   border: 1px solid var(--gray-200, #eaecf0);
 }
@@ -291,4 +304,13 @@
 }
 .inLastDays {
   color: #98a2b3 !important;
+}
+.container {
+  background-color: white;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--Gray-200, #eaecf0);
+  background: #fff;
+
+  box-shadow: 0px 7px 37px -15px rgba(0, 0, 0, 0.09);
 }

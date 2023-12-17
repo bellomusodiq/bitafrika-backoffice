@@ -926,7 +926,7 @@ const UserDetails: NextPage = () => {
           >
             KYC Verification
           </button>
-          {/* <button
+          <button
             onClick={() => setCurrentTab("cards")}
             style={{
               background: currentTab === "cards" ? "white" : "none",
@@ -942,7 +942,7 @@ const UserDetails: NextPage = () => {
             className={styles.tabItem}
           >
             Cards
-          </button> */}
+          </button>
         </div>
         {currentTab === "accountBalance" && <AccountBalanceTable />}
         {currentTab === "kycVerification" && <KYCVerificationTable />}

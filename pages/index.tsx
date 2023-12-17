@@ -10,6 +10,8 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import TrendItem from "@/components/TrendItem";
 import CardListing from "@/components/CardListing";
 import ServicesListing from "@/components/ServicesListing";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -119,6 +121,14 @@ const SERVICES_LISTING: any = [
 ];
 
 export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    const auth = localStorage.getItem("auth");
+    if (!auth) {
+      router.replace("/signin");
+    }
+  }, []);
+
   return (
     <PageLayout showHeader title="Hone">
       <div className={styles.homeContainer}>
@@ -127,6 +137,20 @@ export default function Home() {
           Here&apos;s an overview of how BitAfrika is performing
         </p>
         <div className={styles.divider} />
+        <div className={styles.overviewContainer}>
+          <div className={styles.cardContainer}>
+            <p className={styles.cardTitle}>Total Users</p>
+            <p className={styles.cardValue}>10047</p>
+          </div>
+          <div className={styles.cardContainer}>
+            <p className={styles.cardTitle}>Verified</p>
+            <p className={styles.cardValue}>10047</p>
+          </div>
+          <div className={styles.cardContainer}>
+            <p className={styles.cardTitle}>Unverified</p>
+            <p className={styles.cardValue}>10047</p>
+          </div>
+        </div>
         <div className={styles.statsContainer}>
           <CoinListing title="Available Coin balances" coins={COIN_LISTING} />
           <div className={styles.avaibleContainer}>

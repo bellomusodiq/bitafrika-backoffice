@@ -10,26 +10,16 @@ import styles from "./assets.module.css";
 const AssetsDetail: NextPage = () => {
   const [filter, setFilter] = useState<string>("30d");
   return (
-    <PageLayout>
-      <NavigationStep />
+    <PageLayout showHeader>
+      <NavigationStep
+        navigation={["Overview", "Avaiable balance", "Bitcoin"]}
+      />
       <div className={styles.assetTitleContainer}>
         <h1>Bitcoin - (BTC) balance </h1>
         <span>
           <img src="/icons/arrow-up.svg" />
           $21,500.99
         </span>
-      </div>
-      <div className={styles.welcomeCard}>
-        <div className={styles.welcomeTextContainer}>
-          <p>Good evening emmanuel</p>
-          <h3>Here’s an overview of all Bitcoin balances on the platform</h3>
-        </div>
-        <div className={styles.welcomeButtons}>
-          <Button className={styles.welcomeButton} color="white">
-            Button CTA
-          </Button>
-          <Button color="white">Button CTA</Button>
-        </div>
       </div>
       <div className={styles.assetsBody}>
         <div className={styles.balanceItems}>
@@ -45,7 +35,6 @@ const AssetsDetail: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className={styles.divider} />
           <div className={styles.balanceItem}>
             <div>
               <p className={styles.balanceTitle}>Cold wallet (External)</p>
@@ -55,7 +44,6 @@ const AssetsDetail: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className={styles.divider} />
           <div className={styles.balanceItem}>
             <div>
               <p className={styles.balanceTitle}>Cold wallet (Platform)</p>
@@ -65,7 +53,6 @@ const AssetsDetail: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className={styles.divider} />
           <div className={styles.balanceItem}>
             <div>
               <p className={styles.balanceTitle}>Hot Wallet (Users balance)</p>
@@ -76,75 +63,204 @@ const AssetsDetail: NextPage = () => {
             </div>
           </div>
         </div>
-        <div className={styles.tradesTitle}>
-          <div className={styles.tradesTextContainer}>
-            <h3>Bitcoin Trades</h3>
-            <p>
-              <img src="/icons/info-circle.svg" />
-              Analytics data is compared to previous period
-            </p>
+        <div className={styles.container}>
+          <div className={styles.tradesTitle}>
+            <div className={styles.tradesTextContainer}>
+              <h3>Bitcoin Trades</h3>
+              <p>
+                <img src="/icons/info-circle.svg" />
+                Analytics data is compared to previous period
+              </p>
+            </div>
+            <div className={styles.filterDays}>
+              <a
+                className={filter === "30d" ? styles.filterActiveLeft : ""}
+                onClick={() => setFilter("30d")}
+              >
+                30d
+              </a>
+              <div className={styles.divider} />
+              <a
+                className={
+                  filter === "7d"
+                    ? `${styles.filterActive} ${styles.filterMiddle}`
+                    : styles.filterMiddle
+                }
+                onClick={() => setFilter("7d")}
+              >
+                7d
+              </a>
+              <div className={styles.divider} />
+              <a
+                className={filter === "24h" ? styles.filterActiveRight : ""}
+                onClick={() => setFilter("24h")}
+              >
+                24h
+              </a>
+            </div>
           </div>
-          <div className={styles.filterDays}>
-            <a
-              className={filter === "30d" ? styles.filterActiveLeft : ""}
-              onClick={() => setFilter("30d")}
+          <div className={styles.border} />
+
+          <div className={styles.blankDivider} />
+
+          <div className={styles.tradesCharts}>
+            <div style={{ width: "60%" }}>
+              <div
+                className={styles.balanceItems}
+                style={{ backgroundColor: "#FCFCFD" }}
+              >
+                <div
+                  className={styles.balanceItem2}
+                  style={{ width: "calc(100% / 2 - 2px)" }}
+                >
+                  <div>
+                    <p className={styles.balanceTitle}>Deposit</p>
+                    <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
+                    <div className={styles.balanceFooter}>
+                      <p>$12,000</p>
+                      <div
+                        className={styles.divider}
+                        style={{ margin: "0 10px" }}
+                      />
+                      <p>~GHC 1,900.00</p>
+                    </div>
+                  </div>
+                </div>
+                <div className={styles.divider} />
+                <div
+                  className={styles.balanceItem2}
+                  style={{ width: "calc(100% / 2 - 2px)" }}
+                >
+                  <div>
+                    <p className={styles.balanceTitle}>Deposit</p>
+                    <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
+                    <div className={styles.balanceFooter}>
+                      <p>$12,000.000</p>
+                      <div
+                        className={styles.divider}
+                        style={{ margin: "0 10px" }}
+                      />
+                      <p>~GHC 1,900.00</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ height: 300 }}>
+                <CustomAreaChart />
+              </div>
+            </div>
+            <div
+              style={{
+                width: "calc(40% - 24px)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              30d
-            </a>
-            <div className={styles.divider} />
-            <a
-              className={
-                filter === "7d"
-                  ? `${styles.filterActive} ${styles.filterMiddle}`
-                  : styles.filterMiddle
-              }
-              onClick={() => setFilter("7d")}
-            >
-              7d
-            </a>
-            <div className={styles.divider} />
-            <a
-              className={filter === "24h" ? styles.filterActiveRight : ""}
-              onClick={() => setFilter("24h")}
-            >
-              24h
-            </a>
+              <div style={{ width: "100%", height: 200 }}>
+                <CustomPieChart />
+              </div>
+              <h4 className={styles.pieTitle}>1021</h4>
+              <div className={styles.legend}>
+                <p>
+                  <div style={{ backgroundColor: "red" }} /> Buy Orders
+                </p>
+                <p>
+                  <div style={{ backgroundColor: "red" }} /> Sell Orders
+                </p>
+                <p>
+                  <div style={{ backgroundColor: "red" }} /> Deposits
+                </p>
+                <p>
+                  <div style={{ backgroundColor: "red" }} /> Withdrawals
+                </p>
+              </div>
+              <div>
+                <Button color="white">View transactions</Button>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className={styles.border} />
-
-        <div className={styles.blankDivider} />
-
-        <div className={styles.tradesCharts}>
-          <div style={{ width: "60%" }}>
+          <div className={styles.summaryTexts}>
+            <p className={styles.inLastDays}>in last 30 days</p>
+            <p>120.98938388 BTC Sold</p>
+            <p>120.98938388 BTC bought</p>
+            <p>800 Buy orders</p>
+            <p>221 sell orders</p>
+          </div>
+          <div className={styles.tradesTitle}>
+            <div className={styles.tradesTextContainer}>
+              <h3>Bitcoin Transactions</h3>
+              <p>
+                <img src="/icons/info-circle.svg" />
+                Analytics data is compared to previous period
+              </p>
+            </div>
+            <div className={styles.filterDays}>
+              <a
+                className={filter === "30d" ? styles.filterActiveLeft : ""}
+                onClick={() => setFilter("30d")}
+              >
+                30d
+              </a>
+              <div className={styles.divider} />
+              <a
+                className={
+                  filter === "7d"
+                    ? `${styles.filterActive} ${styles.filterMiddle}`
+                    : styles.filterMiddle
+                }
+                onClick={() => setFilter("7d")}
+              >
+                7d
+              </a>
+              <div className={styles.divider} />
+              <a
+                className={filter === "24h" ? styles.filterActiveRight : ""}
+                onClick={() => setFilter("24h")}
+              >
+                24h
+              </a>
+            </div>
+          </div>
+          <div className={styles.border} />
+          <div style={{ backgroundColor: "white" }}>
             <div
               className={styles.balanceItems}
-              style={{ backgroundColor: "#FCFCFD" }}
+              style={{
+                backgroundColor: "#FCFCFD",
+                justifyContent: "space-between",
+                border: "1px solid #eaecf0",
+                padding: 24,
+                marginTop: 24,
+              }}
             >
               <div
-                className={styles.balanceItem}
-                style={{ width: "calc(100% / 2 - 2px)" }}
+                className={styles.balanceItem2}
+                style={{
+                  width: "calc(100% / 2 - 2px)",
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                }}
               >
                 <div>
-                  <p className={styles.balanceTitle}>Deposit</p>
+                  <p className={styles.balanceTitle}>Sent</p>
                   <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                   <div className={styles.balanceFooter}>
                     <p>$12,000</p>
-                    <div
-                      className={styles.divider}
-                      style={{ margin: "0 10px" }}
-                    />
+                    <div className={styles.divider} />
                     <p>~GHC 1,900.00</p>
                   </div>
                 </div>
               </div>
               <div className={styles.divider} />
               <div
-                className={styles.balanceItem}
+                className={styles.balanceItem2}
                 style={{ width: "calc(100% / 2 - 2px)" }}
               >
                 <div>
-                  <p className={styles.balanceTitle}>Deposit</p>
+                  <p className={styles.balanceTitle}>Received</p>
                   <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                   <div className={styles.balanceFooter}>
                     <p>$12,000.000</p>
@@ -154,131 +270,6 @@ const AssetsDetail: NextPage = () => {
                     />
                     <p>~GHC 1,900.00</p>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div style={{ height: 300 }}>
-              <CustomAreaChart />
-            </div>
-          </div>
-          <div
-            style={{
-              width: "calc(40% - 24px)",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <div style={{ width: "100%", height: 200 }}>
-              <CustomPieChart />
-            </div>
-            <h4 className={styles.pieTitle}>1021</h4>
-            <div className={styles.legend}>
-              <p>
-                <div style={{ backgroundColor: "red" }} /> Buy Orders
-              </p>
-              <p>
-                <div style={{ backgroundColor: "red" }} /> Sell Orders
-              </p>
-              <p>
-                <div style={{ backgroundColor: "red" }} /> Deposits
-              </p>
-              <p>
-                <div style={{ backgroundColor: "red" }} /> Withdrawals
-              </p>
-            </div>
-            <div>
-              <Button color="white">View transactions</Button>
-            </div>
-          </div>
-        </div>
-        <div className={styles.summaryTexts}>
-          <p className={styles.inLastDays}>in last 30 days</p>
-          <p>120.98938388 BTC Sold</p>
-          <p>120.98938388 BTC bought</p>
-          <p>800 Buy orders</p>
-          <p>221 sell orders</p>
-        </div>
-        <div className={styles.tradesTitle}>
-          <div className={styles.tradesTextContainer}>
-            <h3>Bitcoin Transactions</h3>
-            <p>
-              <img src="/icons/info-circle.svg" />
-              Analytics data is compared to previous period
-            </p>
-          </div>
-          <div className={styles.filterDays}>
-            <a
-              className={filter === "30d" ? styles.filterActiveLeft : ""}
-              onClick={() => setFilter("30d")}
-            >
-              30d
-            </a>
-            <div className={styles.divider} />
-            <a
-              className={
-                filter === "7d"
-                  ? `${styles.filterActive} ${styles.filterMiddle}`
-                  : styles.filterMiddle
-              }
-              onClick={() => setFilter("7d")}
-            >
-              7d
-            </a>
-            <div className={styles.divider} />
-            <a
-              className={filter === "24h" ? styles.filterActiveRight : ""}
-              onClick={() => setFilter("24h")}
-            >
-              24h
-            </a>
-          </div>
-        </div>
-        <div className={styles.border} />
-        <div style={{ backgroundColor: "white", padding: 25 }}>
-          <div
-            className={styles.balanceItems}
-            style={{
-              backgroundColor: "#FCFCFD",
-              justifyContent: "space-between",
-              border: "1px solid #eaecf0",
-            }}
-          >
-            <div
-              className={styles.balanceItem}
-              style={{
-                width: "calc(100% / 2 - 2px)",
-                flex: 1,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-start",
-              }}
-            >
-              <div>
-                <p className={styles.balanceTitle}>Sent</p>
-                <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
-                <div className={styles.balanceFooter}>
-                  <p>$12,000</p>
-                  <div className={styles.divider} />
-                  <p>~GHC 1,900.00</p>
-                </div>
-              </div>
-            </div>
-            <div className={styles.divider} />
-            <div
-              className={styles.balanceItem}
-              style={{ width: "calc(100% / 2 - 2px)" }}
-            >
-              <div>
-                <p className={styles.balanceTitle}>Received</p>
-                <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
-                <div className={styles.balanceFooter}>
-                  <p>$12,000.000</p>
-                  <div
-                    className={styles.divider}
-                    style={{ margin: "0 10px" }}
-                  />
-                  <p>~GHC 1,900.00</p>
                 </div>
               </div>
             </div>

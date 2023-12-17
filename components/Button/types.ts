@@ -4,4 +4,5 @@ export interface ButtonProps {
   disabled?: boolean;
   className?: string;
   color?: string;
+  loading?: boolean;
 }

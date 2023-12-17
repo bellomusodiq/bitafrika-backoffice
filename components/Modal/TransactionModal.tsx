@@ -1,14 +1,13 @@
 import React from "react";
-import styles from "./Modal.module.css";
+import styles from "./TransactionModal.module.css";
 import { ModalProps } from "./types";
 
-const Modal: React.FC<ModalProps> = ({
+const TransactionModal: React.FC<ModalProps> = ({
   openModal,
   onClose,
   children,
   headerLeft,
   headerCenter,
-  customStyles,
 }) => {
   return (
     <div className={styles.container} style={{ zIndex: openModal ? 2 : -3 }}>
@@ -19,12 +18,11 @@ const Modal: React.FC<ModalProps> = ({
       <div
         style={{
           transform: openModal ? "translateY(0)" : "translateY(-150vh)",
-          ...customStyles,
         }}
         className={styles.cardContainer}
       >
         <div className={styles.header}>
-          <div className={styles.headerLeft}>{headerLeft}</div>
+          <div className={styles.headerLeft}></div>
           <div className={styles.headerCenter}>{headerCenter}</div>
           <button onClick={onClose} className={styles.cancelButton}>
             <img src="/icons/x.svg" className={styles.cancelImage} />
@@ -36,4 +34,4 @@ const Modal: React.FC<ModalProps> = ({
   );
 };
 
-export default Modal;
+export default TransactionModal;

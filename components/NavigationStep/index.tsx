@@ -8,7 +8,14 @@ const NavigationStep: React.FC<{
   color?: string;
   noPadding?: boolean;
   navigation?: string[];
-}> = ({ hideButton, color = "none", noPadding = false, navigation }) => {
+  rightHeader?: JSX.Element;
+}> = ({
+  hideButton,
+  color = "none",
+  noPadding = false,
+  navigation,
+  rightHeader,
+}) => {
   const router = useRouter();
   return (
     <div
@@ -35,6 +42,7 @@ const NavigationStep: React.FC<{
           </Button>
         </div>
       )}
+      {rightHeader}
     </div>
   );
 };

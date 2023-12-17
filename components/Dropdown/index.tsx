@@ -3,12 +3,25 @@ import styles from "./Dropdown.module.css";
 
 const Dropdown: React.FC<{
   options: { title: string; value: string }[];
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-}> = ({ options, onChange }) => {
+  onChange: (event: string | number) => void;
+  value: string | number;
+}> = ({ options, onChange, value }) => {
   return (
-    <select name="" id="" onChange={onChange} className={styles.select}>
+    <select
+      name=""
+      id=""
+      onChange={(e) => onChange(e.target.value)}
+      className={styles.select}
+      value={value}
+    >
       {options.map((option) => (
-        <option key={option.title}>{option.title}</option>
+        <option
+          onSelect={(e) => console.log("onselect", e)}
+          value={option.value}
+          key={option.title}
+        >
+          {option.title}
+        </option>
       ))}
     </select>
   );

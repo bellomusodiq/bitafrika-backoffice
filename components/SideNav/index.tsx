@@ -89,104 +89,25 @@ const SideNav: React.FC = () => {
         title="Search"
         icon="/icons/search.svg"
         isActive={router.route.split("/")[1] === "search"}
-        childrenItem={[
-          {
-            title: "User",
-            url: "/search/users",
-            isActive: router.route === "/search/users",
-          },
-          {
-            title: "Momo Topup",
-            url: "/search/momo-topup",
-            isActive: router.route === "/search/momo-topup",
-          },
-          {
-            title: "Momo withdrawal",
-            url: "/search/momo-withdrawal",
-            isActive: router.route === "/search/momo-withdrawal",
-          },
-          {
-            title: "Crypto transactions",
-            url: "/search/crypto-transactions",
-            isActive: router.route === "/search/crypto-transactions",
-          },
-        ]}
+        url="/search"
       />
       <SideNavItem
         title="Transactions"
         icon="/icons/transactions.svg"
         isActive={router.route.split("/")[1] === "transactions"}
-        childrenItem={[
-          {
-            title: "Buy (Momo Topup)",
-            url: "/transactions/buy-momo",
-            isActive: router.route === "/transactions/buy-momo",
-          },
-          {
-            title: "Sell (Momo withdrawal)",
-            url: "/transactions/sell-momo",
-            isActive: router.route === "/transactions/sell-momo",
-          },
-          {
-            title: "Crypto transactions",
-            url: "/transactions/crypto",
-            isActive: router.route === "/transactions/crypto",
-          },
-
-          // {
-          //   title: "Swap",
-          //   url: "/transactions/swap",
-          //   isActive: router.route === "/transactions/swap",
-          // },
-          // {
-          //   title: "Utility",
-          //   url: "/transactions/utility",
-          //   isActive: router.route === "/transactions/utility",
-          // },
-          // {
-          //   title: "Cards",
-          //   url: "/transactions/cards",
-          //   isActive: router.route === "/transactions/cards",
-          // },
-        ]}
+        url="/transactions"
       />
       <SideNavItem
         title="Users"
         icon="/icons/users-01.svg"
         isActive={router.route.split("/")[1] === "users"}
-        childrenItem={[
-          {
-            title: "Registered",
-            url: "/users/registered",
-          },
-          {
-            title: "Unverified KYC",
-            url: "/users/unverfied-kyc",
-          },
-          {
-            title: "Disabled",
-            url: "/users/disabled",
-          },
-        ]}
+        url="/users"
       />
       <SideNavItem
         title="Manual approvals"
         icon="/icons/manual-approvals.svg"
         isActive={router.route.split("/")[1] === "manual-approvals"}
-        childrenItem={[
-          {
-            title: "Withdrawals",
-            url: "/manual-approvals/withdrawals",
-          },
-          {
-            title: "Top-up",
-            url: "/manual-approvals/topup",
-          },
-          {
-            title: "KYC",
-            url: "/manual-approvals/withdrawals",
-          },
-        ]}
+        url="/manual-approvals"
       />
       <SideNavItem
         title="Reports"
