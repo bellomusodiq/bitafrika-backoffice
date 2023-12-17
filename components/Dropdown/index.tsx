@@ -4,7 +4,7 @@ import styles from "./Dropdown.module.css";
 const Dropdown: React.FC<{
   options: { title: string; value: string }[];
   onChange: (event: string | number) => void;
-  value: string | number;
+  value?: string | number;
 }> = ({ options, onChange, value }) => {
   return (
     <select
@@ -16,7 +16,6 @@ const Dropdown: React.FC<{
     >
       {options.map((option) => (
         <option
-          onSelect={(e) => console.log("onselect", e)}
           value={option.value}
           key={option.title}
         >

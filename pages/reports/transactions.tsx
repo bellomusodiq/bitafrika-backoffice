@@ -259,7 +259,7 @@ export default function Search() {
                   { title: "Buy orders", value: "Buy orders" },
                   { title: "Buy & sell orders", value: "Buy & sell orders" },
                 ]}
-                onChange={(e) => setOrderType(e.target.value)}
+                onChange={value => setOrderType(String(value))}
               />
             </div>
             <div className={styles.inputContainer}>

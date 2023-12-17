@@ -334,102 +334,105 @@ export default function Search() {
           </div>
         }
       >
-        <div className={styles.modalContainer} style={{ width: "100%" }}>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction type:</p>
-            <p className={styles.value}>Sell (Momo withdrawal)</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Sell amount:</p>
-            <p className={styles.value}>
-              GHS 7488.00 (0.001234 BTC) -{" "}
-              <span style={{ color: "#667085" }}>$120.66</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Rate:</p>
-            <p className={styles.value}>
-              Sold @ 11.60 (Crypto price - $27776.50)
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Fees:</p>
-            <p className={styles.value}>
-              $1.28 <span style={{ color: "#667085" }}>(GHS 1.98)</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Net payout Amount:</p>
-            <p className={styles.value}>GHS 7488.00</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Approved
-            </div>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount:</p>
-            <p className={styles.value}>$100.99</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Payment method:</p>
-            <div>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Account:</span> Account name
-              </p>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Network:</span> MTN
-              </p>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Phone number:</span>{" "}
-                08000000000
-              </p>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Amount:</span> GHS 7488
+        <>
+          <div className={styles.modalContainer} style={{ width: "100%" }}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User: <span style={{ color: "black" }}>@Samuel12345</span>
               </p>
             </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID:</p>
+              <p className={styles.value}>TX12345678909887776665</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction type:</p>
+              <p className={styles.value}>Sell (Momo withdrawal)</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Sell amount:</p>
+              <p className={styles.value}>
+                GHS 7488.00 (0.001234 BTC) -{" "}
+                <span style={{ color: "#667085" }}>$120.66</span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Rate:</p>
+              <p className={styles.value}>
+                Sold @ 11.60 (Crypto price - $27776.50)
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Fees:</p>
+              <p className={styles.value}>
+                $1.28 <span style={{ color: "#667085" }}>(GHS 1.98)</span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Net payout Amount:</p>
+              <p className={styles.value}>GHS 7488.00</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Status:</p>
+              <div className={styles.statusContainer}>
+                <div className={styles.statusIndicator} /> Approved
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Amount:</p>
+              <p className={styles.value}>$100.99</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Payment method:</p>
+              <div>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Account:</span> Account
+                  name
+                </p>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Network:</span> MTN
+                </p>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Phone number:</span>{" "}
+                  08000000000
+                </p>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Amount:</span> GHS 7488
+                </p>
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction data:</p>
+              <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+            </div>
           </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+          <div className={styles.modalFooter}>
+            <Button
+              onClick={() => setOpenModal(false)}
+              className={styles.modalButton}
+              color="white"
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => setOpenModal(false)}
+              className={styles.modalButton}
+            >
+              Mark as success
+            </Button>
           </div>
-        </div>
-        <div className={styles.modalFooter}>
-          <Button
-            onClick={() => setOpenModal(false)}
-            className={styles.modalButton}
-            color="white"
-          >
-            Close
-          </Button>
-          <Button
-            onClick={() => setOpenModal(false)}
-            className={styles.modalButton}
-          >
-            Mark as success
-          </Button>
-        </div>
+        </>
       </Modal>
       <NavigationStep
         hideButton

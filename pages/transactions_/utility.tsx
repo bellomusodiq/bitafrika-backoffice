@@ -284,9 +284,7 @@ export default function Search() {
               { title: "Airtime Topup", value: "Airtime Topup" },
               { title: "TV Subscription", value: "TV Subscription" },
             ]}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setUtility(e.target.value)
-            }
+            onChange={(value) => setUtility(String(value))}
           />
         </div>
         <Divider />
@@ -349,7 +347,11 @@ export default function Search() {
           ) : (
             <div className={styles.table}>
               <p className={styles.resultText}>5 result found!</p>
-              <Table style={{fontFamily: "PP Telegraf"}} dataSource={getDataSource()} columns={getColumns()} />
+              <Table
+                style={{ fontFamily: "PP Telegraf" }}
+                dataSource={getDataSource()}
+                columns={getColumns()}
+              />
             </div>
           )}
         </div>
