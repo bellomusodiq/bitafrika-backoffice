@@ -122,12 +122,12 @@ const SERVICES_LISTING: any = [
 
 export default function Home() {
   const router = useRouter();
-  useEffect(() => {
-    const auth = localStorage.getItem("auth");
-    if (!auth) {
-      router.replace("/signin");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const auth = localStorage.getItem("auth");
+  //   if (!auth) {
+  //     router.replace("/signin");
+  //   }
+  // }, []);
 
   return (
     <PageLayout showHeader title="Hone">
