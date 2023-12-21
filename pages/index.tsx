@@ -197,39 +197,6 @@ export default function Home() {
               </>
             </StatsCard>
             <div className={styles.spacer} />
-            <StatsCard>
-              <div className={styles.statsCardContainer}>
-                <div style={{ width: 120, height: 120 }}>
-                  <CustomPieChart />
-                </div>
-                <div className={styles.statsTextContainer}>
-                  <p className={styles.statsTextNormal}>
-                    Account 1 - 01234567890
-                  </p>
-                  <p className={styles.statsTextGray} style={{ marginTop: 24 }}>
-                    Total available (GHS):
-                  </p>
-                  <p className={styles.statsTextBold}>4,000,206.20</p>
-                </div>
-              </div>
-            </StatsCard>
-            <div className={styles.spacer} />
-            <StatsCard>
-              <div className={styles.statsCardContainer}>
-                <div style={{ width: 120, height: 120 }}>
-                  <CustomPieChart />
-                </div>
-                <div className={styles.statsTextContainer}>
-                  <p className={styles.statsTextNormal}>
-                    Account 2 - 01234567890
-                  </p>
-                  <p className={styles.statsTextGray} style={{ marginTop: 24 }}>
-                    Total available (GHS):
-                  </p>
-                  <p className={styles.statsTextBold}>4,000,206.20</p>
-                </div>
-              </div>
-            </StatsCard>
           </div>
         </div>
         {/* 

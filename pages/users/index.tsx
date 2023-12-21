@@ -130,9 +130,8 @@ export default function Search() {
     <PageLayout title="Hone">
       <NavigationStep hideButton navigation={["Home", "Search", "User"]} />
       <div className={styles.container}>
-        <h3 className={styles.header}>Search</h3>
-        <div className={styles.searchContainer}>
           <p className={styles.filterTitle}>Filter results by</p>
+        <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Type</p>

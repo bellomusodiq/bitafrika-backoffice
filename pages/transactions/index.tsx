@@ -1633,11 +1633,10 @@ export default function Search() {
         </div>
       </Modal>
 
-      <NavigationStep hideButton navigation={["Home", "Search", "User"]} />
+      <NavigationStep hideButton navigation={["Home", "Transactions"]} />
       <div className={styles.container}>
-        <h3 className={styles.header}>Search</h3>
+        <p className={styles.filterTitle}>Filter results by</p>
         <div className={styles.searchContainer}>
-          <p className={styles.filterTitle}>Filter results by</p>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Transaction type</p>
