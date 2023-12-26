@@ -126,25 +126,6 @@
 }
 .modalContainer {
   width: 100%;
-  max-height: 75vh;
-  padding-bottom: 20px;
-}
-.whiteButton {
-  border-radius: 8px;
-  border: 1px solid var(--Gray-300, #d0d5dd);
-  background: var(--Base-White, #fff);
-
-  /* Shadow/xs */
-  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
-}
-.whiteButton > span {
-  color: var(--Blue-600, #1570ef);
-
-  /* Text sm/Medium */
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 20px; /* 142.857% */
 }
 .modalHeader {
   display: flex;
@@ -485,10 +466,4 @@
 }
 .fees > span {
   color: #101828;
-}
-.assetPieContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 24px;
 }

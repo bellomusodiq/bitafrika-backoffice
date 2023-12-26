@@ -67,10 +67,6 @@ const AssetsDetail: NextPage = () => {
           <div className={styles.tradesTitle}>
             <div className={styles.tradesTextContainer}>
               <h3>Bitcoin Trades</h3>
-              <p>
-                <img src="/icons/info-circle.svg" />
-                Analytics data is compared to previous period
-              </p>
             </div>
             <div className={styles.filterDays}>
               <a
@@ -114,7 +110,7 @@ const AssetsDetail: NextPage = () => {
                   style={{ width: "calc(100% / 2 - 2px)" }}
                 >
                   <div>
-                    <p className={styles.balanceTitle}>Deposit</p>
+                    <p className={styles.balanceTitle}>Bought</p>
                     <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                     <div className={styles.balanceFooter}>
                       <p>$12,000</p>
@@ -132,7 +128,7 @@ const AssetsDetail: NextPage = () => {
                   style={{ width: "calc(100% / 2 - 2px)" }}
                 >
                   <div>
-                    <p className={styles.balanceTitle}>Deposit</p>
+                    <p className={styles.balanceTitle}>Sold</p>
                     <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                     <div className={styles.balanceFooter}>
                       <p>$12,000.000</p>
@@ -180,20 +176,14 @@ const AssetsDetail: NextPage = () => {
               </div>
             </div>
           </div>
-          <div className={styles.summaryTexts}>
-            <p className={styles.inLastDays}>in last 30 days</p>
-            <p>120.98938388 BTC Sold</p>
-            <p>120.98938388 BTC bought</p>
-            <p>800 Buy orders</p>
-            <p>221 sell orders</p>
-          </div>
+        </div>
+        <div
+          className={styles.container}
+          style={{ marginTop: 24, marginBottom: 24 }}
+        >
           <div className={styles.tradesTitle}>
             <div className={styles.tradesTextContainer}>
               <h3>Bitcoin Transactions</h3>
-              <p>
-                <img src="/icons/info-circle.svg" />
-                Analytics data is compared to previous period
-              </p>
             </div>
             <div className={styles.filterDays}>
               <a

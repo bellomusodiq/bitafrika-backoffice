@@ -7,27 +7,18 @@ import Button from "@/components/Button";
 import { DatePicker, Divider, Table } from "antd";
 import Modal from "@/components/Modal";
 import Dropdown from "@/components/Dropdown";
+import CustomPieChart from "@/components/Charts/PieChart";
 
-const columns = [
+const BALANCE_COLUMNS = [
   {
     title: "Username",
     dataIndex: "username",
     key: "username",
   },
   {
-    title: "Email",
-    dataIndex: "email",
-    key: "email",
-  },
-  {
-    title: "Phone number",
-    dataIndex: "phoneNumber",
-    key: "phoneNumber",
-  },
-  {
-    title: "Country",
-    dataIndex: "country",
-    key: "country",
+    title: "Balance",
+    dataIndex: "balance",
+    key: "balance",
   },
   {
     title: "Actions",
@@ -35,103 +26,727 @@ const columns = [
     render: (_: any, { action }: any) => (
       <div className={styles.actionButton}>
         <div>
-          <Button onClick={action}>View</Button>
+          <Button className={styles.whiteButton} onClick={action}>
+            <img src="/icons/assets.svg" />
+            <span>Asset breakdown</span>
+          </Button>
         </div>
       </div>
     ),
   },
 ];
 
+const BALANCE_DATA = [
+  {
+    key: "1",
+    username: "Mike",
+    balance: "$2,000,000.00",
+  },
+  {
+    key: "2",
+    username: "Mike",
+    balance: "$2,000,000.00",
+  },
+  {
+    key: "3",
+    username: "Mike",
+    balance: "$2,000,000.00",
+  },
+  {
+    key: "4",
+    username: "Mike",
+    balance: "$2,000,000.00",
+  },
+  {
+    key: "5",
+    username: "Mike",
+    balance: "$2,000,000.00",
+  },
+];
+
+const BUY_COLUMNS = [
+  {
+    title: "Username",
+    dataIndex: "username",
+    key: "username",
+  },
+  {
+    title: "No of trnx",
+    dataIndex: "noTrx",
+    key: "noTrx",
+  },
+  {
+    title: "USD value",
+    dataIndex: "usdValue",
+    key: "usdValue",
+  },
+  {
+    title: "Actions",
+    dataIndex: "action",
+    render: (_: any, { action }: any) => (
+      <div className={styles.actionButton}>
+        <div>
+          <Button className={styles.whiteButton} onClick={action}>
+            <img src="/icons/assets.svg" />
+            <span>Asset breakdown</span>
+          </Button>
+        </div>
+      </div>
+    ),
+  },
+];
+
+const BUY_DATA = [
+  {
+    key: "1",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "2",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "3",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "4",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "5",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+];
+
+const SELL_COLUMN = [
+  {
+    title: "Username",
+    dataIndex: "username",
+    key: "username",
+  },
+  {
+    title: "No of trnx",
+    dataIndex: "noTrx",
+    key: "noTrx",
+  },
+  {
+    title: "USD value",
+    dataIndex: "usdValue",
+    key: "usdValue",
+  },
+  {
+    title: "Actions",
+    dataIndex: "action",
+    render: (_: any, { action }: any) => (
+      <div className={styles.actionButton}>
+        <div>
+          <Button className={styles.whiteButton} onClick={action}>
+            <img src="/icons/assets.svg" />
+            <span>Asset breakdown</span>
+          </Button>
+        </div>
+      </div>
+    ),
+  },
+];
+
+const SELL_DATA = [
+  {
+    key: "1",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "2",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "3",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "4",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+  {
+    key: "5",
+    username: "Mike",
+    noTrx: 1024,
+    usdValue: "$100,009.00",
+  },
+];
+
 export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<any>([]);
+  const [currentUser, setCurrentUser] = useState<any>({});
+  const [searchType, setSearchType] = useState<string>("Balance");
 
-  const dataSource = [
-    {
-      key: "1",
-      username: "Mike",
-      email: "username@gmail.com",
-      phoneNumber: "+234812325600",
-      country: "Ghana",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "2",
-      username: "Mike",
-      email: "username@gmail.com",
-      phoneNumber: "+234812325600",
-      country: "Ghana",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "3",
-      username: "Mike",
-      email: "username@gmail.com",
-      phoneNumber: "+234812325600",
-      country: "Ghana",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "4",
-      username: "Mike",
-      email: "username@gmail.com",
-      phoneNumber: "+234812325600",
-      country: "Ghana",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "5",
-      username: "Mike",
-      email: "username@gmail.com",
-      phoneNumber: "+234812325600",
-      country: "Ghana",
-      action: () => setOpenModal(true),
-    },
-  ];
+  const onSearch = () => {
+    switch (searchType) {
+      case "Balance":
+        setData(BALANCE_DATA);
+        break;
+      case "Buy":
+        setData(BUY_DATA);
+        break;
+      case "Sell":
+        setData(SELL_DATA);
+        break;
+    }
+  };
+
+  const showModal = (user: any) => {
+    setOpenModal(true);
+  };
+
+  const getColumns = () => {
+    switch (searchType) {
+      case "Balance":
+        return BALANCE_COLUMNS;
+      case "Buy":
+        return BUY_COLUMNS;
+      case "Sell":
+        return SELL_COLUMN;
+    }
+  };
 
   return (
     <PageLayout title="Hone">
       <Modal
-        openModal={openModal}
+        openModal={openModal && searchType === "Balance"}
         onClose={() => setOpenModal(false)}
-        headerCenter={<Button color="white">#</Button>}
+        headerLeft={<img src="/icons/assets-dark.svg" />}
+        headerCenter={<p>Assets breakdown</p>}
       >
         <div className={styles.modalContainer}>
-          <p className={styles.modalHeader}>Account details</p>
           <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Account:</p>
-            <p className={styles.value}>EMMANUEL KWABENA NKRUMAH</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Country:</p>
-            <p className={styles.value}>Ghana (GH)</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Network:</p>
-            <p className={styles.value}>MTN</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Phone number:</p>
-            <p className={styles.value}>2334567890000</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Status:</p>
-            <p className={styles.valueStatus}>Payment method is active</p>
-          </div>
-          <div className={styles.divider} />
-          <p className={styles.date}>Date registered: Thur May 13, 2021.</p>
-          <p className={styles.date}>12:33:28 GMT</p>
-          <Button
-            onClick={() => setOpenModal(false)}
-            className={styles.modalButton}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
           >
-            Close
-          </Button>
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User: <span style={{ color: "#1570EF" }}>@Samuel12345</span>
+              </p>
+            </div>
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                Total balance:{" "}
+                <span style={{ color: "black" }}>$20,000.00</span>
+              </p>
+            </div>
+          </div>
+          <div className={styles.assetPieContainer}>
+            <p>Assets</p>
+            <div style={{ width: 160, height: 160 }}>
+              <CustomPieChart />
+            </div>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              Tron (50%)
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>1508.908 TRX</p>
+              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              Matic (30%)
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>1508.908 MATIC</p>
+              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              Binance coin (30%)
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>1.2346 BNB</p>
+              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              Bitcoin (30%)
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>0.12346 BTC</p>
+              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              Litecoin (0%)
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>0.12346 LTC</p>
+              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        openModal={openModal && searchType === "Buy"}
+        onClose={() => setOpenModal(false)}
+        headerLeft={<img src="/icons/assets-dark.svg" />}
+        headerCenter={<p>Order breakdown</p>}
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.divider} />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User: <span style={{ color: "#1570EF" }}>@Samuel12345</span>
+              </p>
+            </div>
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                No of buy orders: <span style={{ color: "black" }}>1009</span>
+              </p>
+            </div>
+          </div>
+          <div className={styles.assetPieContainer}>
+            <p>Assets</p>
+            <div style={{ width: 160, height: 160 }}>
+              <CustomPieChart />
+            </div>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              BTC
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 BTC</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              TRX
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 TRX</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              USDT
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 USDT</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              MATIC
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 MATIC</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              LTC
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 LTC</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        openModal={openModal && searchType === "Sell"}
+        onClose={() => setOpenModal(false)}
+        headerLeft={<img src="/icons/assets-dark.svg" />}
+        headerCenter={<p>Order breakdown</p>}
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.divider} />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User: <span style={{ color: "#1570EF" }}>@Samuel12345</span>
+              </p>
+            </div>
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                No of sell orders: <span style={{ color: "black" }}>1009</span>
+              </p>
+            </div>
+          </div>
+          <div className={styles.assetPieContainer}>
+            <p>Assets</p>
+            <div style={{ width: 160, height: 160 }}>
+              <CustomPieChart />
+            </div>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              BTC
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 BTC</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              TRX
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 TRX</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              USDT
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 USDT</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              MATIC
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 MATIC</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
+          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+            <div
+              className={styles.key}
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: "#9BB0FD",
+                  marginRight: 8,
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: "#101828",
+                }}
+              />
+              LTC
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 LTC</p>
+            </div>
+            <div className={styles.value}>
+              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
+            </div>
+          </div>
         </div>
       </Modal>
       <NavigationStep
@@ -139,37 +754,69 @@ export default function Search() {
         navigation={["Home", "Reports", "User reports"]}
       />
       <div className={styles.container}>
-        <h3 className={styles.header}>User reports</h3>
-        <div className={styles.filterByContainer}>
-          <p className={styles.filterByHeader}>Filter result by</p>
-          <div className={styles.filterContainer}>
-            <div className={styles.inputContainer}>
-              <p>Activity</p>
+        <p className={styles.filterTitle}>Filter results by</p>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchCard}>
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Type</p>
               <Dropdown
-                options={[{ title: "Highest", value: "Highest" }]}
-                onChange={() => {}}
+                value={searchType}
+                options={[
+                  { title: "Balance", value: "Balance" },
+                  { title: "Buy transactions", value: "Buy" },
+                  { title: "Sell transactions", value: "Sell" },
+                ]}
+                onChange={(value) => {
+                  setSearchType(String(value));
+                  setData([]);
+                }}
               />
             </div>
-            <div className={styles.inputContainer}>
-              <p>Activity</p>
-              <DatePicker.RangePicker style={{ padding: 8 }} />
+
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Sort by</p>
+              <Dropdown
+                value={searchType}
+                options={[
+                  { title: "Highest", value: "Highest" },
+                  { title: "Lowest", value: "Lowest" },
+                ]}
+                onChange={(value) => {
+                  setSearchType(String(value));
+                  setData([]);
+                }}
+              />
             </div>
-          </div>
-          <Divider style={{ margin: 0 }} />
-          <div className={styles.filterByFooter}>
-            <div style={{ marginRight: 20 }}>
-              <Button>Filter results</Button>
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Date range</p>
+              <DatePicker.RangePicker style={{ height: 48 }} />
             </div>
-            <div>
-              <Button color="white">Clear</Button>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+              }}
+            >
+              <div>
+                <Button onClick={onSearch} className={styles.searchButton}>
+                  Apply filter
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-        <div className={styles.searchContainer}>
-          <div className={styles.table}>
-            <Table style={{fontFamily: "PP Telegraf"}} dataSource={[]} columns={columns}  />
-          </div>
-        </div>
+        <Table
+          style={{ fontFamily: "PP Telegraf", marginTop: 24 }}
+          dataSource={data?.map((item: any) => ({
+            ...item,
+            action: () => setOpenModal(true),
+          }))}
+          columns={getColumns()}
+          loading={loading}
+        />
       </div>
     </PageLayout>
   );

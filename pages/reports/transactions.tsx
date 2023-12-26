@@ -1,418 +1,829 @@
 import React, { useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
-import styles from "@/pages/reports/users.module.css";
+import styles from "@/pages/reports/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Divider, Table } from "antd";
+import { DatePicker, Table } from "antd";
 import Modal from "@/components/Modal";
+import axios from "axios";
+import { BASE_URL } from "@/CONFIG";
+import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
-import { toast } from "react-toastify";
-
-const columns: any = [
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId, onCopy }: any) => (
-      <div onClick={onCopy} className={styles.transactionId}>
-        <p>
-          {transactionId?.slice(0, 5)} . . .
-          {transactionId?.slice(transactionId?.length - 5)}
-        </p>
-        <img src="/icons/copy.svg" />
-      </div>
-    ),
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Rate",
-    dataIndex: "rate",
-    key: "rate",
-  },
-  {
-    title: "Fees",
-    dataIndex: "fees",
-    key: "fees",
-  },
-  {
-    title: "Total",
-    dataIndex: "total",
-    key: "total",
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
+import CustomPieChart from "@/components/Charts/PieChart";
 
 export default function Search() {
-  const [orderType, setOrderType] = useState<string>("Sell orders");
+  const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<any>({});
+  const [searchType, setSearchType] = useState<string>("Buy");
 
-  const dataSource = [
-    {
-      key: "1",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: "$200.2",
-      rate: "10",
-      fees: "$1.20 (GHS 100.00)",
-      total: "GHS 988.00",
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "2",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: "$200.2",
-      rate: "10",
-      fees: "$1.20 (GHS 100.00)",
-      total: "GHS 988.00",
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "3",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: "$200.2",
-      rate: "10",
-      fees: "$1.20 (GHS 100.00)",
-      total: "GHS 988.00",
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "4",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: "$200.2",
-      rate: "10",
-      fees: "$1.20 (GHS 100.00)",
-      total: "GHS 988.00",
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "5",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: "$200.2",
-      rate: "10",
-      fees: "$1.20 (GHS 100.00)",
-      total: "GHS 988.00",
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
-    },
-  ];
+  const onSearch = () => {
+    setData(true);
+  };
+
+  const showModal = (user: any) => {
+    setCurrentUser(user);
+    setOpenModal(true);
+  };
 
   return (
     <PageLayout title="Hone">
-      <Modal
-        openModal={openModal}
-        onClose={() => setOpenModal(false)}
-        headerCenter={<Button color="white">#</Button>}
-      >
-        <div className={styles.modalContainer}>
-          <p className={styles.modalHeader}>Account details</p>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Account:</p>
-            <p className={styles.value}>EMMANUEL KWABENA NKRUMAH</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Country:</p>
-            <p className={styles.value}>Ghana (GH)</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Network:</p>
-            <p className={styles.value}>MTN</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Phone number:</p>
-            <p className={styles.value}>2334567890000</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Status:</p>
-            <p className={styles.valueStatus}>Payment method is active</p>
-          </div>
-          <div className={styles.divider} />
-          <p className={styles.date}>Date registered: Thur May 13, 2021.</p>
-          <p className={styles.date}>12:33:28 GMT</p>
-          <Button
-            onClick={() => setOpenModal(false)}
-            className={styles.modalButton}
-          >
-            Close
-          </Button>
-        </div>
-      </Modal>
-      <NavigationStep hideButton />
+      <NavigationStep hideButton navigation={["Reports", "Transactions"]} />
       <div className={styles.container}>
-        <div className={styles.headerContainer}>
-          <h3 className={styles.header}>Transactions reports</h3>
-          <div>
-            <Button color="white">
-              <div className={styles.printButton}>
-                <img src="/icons/printer.svg" />
-                Print
-              </div>
-            </Button>
-          </div>
-        </div>
-        <Divider />
-        <div className={styles.filterByContainer}>
-          <p className={styles.filterByHeader}>Filter result by</p>
-          <div className={styles.filterContainer}>
-            <div className={styles.inputContainer}>
-              <p>Order type</p>
+        <p className={styles.filterTitle}>Filter results by</p>
+        <div className={styles.searchContainer}>
+          <div className={styles.searchCard}>
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Transaction type</p>
               <Dropdown
+                value={searchType}
                 options={[
-                  { title: "Sell orders", value: "Sell orders" },
-                  { title: "Buy orders", value: "Buy orders" },
-                  { title: "Buy & sell orders", value: "Buy & sell orders" },
+                  { title: "Buy transactions", value: "Buy" },
+                  { title: "Sell transactions", value: "Sell" },
+                  { title: "Buy and Sell transactions", value: "Buy and Sell" },
+                  { title: "Send transactions", value: "Send" },
+                  { title: "Received transactions", value: "Receive" },
                 ]}
-                onChange={value => setOrderType(String(value))}
+                onChange={(value) => {
+                  setSearchType(String(value));
+                  setData(false);
+                }}
               />
             </div>
-            <div className={styles.inputContainer}>
-              <p>Date range</p>
-              <DatePicker.RangePicker style={{ padding: 8 }} />
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Date range</p>
+              <DatePicker.RangePicker style={{ height: 48 }} />
             </div>
-          </div>
-          <Divider style={{ margin: 0 }} />
-          <div className={styles.filterByFooter}>
-            <div style={{ marginRight: 20 }}>
-              <Button>Filter results</Button>
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Status</p>
+              <Dropdown
+                value={searchType}
+                options={[
+                  { title: "Successful", value: "Successful" },
+                  { title: "Pending", value: "Pending" },
+                  { title: "Failed", value: "Failed" },
+                ]}
+                onChange={(value) => {
+                  setSearchType(String(value));
+                  setData(false);
+                }}
+              />
             </div>
-            <div>
-              <Button color="white">Clear</Button>
+            <div
+              style={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                alignItems: "flex-end",
+              }}
+            >
+              <div>
+                <Button onClick={onSearch} className={styles.searchButton}>
+                  Apply filter
+                </Button>
+              </div>
             </div>
           </div>
         </div>
+        {data && searchType === "Buy" && (
+          <div className={styles.bodyContainer}>
+            <p className={styles.header}>Buy transactions report</p>
+            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
+            <p className={styles.date}>Status: Successful</p>
 
-        {orderType === "Sell orders" && (
-          <>
-            <h3 className={styles.header2}>Sell transaction analysis</h3>
-            <div className={styles.sellTransactions}>
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>
-                  Total successful orders
-                </p>
-                <p className={styles.sellTransactionValue}>1009</p>
+            <p className={styles.header}>Buy orders</p>
+            <div className={styles.ordersContainer}>
+              <div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    BTC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    LTC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    ETH — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    DOGE — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDT — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    MATIC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    TRON — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
               </div>
-              <div className={styles.verticalDivider} />
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>Sell total (USD)</p>
-                <p className={styles.sellTransactionValue}>10,000.00 USD</p>
-              </div>
-              <div className={styles.verticalDivider} />
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>Total fees (USD)</p>
-                <p className={styles.sellTransactionValue}>6</p>
-                <p className={styles.sellTransactionSubValue}>~400 GHS</p>
-              </div>
-              <div className={styles.verticalDivider} />
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>
-                  Sell subtotal (GHS)
-                </p>
-                <p className={styles.sellTransactionValue}>
-                  <span style={{ color: "#16B364" }}>10,000.00</span>{" "}
-                  <span style={{ fontSize: 12 }}>GHS</span>
-                </p>
-              </div>
-            </div>
-          </>
-        )}
-        {orderType === "Buy orders" && (
-          <>
-            <h3 className={styles.header2}>Buy transaction analysis</h3>
-            <div className={styles.sellTransactions}>
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>
-                  Total successful orders
-                </p>
-                <p className={styles.sellTransactionValue}>1009</p>
-              </div>
-              <div className={styles.verticalDivider} />
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>Sell total (USD)</p>
-                <p className={styles.sellTransactionValue}>10,000.00 USD</p>
-              </div>
-              <div className={styles.verticalDivider} />
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>Total fees (USD)</p>
-                <p className={styles.sellTransactionValue}>6</p>
-                <p className={styles.sellTransactionSubValue}>~400 GHS</p>
-              </div>
-              <div className={styles.verticalDivider} />
-              <div className={styles.sellTransaction}>
-                <p className={styles.sellTransactionTitle}>
-                  Sell subtotal (GHS)
-                </p>
-                <p className={styles.sellTransactionValue}>
-                  <span style={{ color: "#16B364" }}>10,000.00</span>{" "}
-                  <span style={{ fontSize: 12 }}>GHS</span>
-                </p>
-              </div>
-            </div>
-          </>
-        )}
-        {orderType === "Buy & sell orders" && (
-          <div className={styles.buySellOrders}>
-            <div className={styles.buySellOrder}>
-              <p className={styles.buySellTitle}>Buy transaction analysis</p>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>
-                  Total successful orders
-                </p>
-                <p className={styles.buySellItemValue}>1009</p>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>Total USD amount</p>
-                <p className={styles.buySellItemValue}>$1009.00</p>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>Total fees (USD)</p>
-                <p className={styles.buySellItemValue}>0</p>
-                <p className={styles.buySellItemSubValue}>~0.00 GHS</p>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>Buy subtotal (GHS)</p>
-                <p className={styles.buySellItemValue}>
-                  <span className={styles.buySellGreen}>170,000.00</span>{" "}
-                  <span className={styles.buySellCurrency}>GHS</span>
-                </p>
+              <div
+                style={{
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: 200, height: 200 }}>
+                  <CustomPieChart />
+                </div>
+                <div className={styles.pieIndicators}>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                </div>
               </div>
             </div>
-            <div className={styles.buySellOrder}>
-              <p className={styles.buySellTitle}>Sell transaction analysis</p>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>
-                  Total successful orders
-                </p>
-                <p className={styles.buySellItemValue}>1009</p>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>Total USD amount</p>
-                <p className={styles.buySellItemValue}>$1009.00</p>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>Total fees (USD)</p>
-                <p className={styles.buySellItemValue}>0</p>
-                <p className={styles.buySellItemSubValue}>~0.00 GHS</p>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.buySellItem}>
-                <p className={styles.buySellItemTitle}>Buy subtotal (GHS)</p>
-                <p className={styles.buySellItemValue}>
-                  <span className={styles.buySellGreen}>170,000.00</span>{" "}
-                  <span className={styles.buySellCurrency}>GHS</span>
-                </p>
-              </div>
+            <div className={styles.divider} style={{ margin: "24px 0" }} />
+            <div className={styles.totalHeader}>
+              <p>Total buy orders: 7000</p>
+              <a href="#">View orders</a>
+            </div>
+            <div className={styles.footerHeaderContainer}>
+              <p>TOTAL AMOUNT</p>
+              <p>TOTAL FEES</p>
+              <p>GRAND TOTAL</p>
+            </div>
+            <div className={styles.divider} style={{ marginTop: 5 }} />
+            <div className={styles.totalContainer}>
+              <p>GHS 109,000</p>
+              <p>GHS 0.00</p>
+              <p style={{ color: "#1570EF" }}>GHS 109,000</p>
             </div>
           </div>
         )}
-        <div className={styles.searchContainer}>
-          <div className={styles.table}>
-            <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
+        {data && searchType === "Sell" && (
+          <div className={styles.bodyContainer}>
+            <p className={styles.header}>Sell transactions report</p>
+            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
+            <p className={styles.date}>Status: Successful</p>
+
+            <p className={styles.header}>Sell orders</p>
+            <div className={styles.ordersContainer}>
+              <div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    BTC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    LTC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    ETH — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    DOGE — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDT — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    MATIC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    TRON — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDC — 1001 orders{" "}
+                    <span className={styles.grey}>— 1001 orders</span>
+                  </p>
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: 200, height: 200 }}>
+                  <CustomPieChart />
+                </div>
+                <div className={styles.pieIndicators}>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.divider} style={{ margin: "24px 0" }} />
+            <div className={styles.totalHeader}>
+              <p>Total sell orders: 7000</p>
+              <a href="#">View orders</a>
+            </div>
+            <div className={styles.footerHeaderContainer}>
+              <p>TOTAL AMOUNT</p>
+              <p>TOTAL FEES</p>
+              <p>GRAND TOTAL</p>
+            </div>
+            <div className={styles.divider} style={{ marginTop: 5 }} />
+            <div className={styles.totalContainer}>
+              <p>GHS 109,000</p>
+              <p>GHS 1000.00</p>
+              <p style={{ color: "#1570EF" }}>GHS 109,000</p>
+            </div>
           </div>
-        </div>
+        )}
+        {data && searchType === "Buy and Sell" && (
+          <>
+            <div className={styles.bodyContainer}>
+              <p className={styles.header}>Buy and Sell transactions report</p>
+              <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
+              <p className={styles.date}>Status: Successful</p>
+
+              <div className={styles.buySellOrders}>
+                <div
+                  className={styles.ordersContainer2}
+                  style={{ paddingRight: 48 }}
+                >
+                  <p className={styles.header}>Buy orders</p>
+                  <div>
+                    <div className={styles.buySellOrdersChild}>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          BTC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          LTC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          ETH — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          DOGE — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          USDT — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          MATIC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          TRON — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          USDC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        width: "50%",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div style={{ width: 200, height: 200 }}>
+                        <CustomPieChart />
+                      </div>
+                      <div className={styles.pieIndicators}>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={styles.divider}
+                    style={{ margin: "24px 0" }}
+                  />
+                  <div className={styles.totalHeader}>
+                    <p>Total buy orders: 7000</p>
+                    <a href="#">View orders</a>
+                  </div>
+                  <div className={styles.footerHeaderContainer}>
+                    <p>TOTAL AMOUNT</p>
+                    <p>TOTAL FEES</p>
+                    <p>GRAND TOTAL</p>
+                  </div>
+                  <div className={styles.divider} style={{ marginTop: 5 }} />
+                  <div className={styles.totalContainer}>
+                    <p>GHS 109,000</p>
+                    <p>GHS 0.00</p>
+                    <p style={{ color: "#1570EF" }}>GHS 109,000</p>
+                  </div>
+                </div>
+                <div className={styles.verticalDivider} />
+                <div
+                  className={styles.ordersContainer2}
+                  style={{ paddingLeft: 48 }}
+                >
+                  <p className={styles.header}>Buy orders</p>
+                  <div>
+                    <div className={styles.buySellOrdersChild}>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          BTC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          LTC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          ETH — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          DOGE — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          USDT — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          MATIC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          TRON — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                      <div className={styles.order}>
+                        <div className={styles.orderIcon} />
+                        <p className={styles.orderText}>
+                          USDC — 1001 orders{" "}
+                          <span className={styles.grey}>— 1001 orders</span>
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        width: "50%",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div style={{ width: 200, height: 200 }}>
+                        <CustomPieChart />
+                      </div>
+                      <div className={styles.pieIndicators}>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                        <div className={styles.pieIndicator}>
+                          <div /> 50%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={styles.divider}
+                    style={{ margin: "24px 0" }}
+                  />
+                  <div className={styles.totalHeader2}>
+                    <p>Total buy orders: 7000</p>
+                    <a href="#">View orders</a>
+                  </div>
+                  <div className={styles.footerHeaderContainer2}>
+                    <p>TOTAL AMOUNT</p>
+                    <p>TOTAL FEES</p>
+                    <p>GRAND TOTAL</p>
+                  </div>
+                  <div className={styles.divider} style={{ marginTop: 5 }} />
+                  <div className={styles.totalContainer2}>
+                    <p>GHS 109,000</p>
+                    <p>GHS 0.00</p>
+                    <p style={{ color: "#1570EF" }}>GHS 109,000</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.bodyContainer}>
+              <div className={styles.totalProfitHeader}>
+                <p>
+                  Total profit <span>(Buy grand total - Sell grand total)</span>
+                </p>
+                <div className={styles.downloadButton}>
+                  <Button>Download report</Button>
+                </div>
+              </div>
+              <p className={styles.profitText}>
+                110,000 — 120,000 ={" "}
+                <span style={{ color: "#1570EF" }}>440</span>
+              </p>
+              <div className={styles.divider} />
+              <p className={styles.profitBreakdown}>Total profit breakdown</p>
+              <p className={styles.fees}>
+                Fees: <span>60</span>
+              </p>
+              <p className={styles.fees}>
+                Rate difference: <span>440-60 = 380 </span>
+              </p>
+            </div>
+          </>
+        )}
+        {data && searchType === "Send" && (
+          <div className={styles.bodyContainer}>
+            <p className={styles.header}>Send transactions report</p>
+            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
+            <p className={styles.date}>Status: Successful</p>
+
+            <p className={styles.header}>Send transactions</p>
+            <div className={styles.ordersContainer}>
+              <div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    BTC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 BTC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    BTC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 BTC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    LTC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 LTC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    ETH — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 ETH — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    DOGE — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 DOGE — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDT — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 USDT — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    MATIC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 MATIC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    TRON — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 TRON — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 USDC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: 200, height: 200 }}>
+                  <CustomPieChart />
+                </div>
+                <div className={styles.pieIndicators}>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.divider} style={{ margin: "24px 0" }} />
+            <div className={styles.totalHeader}>
+              <p>Total send transactions: 7000</p>
+              <a href="#">View transactions</a>
+            </div>
+          </div>
+        )}
+        {data && searchType === "Receive" && (
+          <div className={styles.bodyContainer}>
+            <p className={styles.header}>Received transactions report</p>
+            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
+            <p className={styles.date}>Status: Successful</p>
+
+            <p className={styles.header}>Received transactions</p>
+            <div className={styles.ordersContainer}>
+              <div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    BTC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 BTC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    BTC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 BTC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    LTC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 LTC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    ETH — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 ETH — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    DOGE — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 DOGE — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDT — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 USDT — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    MATIC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 MATIC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    TRON — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 TRON — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.order}>
+                  <div className={styles.orderIcon} />
+                  <p className={styles.orderText}>
+                    USDC — 1001 trnx{" "}
+                    <span className={styles.grey}>
+                      — 10.02231 USDC — 10,010.00 USD
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div
+                style={{
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: 200, height: 200 }}>
+                  <CustomPieChart />
+                </div>
+                <div className={styles.pieIndicators}>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                  <div className={styles.pieIndicator}>
+                    <div /> 50%
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className={styles.divider} style={{ margin: "24px 0" }} />
+            <div className={styles.totalHeader}>
+              <p>Total recived transactions: 7000</p>
+              <a href="#">View transactions</a>
+            </div>
+          </div>
+        )}
       </div>
     </PageLayout>
   );
