@@ -1,0 +1,110 @@
+.container {
+  padding: 24px 32px;
+}
+.header {
+  color: var(--Gray-900, #101828);
+
+  /* Text xl/Bold */
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 30px; /* 150% */
+  margin-bottom: 8px;
+}
+.subHeader {
+  color: var(--Gray-400, #98a2b3);
+
+  /* Text sm/Medium */
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
+}
+.divider {
+  margin: 24px 0;
+  width: 100%;
+  height: 1px;
+  background: #eaecf0;
+}
+.cardsContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  justify-content: space-between;
+}
+.card {
+  border-radius: 12px;
+  border: 1px solid var(--Gray-200, #eaecf0);
+  background: #fff;
+
+  /* new */
+  box-shadow: 0px 7px 37px -24px rgba(0, 0, 0, 0.09);
+  display: flex;
+  width: 24%;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.cardHeader {
+  color: var(--Gray-400, #98a2b3);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px; /* 171.429% */
+  margin-bottom: 8px;
+}
+.cardText {
+  color: var(--Gray-900, #101828);
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 32px; /* 160% */
+}
+.bodyContainer {
+  display: flex;
+  justify-content: space-between;
+}
+.bodyContainer > div {
+  width: calc(50% - 12px);
+}
+.cardsNav {
+  border-radius: 8px;
+  border: 1px solid var(--Gray-200, #eaecf0);
+  background: var(--Base-White, #fff);
+}
+.headerRow {
+  padding: 12px 24px;
+  background: var(--Gray-25, #fcfcfd);
+  border-bottom: 1px solid var(--Gray-200, #eaecf0);
+}
+.headerRow > p {
+  color: var(--Gray-400, #98a2b3);
+
+  /* Text md/Bold */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 150% */
+}
+.cardBody {
+  padding: 0 24px;
+}
+.cardBody > div {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--Gray-200, #f0f2f5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cardBody > div > span {
+  color: #000;
+
+  /* Text md/Medium */
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 24px; /* 150% */
+}

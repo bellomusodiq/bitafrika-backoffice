@@ -1,0 +1,377 @@
+.container {
+    margin: 24px 32px;
+  }
+  .header {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 38px;
+    color: #101828;
+  }
+  .subHeader {
+    font-family: "PP Telegraf";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000;
+    margin-top: 16px;
+  }
+  .tabContainer {
+    display: flex;
+    border-bottom: 2px solid #eaecf0;
+    padding-bottom: 16px;
+  }
+  .tabItem {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #3861fb;
+    border-bottom: 2px solid #3861fb;
+    padding: 0 16px;
+    padding-bottom: 16px;
+    margin-bottom: -18px;
+    display: flex;
+    align-items: center;
+  }
+  .tabItem > span {
+    display: flex;
+    padding: 2px 10px;
+    align-items: center;
+    border-radius: 16px;
+    background: var(--primary-25, #f1f4ff);
+    mix-blend-mode: multiply;
+    margin-left: 8px;
+  }
+  .searchContainer {
+    margin-top: 8px;
+    background: #ffffff;
+    border: 1px solid #eaecf0;
+    border-radius: 12px;
+    min-height: 400px;
+  }
+  .searchHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+    padding: 0 24px;
+    border: 1px solid #eaecf0;
+    border-radius: 8px 8px 0px 0px;
+  }
+  .input {
+    flex: 1;
+    margin: 10px 16px;
+    padding: 8px 0px;
+    color: #475467;
+    outline: none;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    background-color: inherit;
+    border: none;
+    cursor: text;
+  }
+  .input::placeholder {
+    color: #667085;
+  }
+  .searchHint {
+    margin: 16px 0;
+    text-align: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    color: #98a2b3;
+  }
+  .searchHint > span {
+    color: #475467;
+  }
+  .searchButton {
+    height: 36px;
+  }
+  .resultText {
+    margin: 16px 24px;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+    color: #98a2b3;
+  }
+  .actionButton {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+  }
+  .modalContainer {
+    width: 100%;
+    overflow-y: auto;
+    max-height: 75vh;
+  }
+  .modalHeader {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 28px;
+    color: #101828;
+    text-align: center;
+  }
+  .divider {
+    height: 1px;
+    background-color: #eaecf0;
+    margin: 20px 0;
+  }
+  .keyValue {
+    display: flex;
+    justify-content: space-between;
+  }
+  .key {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: #667085;
+  }
+  .value {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #101828;
+  }
+  .valueStatus {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    color: #099250;
+    padding: 2px 8px;
+    background-color: #f6fef9;
+    border-radius: 16px;
+  }
+  .date {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    color: #a3a3a3;
+  }
+  .modalButton {
+    margin-top: 56px;
+  }
+  .dropModal {
+    cursor: pointer;
+    width: fit-content;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    color: #475467;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .filterTitle {
+    font-family: "PP Telegraf";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 18px;
+    color: #98a2b3;
+  }
+  .dropModalContainer {
+    background: #ffffff;
+    border: 1px solid #eaecf0;
+    box-shadow: 0px 20px 24px -4px rgba(16, 24, 40, 0.08),
+      0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+    border-radius: 8px;
+    width: 350px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  .checkbox {
+    margin: 10px 0;
+    font-family: "PP Telegraf";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: #344054;
+  }
+  .nameInput {
+    margin: 5px 0;
+  }
+  .dropModalFooter {
+    display: flex;
+  }
+  .dropModalButton {
+    margin-right: 10px;
+  }
+  .dropModalButton2 {
+    flex: 1;
+  }
+  .dropdownContainer {
+    width: fit-content;
+    margin-top: 24px;
+  }
+  .nameContainer {
+    display: flex;
+    align-items: center;
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 40px;
+    background: #eff8ff;
+    color: var(--blue-500, #2e90fa);
+    font-size: 16px;
+    font-family: "PP Telegraf";
+    font-weight: 600;
+    line-height: 24px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .tableRow {
+    cursor: pointer;
+  }
+  .transactionId {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  .transactionId > p {
+    color: var(--blue-500, #2e90fa);
+    font-family: "PP Telegraf";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    margin-right: 5px;
+  }
+  .currency {
+    color: var(--gray-900, #101828);
+    font-family: "PP Telegraf";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+  }
+  .crypto {
+    color: var(--gray-400, #98a2b3);
+    font-family: "PP Telegraf";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 18px;
+    margin-top: 8px;
+  }
+  .topUpButton {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+  .modalFooter {
+    display: flex;
+    justify-content: space-between;
+  }
+  .modalFooter > * {
+    width: 47.5%;
+  }
+  .inputContainer {
+    margin-top: 24px;
+  }
+  .inputContainer > p {
+    color: var(--gray-700, #344054);
+    font-family: "PP Telegraf";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    margin-bottom: 6px;
+  }
+  .modalTitle {
+    font-size: 18px;
+    line-height: 28px;
+    color: #101828;
+  }
+  .modalText {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #475467;
+    margin-top: 4px;
+  }
+  .qrImage {
+    width: 128px;
+    margin: 36px 0;
+  }
+  .verificationText {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #344054;
+    align-self: flex-start;
+    margin-bottom: 6px;
+  }
+  .footerContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 34px;
+    width: 100%;
+  }
+  .footerButton {
+    width: calc(50% - 5px) !important;
+  }
+  .codeContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  .code {
+    display: flex;
+    width: 80px;
+    padding: 10px 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid var(--gray-300, #d0d5dd);
+    background: var(--base-white, #fff);
+    box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    color: var(--gray-300, #d0d5dd);
+    text-align: center;
+    font-family: "PP Telegraf";
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 60px; /* 125% */
+    letter-spacing: -0.96px;
+  }
+  .breadCrumb {
+    display: flex;
+    padding: 2px 8px;
+    align-items: center;
+    border-radius: 16px;
+    background: var(--Gray-300, #d0d5dd);
+    mix-blend-mode: multiply;
+    color: var(--Gray-700, #344054);
+    text-align: center;
+  
+    /* Text xs/Medium */
+    font-family: "PP Telegraf";
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px; /* 150% */
+    margin-right: 15px;
+  }
+  

@@ -178,75 +178,64 @@ export default function Search() {
         )}
         {currentTab === "Rates" && (
           <>
-            <div className={styles.ratesTab}>
-              <a
-                onClick={() => setRatesTab("BTC")}
-                style={{
-                  color: ratesTab === "BTC" ? "#3861FB" : "#d0d5dd",
-                  borderRight: "1px solid var(--gray-300, #d0d5dd)",
-                }}
-                className={styles.ratesTabItem}
-              >
-                {ratesTab === "BTC" && (
-                  <div className={styles.ratesIndicator} />
-                )}
-                BTC
-              </a>
-              <a
-                onClick={() => setRatesTab("USDT")}
-                style={{
-                  color: ratesTab === "USDT" ? "#3861FB" : "#d0d5dd",
-                  borderRight: "1px solid var(--gray-300, #d0d5dd)",
-                }}
-                className={styles.ratesTabItem}
-              >
-                {ratesTab === "USDT" && (
-                  <div className={styles.ratesIndicator} />
-                )}
-                USDT
-              </a>
-              <a
-                onClick={() => setRatesTab("TRX")}
-                style={{
-                  color: ratesTab === "TRX" ? "#3861FB" : "#d0d5dd",
-                  borderRight: "1px solid var(--gray-300, #d0d5dd)",
-                }}
-                className={styles.ratesTabItem}
-              >
-                {ratesTab === "TRX" && (
-                  <div className={styles.ratesIndicator} />
-                )}
-                TRX
-              </a>
-              <a
-                onClick={() => setRatesTab("BNB")}
-                style={{ color: ratesTab === "BNB" ? "#3861FB" : "#d0d5dd" }}
-                className={styles.ratesTabItem}
-              >
-                {ratesTab === "BNB" && (
-                  <div className={styles.ratesIndicator} />
-                )}
-                BNB
-              </a>
-            </div>
-            <div className={styles.body}>
-              <div className={styles.ratesContainer}>
-                <div className={styles.ratesInputContainer}>
-                  <p>{ratesTab} Buy Rate</p>
-                  <Input leftIcon={<div className={styles.leftIcon}>$</div>} />
+            <div className={styles.tableContainer} style={{ marginTop: 24 }}>
+              <div className={styles.bodyContainer}>
+                <div className={styles.tableRowHeader}>
+                  <p style={{ flex: 1 }}>Coin</p>
+                  <p style={{ width: "15%" }}>BUY</p>
+                  <p style={{ width: "15%" }}>SELL</p>
+                  <p style={{ width: "15%" }}>Actions</p>
                 </div>
-                <div className={styles.ratesInputContainer}>
-                  <p>{ratesTab} Sell Rate</p>
-                  <Input leftIcon={<div className={styles.leftIcon}>$</div>} />
+                <div className={styles.tableRow}>
+                  <p style={{ flex: 1 }}>USDT</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>
+                    <Button className={styles.editButton} color="white">
+                      Edit
+                    </Button>
+                  </p>
                 </div>
-              </div>
-            </div>
-            <div className={styles.ratesFooter}>
-              <div style={{ marginRight: 10 }}>
-                <Button color="white">Cancel</Button>
-              </div>
-              <div>
-                <Button>Update</Button>
+                <div className={styles.tableRow}>
+                  <p style={{ flex: 1 }}>Bitcoin</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>
+                    <Button className={styles.editButton} color="white">
+                      Edit
+                    </Button>
+                  </p>
+                </div>
+                <div className={styles.tableRow}>
+                  <p style={{ flex: 1 }}>Tron</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>
+                    <Button className={styles.editButton} color="white">
+                      Edit
+                    </Button>
+                  </p>
+                </div>
+                <div className={styles.tableRow}>
+                  <p style={{ flex: 1 }}>Litecoin</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>
+                    <Button className={styles.editButton} color="white">
+                      Edit
+                    </Button>
+                  </p>
+                </div>
+                <div className={styles.tableRow}>
+                  <p style={{ flex: 1 }}>Binance</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>
+                    <Button className={styles.editButton} color="white">
+                      Edit
+                    </Button>
+                  </p>
+                </div>
               </div>
             </div>
           </>
