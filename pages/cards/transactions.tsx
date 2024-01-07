@@ -10,6 +10,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
+import { useRouter } from "next/router";
 
 const TRANSACTIONS_COLUMNS = [
   {
@@ -131,10 +132,11 @@ const TRANSACTIONS_DATA = [
 ];
 
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any>(TRANSACTIONS_DATA);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
 
@@ -222,63 +224,40 @@ export default function Search() {
           </div>
         </>
       </Modal>
-      <NavigationStep hideButton navigation={["Cards", "Transactions"]} />
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
-        <div className={styles.searchContainer}>
-          <div className={styles.searchCard}>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker style={{ height: 48 }} />
-            </div>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Status</p>
-              <Dropdown
-                value={searchType}
-                options={[
-                  { title: "Successful", value: "Successful" },
-                  { title: "Pending", value: "Pending" },
-                  { title: "Failed", value: "Failed" },
-                ]}
-                onChange={(value) => {
-                  setSearchType(String(value));
-                  setData([]);
-                }}
-              />
-            </div>
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-end",
-                alignItems: "flex-end",
-              }}
-            >
-              <div>
-                <Button onClick={onSearch} className={styles.searchButton}>
-                  Apply filter
-                </Button>
-              </div>
-            </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h3 className={styles.header}>Transactions</h3>
+          <div>
+            <Button color="white" onClick={router.back}>
+              <img src="/icons/arrow-left.svg" /> Back
+            </Button>
           </div>
         </div>
-        {data.length === 0 ? (
-          <></>
-        ) : (
-          <div className={styles.table}>
-            <p className={styles.resultText}>{data.length} result found!</p>
-            <Table
-              style={{ fontFamily: "PP Telegraf" }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => showModal(user),
-              }))}
-              columns={getColumns()}
-              loading={loading}
-            />
-          </div>
-        )}
+
+        <div className={styles.table} style={{ overflow: "hidden" }}>
+          <p className={styles.resultText}>{data.length} result found!</p>
+          <Table
+            style={{
+              fontFamily: "PP Telegraf",
+              border: "1px solid var(--Gray-200, #EAECF0)",
+              borderRadius: 12,
+              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+              overflow: "hidden",
+            }}
+            dataSource={data.map((user: any) => ({
+              ...user,
+              action: () => showModal(user),
+            }))}
+            columns={getColumns()}
+            loading={loading}
+          />
+        </div>
       </div>
     </PageLayout>
   );

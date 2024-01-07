@@ -46,10 +46,6 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      <NavigationStep
-        hideButton
-        navigation={["Home", "Site Settings", currentTab]}
-      />
       <div className={styles.container}>
         <h3 className={styles.header}>
           Site settings - <span style={{ color: "#98A2B3" }}>{currentTab}</span>

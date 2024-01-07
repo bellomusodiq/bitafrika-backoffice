@@ -30,7 +30,7 @@
   border-radius: 12px;
   border: 1px solid var(--Gray-200, #eaecf0);
   background: var(--Gray-25, #fcfcfd);
-  padding: 24px;
+  padding: 12px 24px;
   flex-direction: column;
   align-items: flex-start;
 }
@@ -90,13 +90,21 @@
   min-width: 200px;
   margin-right: 16px;
 }
-.filterTitle {
-  color: var(--Gray-900, #101828);
-  font-family: "PP Telegraf";
-  font-size: 14px;
+.header {
   font-style: normal;
   font-weight: 600;
-  line-height: 38px; /* 190% */
+  font-size: 30px;
+  line-height: 38px;
+  color: #101828;
+}
+.subHeader {
+  font-family: "PP Telegraf";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #000;
+  margin-top: 0px;
 }
 .dropdownTitle {
   color: var(--Gray-900, #101828);

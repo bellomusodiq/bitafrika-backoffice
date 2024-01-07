@@ -18,14 +18,20 @@ export default function Search() {
 
   return (
     <PageLayout title="Hone">
-      <Modal openModal={openModal} onClose={() => setOpenModal(false)}>
+      <Modal
+        customStyles={{ width: "30vw" }}
+        openModal={openModal}
+        onClose={() => setOpenModal(false)}
+      >
         <div className={styles.modalContainer}>
-          <p className={styles.modalHeader}>Manual account Top-Up</p>
+          <p className={styles.modalHeader}>Update (BITCOIN) rate</p>
           <div className={styles.inputContainer}>
-            <p>Transaction ID</p>
-            <Dropdown
-              options={[{ title: "Card", value: "Card" }]}
-              onChange={() => {}}
+            <p>New Buy rate</p>
+            <input className={styles.modalInput} defaultValue={"0.00"} />
+            <p>New Sell rate</p>
+            <input
+              className={styles.modalInput}
+              defaultValue={"0.00"}
             />
           </div>
 
@@ -46,10 +52,6 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      <NavigationStep
-        hideButton
-        navigation={["Home", "Country Settings", currentTab]}
-      />
       <div className={styles.container}>
         <h3 className={styles.header}>Country Settings</h3>
         <p className={styles.subHeader}></p>
@@ -191,7 +193,11 @@ export default function Search() {
                   <p style={{ width: "15%" }}>11.60</p>
                   <p style={{ width: "15%" }}>11.60</p>
                   <p style={{ width: "15%" }}>
-                    <Button className={styles.editButton} color="white">
+                    <Button
+                      onClick={() => setOpenModal(true)}
+                      className={styles.editButton}
+                      color="white"
+                    >
                       Edit
                     </Button>
                   </p>
@@ -201,7 +207,11 @@ export default function Search() {
                   <p style={{ width: "15%" }}>11.60</p>
                   <p style={{ width: "15%" }}>11.60</p>
                   <p style={{ width: "15%" }}>
-                    <Button className={styles.editButton} color="white">
+                    <Button
+                      onClick={() => setOpenModal(true)}
+                      className={styles.editButton}
+                      color="white"
+                    >
                       Edit
                     </Button>
                   </p>

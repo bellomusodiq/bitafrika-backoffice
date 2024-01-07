@@ -13,7 +13,7 @@ const NavigationStep: React.FC<{
   hideButton,
   color = "none",
   noPadding = false,
-  navigation,
+  navigation = [],
   rightHeader,
 }) => {
   const router = useRouter();
@@ -22,16 +22,18 @@ const NavigationStep: React.FC<{
       style={{ padding: noPadding ? 0 : "0 32px" }}
       className={styles.navigationStep}
     >
-      <div style={{ color }} className={styles.navItems}>
-        {navigation?.map((n, i) => (
-          <React.Fragment key={n}>
-            <span style={{ color }}>{n}</span>
-            {i !== navigation.length - 1 && (
-              <img src="/icons/arrow-right2.svg" />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+      {navigation?.length > 0 && (
+        <div style={{ color }} className={styles.navItems}>
+          {navigation?.map((n, i) => (
+            <React.Fragment key={n}>
+              <span style={{ color }}>{n}</span>
+              {i !== navigation.length - 1 && (
+                <img src="/icons/arrow-right2.svg" />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
       {!hideButton && (
         <div>
           <Button onClick={() => router.back()} color="white">

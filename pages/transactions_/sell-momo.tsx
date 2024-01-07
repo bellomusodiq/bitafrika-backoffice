@@ -298,9 +298,15 @@ export default function Search() {
           </div>
         </div>
         <div className={styles.searchContainer}>
-          <div className={styles.table}>
+          <div className={styles.table} style={{overflow: "hidden"}}>
             <Table
-              style={{ fontFamily: "PP Telegraf" }}
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden"
+              }}
               dataSource={dataSource}
               columns={columns}
             />

@@ -749,10 +749,6 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      <NavigationStep
-        hideButton
-        navigation={["Home", "Reports", "User reports"]}
-      />
       <div className={styles.container}>
         <p className={styles.filterTitle}>Filter results by</p>
         <div className={styles.searchContainer}>
@@ -808,15 +804,28 @@ export default function Search() {
             </div>
           </div>
         </div>
-        <Table
-          style={{ fontFamily: "PP Telegraf", marginTop: 24 }}
-          dataSource={data?.map((item: any) => ({
-            ...item,
-            action: () => setOpenModal(true),
-          }))}
-          columns={getColumns()}
-          loading={loading}
-        />
+        {data?.length > 0 && (
+          <div
+            className={styles.table}
+            style={{
+              fontFamily: "PP Telegraf",
+              border: "1px solid var(--Gray-200, #EAECF0)",
+              borderRadius: 12,
+              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+              overflow: "hidden",
+            }}
+          >
+            <Table
+              style={{ fontFamily: "PP Telegraf", marginTop: 24 }}
+              dataSource={data?.map((item: any) => ({
+                ...item,
+                action: () => setOpenModal(true),
+              }))}
+              columns={getColumns()}
+              loading={loading}
+            />
+          </div>
+        )}
       </div>
     </PageLayout>
   );

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
-import styles from "@/pages/manual-approvals/manual-approvals.module.css";
+import styles from "@/pages/approvals/approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
 import { Checkbox, DatePicker, Divider, Space, Table } from "antd";
@@ -51,10 +51,10 @@ const columns: any = [
   {
     title: "Actions",
     dataIndex: "action",
-    render: (_: any, { action }: any) => (
+    render: (_: any, { action, reject }: any) => (
       <div className={styles.actionButton}>
         <div>
-          <Button color="white" onClick={action}>
+          <Button color="white" onClick={reject}>
             Decline
           </Button>
         </div>
@@ -81,6 +81,12 @@ export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
+  const [openRejectModal, setOpenRejectModal] = useState<boolean>(false);
+  const [approvalType, setApprovalType] = useState<any>({
+    type: "",
+    amount: "",
+    intiator: "",
+  });
   const [pin, setPin] = useState<string>("");
 
   const dataSource = [
@@ -93,46 +99,53 @@ export default function Search() {
       coin: "BTC",
       amount: "0.98999882 BTC",
       usdAmount: "$1000.00",
+      action: () => setOpenCodeModal(true),
+      reject: () => {
+        setOpenRejectModal(true);
+        setApprovalType({
+          type: "Balance top up",
+          initiator: "@Admin",
+          amount: "0.98999882 BTC",
+        });
+      },
     },
     {
-      key: "1",
-      type: "Balance top up",
-      initiatorType: "Admin",
-      initiator: "@Admin",
-      description: "Add balance to @username",
+      key: "2",
+      type: "Over 1 BTC",
+      initiatorType: "User",
+      initiator: "@User",
+      description: "Asset withdrawal over 1 BTC",
       coin: "BTC",
       amount: "0.98999882 BTC",
       usdAmount: "$1000.00",
+      action: () => setOpenCodeModal(true),
+      reject: () => {
+        setOpenRejectModal(true);
+        setApprovalType({
+          type: "Over 1 BTC",
+          initiator: "@User",
+          amount: "0.98999882 BTC",
+        });
+      },
     },
     {
-      key: "1",
-      type: "Balance top up",
+      key: "3",
+      type: "Deduction",
       initiatorType: "Admin",
       initiator: "@Admin",
-      description: "Add balance to @username",
+      description: "deduct balance @username",
       coin: "BTC",
       amount: "0.98999882 BTC",
       usdAmount: "$1000.00",
-    },
-    {
-      key: "1",
-      type: "Balance top up",
-      initiatorType: "Admin",
-      initiator: "@Admin",
-      description: "Add balance to @username",
-      coin: "BTC",
-      amount: "0.98999882 BTC",
-      usdAmount: "$1000.00",
-    },
-    {
-      key: "1",
-      type: "Balance top up",
-      initiatorType: "Admin",
-      initiator: "@Admin",
-      description: "Add balance to @username",
-      coin: "BTC",
-      amount: "0.98999882 BTC",
-      usdAmount: "$1000.00",
+      action: () => setOpenCodeModal(true),
+      reject: () => {
+        setOpenRejectModal(true);
+        setApprovalType({
+          type: "Deduction",
+          initiator: "@Admin",
+          amount: "0.98999882 BTC",
+        });
+      },
     },
   ];
 
@@ -164,9 +177,10 @@ export default function Search() {
   return (
     <PageLayout title="Hone">
       <Modal
-        headerLeft={
+        customStyles={{ width: "30%" }}
+        headerCenter={
           <div className={styles.lockContainer}>
-            <img src="/icons/lock.svg" />
+            <img src="/images/email.png" style={{ width: 48, height: 48 }} />
           </div>
         }
         onClose={() => setOpenCodeModal(false)}
@@ -207,6 +221,32 @@ export default function Search() {
               className={styles.footerButton}
             >
               Confirm
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        customStyles={{ width: "30%" }}
+        // headerCenter={
+        //   <div className={styles.lockContainer}>
+        //     <img src="/images/email.png" style={{ width: 48, height: 48 }} />
+        //   </div>
+        // }
+        onClose={() => setOpenRejectModal(false)}
+        openModal={openRejectModal}
+      >
+        <div className={styles.modalContainer}>
+          <h3 className={styles.modalTitle}>
+            <span style={{ color: "#D92D20" }}>Request Declined</span>
+          </h3>
+          <p className={styles.modalText}>
+            You have rejected {approvalType.type} of {approvalType.amount} by{" "}
+            {approvalType.initiator}
+          </p>
+
+          <div className={styles.footerContainer}>
+            <Button onClick={() => setOpenRejectModal(false)} color="white">
+              Close
             </Button>
           </div>
         </div>
@@ -373,19 +413,20 @@ export default function Search() {
           </div>
         </>
       </Modal>
-      <NavigationStep hideButton navigation={["Home", "Approvals"]} />
       <div className={styles.container}>
-        <h3 className={styles.header}>Manual Approvals</h3>
+        <h3 className={styles.header}>Approvals</h3>
         <p className={styles.subHeader}></p>
-        <div className={styles.searchContainer}>
-          <div className={styles.table}>
-            <Table
-              style={{ fontFamily: "PP Telegraf" }}
-              dataSource={dataSource}
-              columns={columns}
-            />
-          </div>
-        </div>
+        <Table
+          style={{
+            fontFamily: "PP Telegraf",
+            border: "1px solid var(--Gray-200, #EAECF0)",
+            borderRadius: 12,
+            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+            overflow: "hidden",
+          }}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
     </PageLayout>
   );

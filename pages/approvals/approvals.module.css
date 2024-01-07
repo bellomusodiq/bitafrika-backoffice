@@ -301,6 +301,7 @@
     font-size: 18px;
     line-height: 28px;
     color: #101828;
+    text-align: center;
   }
   .modalText {
     font-weight: 400;
@@ -308,6 +309,7 @@
     line-height: 20px;
     color: #475467;
     margin-top: 4px;
+    text-align: center;
   }
   .qrImage {
     width: 128px;
@@ -374,4 +376,8 @@
     line-height: 18px; /* 150% */
     margin-right: 15px;
   }
-  
+  .lockContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

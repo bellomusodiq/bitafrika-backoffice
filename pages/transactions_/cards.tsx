@@ -228,7 +228,7 @@ export default function Search() {
               </span>
             </p>
           ) : (
-            <div className={styles.table}>
+            <div className={styles.table} style={{overflow: "hidden"}}>
               <p className={styles.resultText}>5 result found!</p>
               <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
             </div>

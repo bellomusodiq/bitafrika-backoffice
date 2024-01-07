@@ -726,7 +726,6 @@ export default function Search() {
           </Button>
         </div>
       </Modal>
-      <NavigationStep hideButton navigation={["Home", "Search", "User"]} />
       <div className={styles.container}>
         <h3 className={styles.header}>Search</h3>
         <div className={styles.searchContainer}>
@@ -766,18 +765,18 @@ export default function Search() {
           </div>
         </div>
         {data.length === 0 ? (
-          <p className={styles.searchHint}>
-            Search hint:{" "}
-            <span>
-              Enter up to 10 search items , separated by comma (,) to search
-              multiple items
-            </span>
-          </p>
+          <p className={styles.searchHint}></p>
         ) : (
-          <div className={styles.table}>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
-              style={{ fontFamily: "PP Telegraf" }}
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden"
+              }}
               dataSource={data.map((user: any) => ({
                 ...user,
                 action: () => showModal(user),

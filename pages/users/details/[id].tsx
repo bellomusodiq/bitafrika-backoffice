@@ -85,7 +85,13 @@ const PaymentAccountsTable: React.FC = () => {
 
   return (
     <Table
-      style={{ fontFamily: "PP Telegraf" }}
+      style={{
+        fontFamily: "PP Telegraf",
+        border: "1px solid var(--Gray-200, #EAECF0)",
+        borderRadius: 12,
+        boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+        overflow: "hidden",
+      }}
       dataSource={dataSource}
       columns={columns}
     />
@@ -178,7 +184,13 @@ const KYCVerificationTable: React.FC = () => {
 
   return (
     <Table
-      style={{ fontFamily: "PP Telegraf" }}
+      style={{
+        fontFamily: "PP Telegraf",
+        border: "1px solid var(--Gray-200, #EAECF0)",
+        borderRadius: 12,
+        boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+        overflow: "hidden",
+      }}
       dataSource={dataSource}
       columns={columns}
     />
@@ -345,6 +357,7 @@ const AccountBalanceTable: React.FC = () => {
       <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
+        customStyles={{ width: "30vw" }}
         headerLeft={
           <p style={{ width: 300 }}>
             {deduct
@@ -446,7 +459,13 @@ const AccountBalanceTable: React.FC = () => {
         </div>
       </Modal>
       <Table
-        style={{ fontFamily: "PP Telegraf" }}
+        style={{
+          fontFamily: "PP Telegraf",
+          border: "1px solid var(--Gray-200, #EAECF0)",
+          borderRadius: 12,
+          boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+          overflow: "hidden",
+        }}
         dataSource={dataSource}
         columns={columns}
       />
@@ -726,11 +745,19 @@ const CardsTable: React.FC = () => {
           </div>
         </div>
       </Modal>
-      <Table
-        style={{ fontFamily: "PP Telegraf" }}
-        dataSource={dataSource}
-        columns={columns}
-      />
+      <div className={styles.table} style={{ overflow: "hidden" }}>
+        <Table
+          style={{
+            fontFamily: "PP Telegraf",
+            border: "1px solid var(--Gray-200, #EAECF0)",
+            borderRadius: 12,
+            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+            overflow: "hidden",
+          }}
+          dataSource={dataSource}
+          columns={columns}
+        />
+      </div>
     </>
   );
 };

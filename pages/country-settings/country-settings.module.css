@@ -77,6 +77,18 @@
   border: none;
   cursor: text;
 }
+.modalInput {
+  padding: 10px 0px 10px 14px;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--Gray-300, #d0d5dd);
+  background: var(--Base-White, #fff);
+
+  /* Shadow/xs */
+  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  margin-bottom: 16px;
+  font-size: 16px;
+}
 .input::placeholder {
   color: #667085;
 }
@@ -107,9 +119,6 @@
   display: flex;
   justify-content: flex-start;
   flex: 1;
-}
-.modalContainer {
-  width: 400px;
 }
 .modalHeader {
   font-style: normal;
@@ -162,7 +171,7 @@
   color: #a3a3a3;
 }
 .modalButton {
-  margin-top: 56px;
+  margin-top: 16px;
 }
 .dropModal {
   cursor: pointer;
@@ -302,6 +311,7 @@
 .modalFooter {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
 }
 .modalFooter > * {
   width: 47.5%;

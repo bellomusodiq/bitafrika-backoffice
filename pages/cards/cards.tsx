@@ -223,15 +223,10 @@ export default function Search() {
           </div>
         </>
       </Modal>
-      <NavigationStep hideButton navigation={["Cards", "List"]} />
       <div className={styles.container}>
         <p className={styles.filterTitle}>Filter results by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker style={{ height: 48 }} />
-            </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Status</p>
               <Dropdown
@@ -266,10 +261,16 @@ export default function Search() {
         {data.length === 0 ? (
           <></>
         ) : (
-          <div className={styles.table}>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
-              style={{ fontFamily: "PP Telegraf" }}
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
               dataSource={data.map((user: any) => ({
                 ...user,
                 action: () => showModal(user),

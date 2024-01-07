@@ -408,7 +408,7 @@ export default function Search() {
         </div>
 
         <div className={styles.searchContainer}>
-          <div className={styles.table}>
+          <div className={styles.table} style={{overflow: "hidden"}}>
             <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
           </div>
         </div>

@@ -10,18 +10,20 @@ import styles from "./assets.module.css";
 const AssetsDetail: NextPage = () => {
   const [filter, setFilter] = useState<string>("30d");
   return (
-    <PageLayout showHeader>
+    <PageLayout>
       <NavigationStep
         navigation={["Overview", "Avaiable balance", "Bitcoin"]}
       />
       <div className={styles.assetTitleContainer}>
         <h1>Bitcoin - (BTC) balance </h1>
         <span>
-          <img src="/icons/arrow-up.svg" />
           $21,500.99
         </span>
       </div>
+
       <div className={styles.assetsBody}>
+        <div className={styles.divider} />
+
         <div className={styles.balanceItems}>
           <div className={styles.balanceItem}>
             <div>
@@ -29,15 +31,12 @@ const AssetsDetail: NextPage = () => {
               <p className={styles.balanceAmount}>102.99831016 BTC</p>
               <div className={styles.balanceAmount}>
                 <p>$62,898.55</p>
-                <span>
-                  <img src="/icons/arrow-up.svg" /> 10%
-                </span>
               </div>
             </div>
           </div>
           <div className={styles.balanceItem}>
             <div>
-              <p className={styles.balanceTitle}>Cold wallet (External)</p>
+              <p className={styles.balanceTitle}>Users balance</p>
               <p className={styles.balanceAmount}>102.99831016 BTC</p>
               <div className={styles.balanceAmount}>
                 <p>$62,898.55</p>
@@ -46,7 +45,7 @@ const AssetsDetail: NextPage = () => {
           </div>
           <div className={styles.balanceItem}>
             <div>
-              <p className={styles.balanceTitle}>Cold wallet (Platform)</p>
+              <p className={styles.balanceTitle}>Our balance</p>
               <p className={styles.balanceAmount}>102.99831016 BTC</p>
               <div className={styles.balanceAmount}>
                 <p>$62,898.55</p>
@@ -55,7 +54,7 @@ const AssetsDetail: NextPage = () => {
           </div>
           <div className={styles.balanceItem}>
             <div>
-              <p className={styles.balanceTitle}>Hot Wallet (Users balance)</p>
+              <p className={styles.balanceTitle}>External wallet</p>
               <p className={styles.balanceAmount}>102.99831016 BTC</p>
               <div className={styles.balanceAmount}>
                 <p>$62,898.55</p>
@@ -75,7 +74,7 @@ const AssetsDetail: NextPage = () => {
               >
                 30d
               </a>
-              <div className={styles.divider} />
+              <div className={styles.verticalDivider} />
               <a
                 className={
                   filter === "7d"
@@ -86,7 +85,7 @@ const AssetsDetail: NextPage = () => {
               >
                 7d
               </a>
-              <div className={styles.divider} />
+              <div className={styles.verticalDivider} />
               <a
                 className={filter === "24h" ? styles.filterActiveRight : ""}
                 onClick={() => setFilter("24h")}
@@ -115,14 +114,14 @@ const AssetsDetail: NextPage = () => {
                     <div className={styles.balanceFooter}>
                       <p>$12,000</p>
                       <div
-                        className={styles.divider}
+                        className={styles.verticalDivider}
                         style={{ margin: "0 10px" }}
                       />
                       <p>~GHC 1,900.00</p>
                     </div>
                   </div>
                 </div>
-                <div className={styles.divider} />
+                <div className={styles.verticalDivider} />
                 <div
                   className={styles.balanceItem2}
                   style={{ width: "calc(100% / 2 - 2px)" }}
@@ -133,7 +132,7 @@ const AssetsDetail: NextPage = () => {
                     <div className={styles.balanceFooter}>
                       <p>$12,000.000</p>
                       <div
-                        className={styles.divider}
+                        className={styles.verticalDivider}
                         style={{ margin: "0 10px" }}
                       />
                       <p>~GHC 1,900.00</p>
@@ -192,7 +191,7 @@ const AssetsDetail: NextPage = () => {
               >
                 30d
               </a>
-              <div className={styles.divider} />
+              <div className={styles.verticalDivider} />
               <a
                 className={
                   filter === "7d"
@@ -203,7 +202,7 @@ const AssetsDetail: NextPage = () => {
               >
                 7d
               </a>
-              <div className={styles.divider} />
+              <div className={styles.verticalDivider} />
               <a
                 className={filter === "24h" ? styles.filterActiveRight : ""}
                 onClick={() => setFilter("24h")}
@@ -239,12 +238,12 @@ const AssetsDetail: NextPage = () => {
                   <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                   <div className={styles.balanceFooter}>
                     <p>$12,000</p>
-                    <div className={styles.divider} />
+                    <div className={styles.verticalDivider} />
                     <p>~GHC 1,900.00</p>
                   </div>
                 </div>
               </div>
-              <div className={styles.divider} />
+              <div className={styles.verticalDivider} />
               <div
                 className={styles.balanceItem2}
                 style={{ width: "calc(100% / 2 - 2px)" }}
@@ -255,7 +254,7 @@ const AssetsDetail: NextPage = () => {
                   <div className={styles.balanceFooter}>
                     <p>$12,000.000</p>
                     <div
-                      className={styles.divider}
+                      className={styles.verticalDivider}
                       style={{ margin: "0 10px" }}
                     />
                     <p>~GHC 1,900.00</p>

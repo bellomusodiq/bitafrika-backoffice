@@ -137,7 +137,7 @@
 .tabContainer {
   width: 100%;
   padding: 4px;
-  overflow-x: scroll;
+  overflow-x: hidden;
   display: flex;
   align-items: center;
   border-radius: 8px;

@@ -434,24 +434,33 @@ export default function Search() {
           </div>
         </>
       </Modal>
-      <NavigationStep
-        hideButton
-        navigation={["Home", "Manual approvals", "Withdrawals"]}
-        rightHeader={
+      <NavigationStep hideButton />
+      <div className={styles.container}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h3 className={styles.header}>Manual Approvals</h3>
           <div>
             <Button onClick={() => setOpenAddModal(true)} color="white">
               <img src="/icons/plus.svg" /> Add a manual transaction
             </Button>
           </div>
-        }
-      />
-      <div className={styles.container}>
-        <h3 className={styles.header}>Manual Approvals</h3>
+        </div>
         <p className={styles.subHeader}>120 pending</p>
         <div className={styles.searchContainer}>
-          <div className={styles.table}>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
             <Table
-              style={{ fontFamily: "PP Telegraf" }}
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden"
+              }}
               dataSource={dataSource}
               columns={columns}
             />

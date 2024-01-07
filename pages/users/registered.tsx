@@ -193,7 +193,7 @@ export default function Search() {
         </div>
 
         <div className={styles.searchContainer}>
-          <div className={styles.table}>
+          <div className={styles.table} style={{overflow: "hidden"}}>
             <Table
               onRow={(record, rowIndex) => {
                 return {
