@@ -10,6 +10,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
+import { useRouter } from "next/router";
 
 const CARDS_COLUMNS = [
   {
@@ -102,6 +103,7 @@ const CARDS_DATA = [
 ];
 
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -224,7 +226,20 @@ export default function Search() {
         </>
       </Modal>
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h3 className={styles.header}>Cards</h3>
+          <div>
+            <Button color="white" onClick={() => router.back()}>
+              <img src="/icons/arrow-left.svg" /> Back
+            </Button>
+          </div>
+        </div>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>

@@ -6,19 +6,23 @@ import PageLayout from "@/components/PageLayout";
 import { NextPage } from "next";
 import React, { useState } from "react";
 import styles from "./assets.module.css";
+import { useRouter } from "next/router";
 
 const AssetsDetail: NextPage = () => {
+  const router = useRouter();
   const [filter, setFilter] = useState<string>("30d");
   return (
     <PageLayout>
-      <NavigationStep
-        navigation={["Overview", "Avaiable balance", "Bitcoin"]}
-      />
-      <div className={styles.assetTitleContainer}>
-        <h1>Bitcoin - (BTC) balance </h1>
-        <span>
-          $21,500.99
-        </span>
+      <div className={styles.headerContainer}>
+        <div className={styles.assetTitleContainer}>
+          <h1>Bitcoin - (BTC) balance </h1>
+          <span>$21,500.99</span>
+        </div>
+        <div>
+          <Button color="white" onClick={() => router.back()}>
+            <img src="/icons/arrow-left.svg" /> Back
+          </Button>
+        </div>
       </div>
 
       <div className={styles.assetsBody}>
@@ -238,8 +242,6 @@ const AssetsDetail: NextPage = () => {
                   <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                   <div className={styles.balanceFooter}>
                     <p>$12,000</p>
-                    <div className={styles.verticalDivider} />
-                    <p>~GHC 1,900.00</p>
                   </div>
                 </div>
               </div>
@@ -253,11 +255,6 @@ const AssetsDetail: NextPage = () => {
                   <h3 className={styles.balanceAmount}>1.2345678 BTC</h3>
                   <div className={styles.balanceFooter}>
                     <p>$12,000.000</p>
-                    <div
-                      className={styles.verticalDivider}
-                      style={{ margin: "0 10px" }}
-                    />
-                    <p>~GHC 1,900.00</p>
                   </div>
                 </div>
               </div>

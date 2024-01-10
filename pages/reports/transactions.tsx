@@ -102,29 +102,29 @@ export default function Search() {
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>BTC</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>BTC</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>LTC</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>LTC</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>DOGE</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>DOGE</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>TRX</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>TRX</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
               </div>
@@ -186,43 +186,43 @@ export default function Search() {
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>BTC</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>BTC</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>TRX</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>TRX</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>LTC</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>LTC</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>DOGE</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>DOGE</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>MATIC</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>MATIC</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText}>
-                    <span>BTC</span> <span> — 1001 orders</span>
-                    <span className={styles.grey}>— 10,000.00 USD</span>
+                    <span>BTC</span> <span> 1001 orders</span>
+                    <span className={styles.grey}>10,000.00 USD</span>
                   </p>
                 </div>
               </div>
@@ -290,36 +290,36 @@ export default function Search() {
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>BTC</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>BTC</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>LTC</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>LTC</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>TRX</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>TRX</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>DOGE</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>DOGE</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>MATIC</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>MATIC</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                     </div>
@@ -382,36 +382,36 @@ export default function Search() {
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>BTC</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>BTC</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>LTC</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>LTC</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>TRX</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>TRX</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>DOGE</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>DOGE</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                       <div className={styles.order}>
                         <div className={styles.orderIcon} />
                         <p className={styles.orderText}>
-                          <span>MATIC</span> <span>— 1001 orders</span>{" "}
-                          <span className={styles.grey}>— 1001 orders</span>
+                          <span>MATIC</span> <span>1001 orders</span>{" "}
+                          <span className={styles.grey}>1001 orders</span>
                         </p>
                       </div>
                     </div>
@@ -475,7 +475,7 @@ export default function Search() {
                 </div>
               </div>
               <p className={styles.profitText}>
-                110,000 — 120,000 ={" "}
+                110,000 120,000 ={" "}
                 <span style={{ color: "#1570EF" }}>440</span>
               </p>
               <div className={styles.divider} />
@@ -501,41 +501,41 @@ export default function Search() {
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>BTC</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>BTC</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>LTC</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>LTC</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>TRX</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>TRX</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>MATIC</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>MATIC</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>DOGE</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>DOGE</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
               </div>
@@ -586,41 +586,41 @@ export default function Search() {
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>BTC</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>BTC</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>LTC</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>LTC</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>TRX</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>TRX</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>MATIC</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>MATIC</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
                 <div className={styles.order}>
                   <div className={styles.orderIcon} />
                   <p className={styles.orderText1}>
-                    <span>DOGE</span> <span>— 1001 trnx</span>{" "}
-                    <span className={styles.grey}> — 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>— 10,010.00 USD</span>
+                    <span>DOGE</span> <span>1001 trnx</span>{" "}
+                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
+                    <span className={styles.grey}>10,010.00 USD</span>
                   </p>
                 </div>
               </div>

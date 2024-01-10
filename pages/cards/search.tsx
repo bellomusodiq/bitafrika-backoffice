@@ -10,6 +10,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
+import { useRouter } from "next/router";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -305,11 +306,11 @@ const TOPUPS_COLUMNS = [
     dataIndex: "cardNumber",
     key: "cardNumber",
   },
-//   {
-//     title: "Transaction type",
-//     dataIndex: "transactionType",
-//     key: "transactionType",
-//   },
+  //   {
+  //     title: "Transaction type",
+  //     dataIndex: "transactionType",
+  //     key: "transactionType",
+  //   },
   {
     title: "Actions",
     dataIndex: "action",
@@ -468,6 +469,7 @@ const TRANSACTIONS_DATA = [
 ];
 
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -887,9 +889,21 @@ export default function Search() {
           </div>
         </>
       </Modal>
-      <NavigationStep hideButton navigation={["Home", "Search", "Cards"]} />
       <div className={styles.container}>
-        <h3 className={styles.header}>Search</h3>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h3 className={styles.header}>Search</h3>
+          <div>
+            <Button color="white" onClick={() => router.back()}>
+              <img src="/icons/arrow-left.svg" /> Back
+            </Button>
+          </div>
+        </div>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -931,11 +945,9 @@ export default function Search() {
           </div>
         </div>
         {data.length === 0 ? (
-          <p className={styles.searchHint}>
-            
-          </p>
+          <p className={styles.searchHint}></p>
         ) : (
-          <div className={styles.table} style={{overflow: "hidden"}}>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
               style={{
@@ -943,7 +955,7 @@ export default function Search() {
                 border: "1px solid var(--Gray-200, #EAECF0)",
                 borderRadius: 12,
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                overflow: "hidden"
+                overflow: "hidden",
               }}
               dataSource={data.map((user: any) => ({
                 ...user,

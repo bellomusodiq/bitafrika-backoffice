@@ -1,8 +1,15 @@
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 32px;
+}
 .assetTitleContainer {
   display: flex;
   align-items: center;
   margin-bottom: 24px;
   padding: 0 24px;
+  margin-top: 24px;
 }
 .assetTitleContainer > h1 {
   font-family: "PP Telegraf";
@@ -233,7 +240,7 @@
   background-color: white;
 }
 .tradesCharts > div {
-  background-color: #FCFCFD;
+  background-color: #fcfcfd;
   padding: 8px;
   border: 1px solid var(--gray-200, #eaecf0);
 }
