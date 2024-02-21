@@ -54,45 +54,6 @@ const USER_COLUMNS = [
   },
 ];
 
-const USER_DATA = [
-  {
-    username: "Samuel 12345",
-    email: "EmmanuelNkrumah@email.com",
-    phoneNumber: "+233 812 334 0099",
-    country: "Ghana",
-  },
-  {
-    username: "Samuel 12345",
-    email: "EmmanuelNkrumah@email.com",
-    phoneNumber: "+233 812 334 0099",
-    country: "Ghana",
-  },
-  {
-    username: "Samuel 12345",
-    email: "EmmanuelNkrumah@email.com",
-    phoneNumber: "+233 812 334 0099",
-    country: "Ghana",
-  },
-  {
-    username: "Samuel 12345",
-    email: "EmmanuelNkrumah@email.com",
-    phoneNumber: "+233 812 334 0099",
-    country: "Ghana",
-  },
-  {
-    username: "Samuel 12345",
-    email: "EmmanuelNkrumah@email.com",
-    phoneNumber: "+233 812 334 0099",
-    country: "Ghana",
-  },
-  {
-    username: "Samuel 12345",
-    email: "EmmanuelNkrumah@email.com",
-    phoneNumber: "+233 812 334 0099",
-    country: "Ghana",
-  },
-];
-
 const MOMO_TOPUP_COLUMNS = [
   {
     title: "#Transaction ID",
@@ -133,8 +94,8 @@ const MOMO_TOPUP_COLUMNS = [
   },
   {
     title: "Amount (USD)",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "amountUsd",
+    key: "amountUsd",
   },
   {
     title: "Actions",
@@ -146,51 +107,6 @@ const MOMO_TOPUP_COLUMNS = [
         </div>
       </div>
     ),
-  },
-];
-
-const MOMO_TOPUP_DATA = [
-  {
-    transactionId: "#22002200002",
-    username: "Samuel123455",
-    amount: "GHS 7,500.99",
-    status: "Completed",
-    date: "21 Sept, 11:20AM.",
-  },
-  {
-    transactionId: "#22002200002",
-    username: "Samuel123455",
-    amount: "GHS 7,500.99",
-    status: "Completed",
-    date: "21 Sept, 11:20AM.",
-  },
-  {
-    transactionId: "#22002200002",
-    username: "Samuel123455",
-    amount: "GHS 7,500.99",
-    status: "Completed",
-    date: "21 Sept, 11:20AM.",
-  },
-  {
-    transactionId: "#22002200002",
-    username: "Samuel123455",
-    amount: "GHS 7,500.99",
-    status: "Completed",
-    date: "21 Sept, 11:20AM.",
-  },
-  {
-    transactionId: "#22002200002",
-    username: "Samuel123455",
-    amount: "GHS 7,500.99",
-    status: "Completed",
-    date: "21 Sept, 11:20AM.",
-  },
-  {
-    transactionId: "#22002200002",
-    username: "Samuel123455",
-    amount: "GHS 7,500.99",
-    status: "Completed",
-    date: "21 Sept, 11:20AM.",
   },
 ];
 
@@ -238,49 +154,6 @@ const MOMO_WITHDRWAL_COLUMNS = [
         </div>
       </div>
     ),
-  },
-];
-
-const MOMO_WITHDRWAL_DATA = [
-  {
-    username: "Samuel12345",
-    transactionId: "#22200023320",
-    amountUSD: "$400",
-    amount: "GHS 1,000",
-    fee: "$1.20",
-    topupAmount: "0.000004564 BTC",
-  },
-  {
-    username: "Samuel12345",
-    transactionId: "#22200023320",
-    amountUSD: "$400",
-    amount: "GHS 1,000",
-    fee: "$1.20",
-    topupAmount: "0.000004564 BTC",
-  },
-  {
-    username: "Samuel12345",
-    transactionId: "#22200023320",
-    amountUSD: "$400",
-    amount: "GHS 1,000",
-    fee: "$1.20",
-    topupAmount: "0.000004564 BTC",
-  },
-  {
-    username: "Samuel12345",
-    transactionId: "#22200023320",
-    amountUSD: "$400",
-    amount: "GHS 1,000",
-    fee: "$1.20",
-    topupAmount: "0.000004564 BTC",
-  },
-  {
-    username: "Samuel12345",
-    transactionId: "#22200023320",
-    amountUSD: "$400",
-    amount: "GHS 1,000",
-    fee: "$1.20",
-    topupAmount: "0.000004564 BTC",
   },
 ];
 
@@ -382,19 +255,127 @@ export default function Search() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("User");
 
+  let auth: any;
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const searchUser = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/searchUser`, {
+        user: search,
+        token: auth.token
+      })
+      .then((res) => {
+        setLoading(false);
+        setData(
+          res.data.users.map((user: any) => ({
+            username: user.username,
+            email: user.email,
+            phoneNumber: user.phone,
+            country: user.countryCode,
+            action: () => {
+              showModal(user);
+            },
+          }))
+        );
+      });
+  };
+
+  const searchMomoTopUp = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/searchDeposit`, {
+        txid: search,
+        token: auth.token
+      })
+      .then((res) => {
+        setLoading(false);
+        const data = {
+          ...res.data.users,
+          transactionId: res.data.users.txid,
+          username: res.data.users.username,
+          amount: res.data.users.amount,
+          status: res.data.users.status,
+          amountUsd: res.data.users.usd,
+        };
+        setData([
+          {
+            ...data,
+            action: () => {
+              showModal(data);
+            },
+          },
+        ]);
+      });
+  };
+
+  const searchMomoWithdrawal = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/searchWithdrawal`, {
+        txid: search,
+        token: auth.token
+      })
+      .then((res) => {
+        setLoading(false);
+        const data = {
+          ...res.data.users,
+          transactionId: res.data.users.uniq,
+          username: res.data.users.username,
+          amount: res.data.users.rawAmount,
+          status: res.data.users.status,
+          amountUSD: res.data.users.usdAmount,
+          fee: res.data.users.netFee,
+          topupAmount: `${res.data.users.netFee} ${res.data.users.cryptoCurrency}`,
+        };
+        setData([
+          {
+            ...data,
+            action: () => {
+              showModal(data);
+            },
+          },
+        ]);
+      });
+  };
+
+  const searchTransactions = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/searchTransaction`, {
+        txid: search,
+        token: auth.token
+      })
+      .then((res) => {
+        setLoading(false);
+        setData(
+          res.data.users.map((item: any) => ({
+            ...item,
+            transactionId: item.txid,
+            amountCrypto: `${item.cryptoValue} ${item.currency}`,
+            amountUSD: `$${item.usdAmount}`,
+            txType: item.type,
+            action: () => showModal(item),
+          }))
+        );
+      });
+  };
+
   const onSearch = () => {
     switch (searchType) {
       case "User":
-        setData(USER_DATA);
+        searchUser();
         break;
       case "Momo topup":
-        setData(MOMO_TOPUP_DATA);
+        searchMomoTopUp();
         break;
       case "Momo withdrawal":
-        setData(MOMO_WITHDRWAL_DATA);
+        searchMomoWithdrawal();
         break;
       case "Crypto transactions":
-        setData(CRYPTO_TRANSACTIONS_DATA);
+        searchTransactions();
         break;
       default:
         setData([]);
@@ -432,6 +413,8 @@ export default function Search() {
     }
   };
 
+  console.log(currentUser);
+
   return (
     <PageLayout title="Hone">
       <Modal
@@ -441,7 +424,7 @@ export default function Search() {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Crypto transactions</div>
-            <div className={styles.breadCrumb}>Receive</div>
+            <div className={styles.breadCrumb}>{currentUser.type}</div>
           </div>
         }
         headerLeft={
@@ -454,57 +437,58 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.txid}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Confirmed
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset:</p>
-            <p className={styles.value}>Bitcoin</p>
+            <p className={styles.value}>{currentUser.dataOne}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Address:</p>
-            <p className={styles.value}>123, mark avenue</p>
+            <p className={styles.value}>{""}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset amount:</p>
             <p className={styles.value} style={{ color: "#16B364" }}>
-              +0.001234 BTC
+              {currentUser.cryptoValue} {currentUser.currency}
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>USD value:</p>
-            <p className={styles.value}>$7,500.00</p>
+            <p className={styles.value}>${currentUser.usdAmount}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Total paid:</p>
-            <p className={styles.value}>GHS 750,099.00</p>
+            <p className={styles.value}></p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Confirmations:</p>
-            <p className={styles.value}>24/24</p>
+            <p className={styles.value}>{currentUser.confirmations}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction date:</p>
-            <p className={styles.value}>Monday 23 Jan, 2023 07:52 AM</p>
+            <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
       </Modal>
@@ -515,7 +499,9 @@ export default function Search() {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Sell (Momo withdrawal)</div>
-            <div className={styles.breadCrumb}>BITCOIN</div>
+            <div className={styles.breadCrumb}>
+              {currentUser.cryptoCurrency}
+            </div>
           </div>
         }
         headerLeft={
@@ -528,71 +514,75 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.uniq}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Successful
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset amount:</p>
             <p className={styles.value} style={{ color: "#F79009" }}>
-              -0.001234 BTC <span style={{ color: "#98A2B3" }}>($50.06)</span>
+              -{currentUser.topupAmount}{" "}
+              <span style={{ color: "#98A2B3" }}>
+                (${currentUser.usdAmount})
+              </span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Amount:</p>
-            <p className={styles.value}>GHS 500.00</p>
+            <p className={styles.value}>
+              {currentUser.localCurrency} {currentUser.amount}
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Rate:</p>
             <p className={styles.value}>
-              Sold @ 11.2 (price at sell time: $28700.00)
+              Sold @ {currentUser.rate} (price at sell time: $
+              {currentUser.cryptoPrice})
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Fee:</p>
             <p className={styles.value}>
-              $1.20 <span style={{ color: "#98A2B3" }}>($50.06)</span>
+              {currentUser.fee} <span style={{ color: "#98A2B3" }}></span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Total paid:</p>
-            <p className={styles.value}>GHS 750,099.00</p>
+            <p className={styles.value}>
+              {currentUser.localCurrency} {currentUser.receivableLocal}
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Payment account:</p>
-            <p className={styles.status}>
-              Samuel samuel{" "}
-              <span style={{ color: "#667085" }}>(+2334567895566)</span>
-            </p>
+            <p className={styles.status}>{currentUser.dataFive}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Order time:</p>
-            <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+            <p className={styles.value}>{currentUser.createdOn}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Completion time:</p>
-            <p className={styles.value}>
-              Paid by Pi(Cashout @ Mon 23 jan 07:40:03AM)
-            </p>
+            <p className={styles.value}>{currentUser.newDate}</p>
           </div>
         </div>
       </Modal>
@@ -603,7 +593,7 @@ export default function Search() {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Buy (Momo Top-Up)</div>
-            <div className={styles.breadCrumb}>BITCOIN</div>
+            <div className={styles.breadCrumb}>{currentUser.cryptoSymbol}</div>
           </div>
         }
         headerLeft={
@@ -616,45 +606,45 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.txid}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Successful
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset amount:</p>
             <p className={styles.value} style={{ color: "#16B364" }}>
-              +0.001234 BTC
+              +{currentUser.crypto} {currentUser.currency}
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Rate:</p>
-            <p className={styles.value}>100 ghs per Dollar</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Payment account:</p>
-            <p className={styles.status}>
-              Samuel samuel{" "}
-              <span style={{ color: "#667085" }}>(+2334567895566)</span>
+            <p className={styles.value}>
+              {currentUser.rate} {currentUser.currency} per Dollar
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
+            <p className={styles.key}>Payment account:</p>
+            <p className={styles.status}>{currentUser.methodId}</p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
             <p className={styles.key}>Transaction date:</p>
-            <p className={styles.value}>Monday 23 Jan, 2023 07:52 AM</p>
+            <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
       </Modal>
@@ -680,16 +670,12 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Account:</p>
-            <p className={styles.value}>
-              {currentUser.firstName} {currentUser.lastName}
-            </p>
+            <p className={styles.value}>{currentUser.fullname}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Country:</p>
-            <p className={styles.value}>
-              {COUNTRY_MAP[currentUser.countryCode]} ({currentUser.countryCode})
-            </p>
+            <p className={styles.value}>{currentUser.countryCode}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -717,7 +703,6 @@ export default function Search() {
           <p className={styles.date}>
             Date registered: {currentUser.createdOn}
           </p>
-          <p className={styles.date}>12:33:28 GMT</p>
           <Button
             onClick={() => setOpenModal(false)}
             className={styles.modalButton}
@@ -775,12 +760,9 @@ export default function Search() {
                 border: "1px solid var(--Gray-200, #EAECF0)",
                 borderRadius: 12,
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                overflow: "hidden"
+                overflow: "hidden",
               }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => showModal(user),
-              }))}
+              dataSource={data}
               columns={getColumns()}
               loading={loading}
             />

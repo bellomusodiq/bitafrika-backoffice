@@ -1,1 +1,1 @@
-export const BASE_URL = "https://2b9514c2-068e-4e4c-a3f6-56a14629dc95.mock.pstmn.io/admin";
+export const BASE_URL = "https://63dc8fdb-e09a-4441-9e49-c4f4e950f895.mock.pstmn.io/admin";

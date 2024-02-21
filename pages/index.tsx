@@ -10,8 +10,10 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import TrendItem from "@/components/TrendItem";
 import CardListing from "@/components/CardListing";
 import ServicesListing from "@/components/ServicesListing";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { BASE_URL } from "@/CONFIG";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -122,12 +124,20 @@ const SERVICES_LISTING: any = [
 
 export default function Home() {
   const router = useRouter();
-  // useEffect(() => {
-  //   const auth = localStorage.getItem("auth");
-  //   if (!auth) {
-  //     router.replace("/signin");
-  //   }
-  // }, []);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const fetchDashboardData = () => {
+    setLoading(true);
+    axios.post(`${BASE_URL}/financeReport`, {})
+  }
+
+  useEffect(() => {
+    const auth = localStorage.getItem("auth");
+    if (!auth) {
+      router.replace("/signin");
+    }
+  }, []);
+
 
   return (
     <PageLayout showHeader title="Hone">
