@@ -131,9 +131,9 @@ export default function Home() {
   const [doge, setDoge] = useState<any>({});
 
   let auth: any;
-  // if (typeof window !== "undefined") {
-  //   auth = JSON.parse(localStorage.getItem("auth") || "");
-  // }
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
 
   const fetchCoinData = (coin: string) => {
     axios
@@ -160,7 +160,13 @@ export default function Home() {
   };
 
   useEffect(() => {
-    router.replace("/signin");
+    const auth = localStorage.getItem("auth");
+    if (!auth) {
+      router.replace("/signin");
+    }
+    ["btc", "bch", "ltc", "doge"].forEach(async (coin: string) => {
+      await fetchCoinData(coin);
+    });
   }, []);
 
   console.log("ltc", ltc);

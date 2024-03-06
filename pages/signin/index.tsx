@@ -28,7 +28,7 @@ const Signin: React.FC<NextPage> = () => {
         setLoading(false);
         if (res.data.success) {
           localStorage.setItem("auth", JSON.stringify(res.data.account));
-          router.replace("/", "/");
+          router.replace("/dashboard", "/dashboard");
         } else {
           setLoading(false);
           toast.error(res.data.message, {
