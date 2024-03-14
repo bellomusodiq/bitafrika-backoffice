@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ant-design/charts": "^1.4.2",
+    "@hcaptcha/react-hcaptcha": "^1.10.1",
     "@types/node": "18.14.2",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",

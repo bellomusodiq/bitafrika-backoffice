@@ -23,6 +23,33 @@
   font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
+.codeContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 70%;
+}
+.code {
+  display: flex;
+  width: 80px;
+  padding: 10px 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300, #d0d5dd);
+  background: var(--base-white, #fff);
+  box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+  color: var(--gray-300, #d0d5dd);
+  text-align: center;
+  font-family: "PP Telegraf";
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 60px; /* 125% */
+  letter-spacing: -0.96px;
+}
 .title {
   color: #475467;
   font-size: 1rem;
