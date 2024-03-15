@@ -214,19 +214,41 @@ const Signin: React.FC<NextPage> = () => {
               className={styles.input}
               type="password"
             />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                marginTop: 15,
+              }}
+            >
+              <HCaptcha
+                size="normal"
+                // This is testing sitekey, will autopass
+                // Make sure to replace
+                sitekey="20000000-ffff-ffff-ffff-000000000002"
+                // size="invisible"
+                onVerify={() => setDisabled(false)}
+                onError={(e) => console.log(e)}
+                // onExpire={onExpire}
+                ref={captchaRef}
+              />
+            </div>
             <div className={styles.rememberContainer}>
               <input className={styles.checkbox} type="checkbox" />
               <p className={styles.rememberText}>Remember for 30 days</p>
             </div>
-            <div className={styles.buttonContainer}>
-              <Button
-                disabled={disabled}
-                loading={loading}
-                onClick={() => setOpenCodeModal(true)}
-              >
-                Sign in
-              </Button>
-            </div>
+            {!disabled && (
+              <div className={styles.buttonContainer}>
+                <Button
+                  disabled={disabled}
+                  loading={loading}
+                  onClick={() => setOpenCodeModal(true)}
+                >
+                  Sign in
+                </Button>
+              </div>
+            )}
             <div className={styles.divider} />
             <div className={styles.dropdownContainer}>
               <Dropdown
@@ -236,26 +258,6 @@ const Signin: React.FC<NextPage> = () => {
             </div>
           </div>
         </Card>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            width: "100%",
-            marginTop: 15,
-          }}
-        >
-          <HCaptcha
-            size="normal"
-            // This is testing sitekey, will autopass
-            // Make sure to replace
-            sitekey="20000000-ffff-ffff-ffff-000000000002"
-            // size="invisible"
-            onVerify={() => setDisabled(false)}
-            onError={(e) => console.log(e)}
-            // onExpire={onExpire}
-            ref={captchaRef}
-          />
-        </div>
       </div>
     </div>
   );
