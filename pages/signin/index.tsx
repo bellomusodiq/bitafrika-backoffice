@@ -35,8 +35,13 @@ const Signin: React.FC<NextPage> = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
   const [pin, setPin] = useState<string>("");
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState<any>(null);
   const [disabled, setDisabled] = useState<boolean>(true);
+  const [loginRes, setLoginRes] = useState<any>({
+    requestId: "5333cd317646b720",
+    isMfaEnabled: false,
+    dataURL: "data:image/png;base64,SOME LONG STRING",
+  });
 
   const onLoad = () => {
     // this reaches out to the hCaptcha JS API and runs the
@@ -47,16 +52,59 @@ const Signin: React.FC<NextPage> = () => {
   };
 
   const signIn = () => {
-    console.log("signIn...");
-
     setLoading(true);
     axios
-      .post(`${BASE_URL}/signIn`, { username, password })
+      .post(`${BASE_URL}/login`, { username, password, hCaptcha: token })
       .then((res) => {
         setLoading(false);
         if (res.data.success) {
-          localStorage.setItem("auth", JSON.stringify(res.data.account));
+          // setLoginRes(res.data.data);
+          // localStorage.setItem("auth", JSON.stringify(res.data.account));
+          // router.replace("/dashboard", "/dashboard");
+          setShowModal(true);
+        } else {
+          setLoading(false);
+          toast.error(res.data.message, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+          });
+        }
+      })
+      .catch(() => {
+        setLoading(false);
+        toast.error("Something went wrong, try again", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      });
+  };
+
+  const verifyMfa = () => {
+    setLoading(true);
+    axios
+      .post(`${BASE_URL}/login/verify-mfa`, {
+        requestId: loginRes.requestId,
+        mfaToken: verificationCode,
+      })
+      .then((res) => {
+        setLoading(false);
+        if (res.data.success) {
+          // setLoginRes(res.data.data);
+          localStorage.setItem("auth", JSON.stringify(res.data.data));
           router.replace("/dashboard", "/dashboard");
+          setShowModal(false);
         } else {
           setLoading(false);
           toast.error(res.data.message, {
@@ -129,7 +177,9 @@ const Signin: React.FC<NextPage> = () => {
             <br />
             Authenticator App or enter the verification code below.
           </p>
-          <img src="/images/QR.png" className={styles.qrImage} />
+          {loginRes.dataURL && (
+            <img src={loginRes.dataURL} className={styles.qrImage} />
+          )}
           <p className={styles.verificationText}>Verification code</p>
           <Input
             value={verificationCode}
@@ -137,7 +187,11 @@ const Signin: React.FC<NextPage> = () => {
           />
           <div className={styles.footerContainer}>
             <Button className={styles.footerButton}>Cancel</Button>
-            <Button color="white" className={styles.footerButton}>
+            <Button
+              color="white"
+              onClick={verifyMfa}
+              className={styles.footerButton}
+            >
               Confirm
             </Button>
           </div>
@@ -228,7 +282,10 @@ const Signin: React.FC<NextPage> = () => {
                 // Make sure to replace
                 sitekey="20000000-ffff-ffff-ffff-000000000002"
                 // size="invisible"
-                onVerify={() => setDisabled(false)}
+                onVerify={(token) => {
+                  setToken(token);
+                  setDisabled(false);
+                }}
                 onError={(e) => console.log(e)}
                 // onExpire={onExpire}
                 ref={captchaRef}
@@ -240,11 +297,7 @@ const Signin: React.FC<NextPage> = () => {
             </div>
             {!disabled && (
               <div className={styles.buttonContainer}>
-                <Button
-                  disabled={disabled}
-                  loading={loading}
-                  onClick={() => setOpenCodeModal(true)}
-                >
+                <Button disabled={disabled} loading={loading} onClick={signIn}>
                   Sign in
                 </Button>
               </div>
