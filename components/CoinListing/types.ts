@@ -1,9 +1,9 @@
 export interface CoinListingProps {
   title: string;
   coins: {
-    icon: string;
-    name: string;
-    balance: string;
-    currency: string;
+    coin: string;
+    coin_code: string;
+    amount: number;
+    count: number;
   }[];
 }

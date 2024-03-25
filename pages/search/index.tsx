@@ -33,13 +33,13 @@ const USER_COLUMNS = [
   },
   {
     title: "Phone number",
-    dataIndex: "phoneNumber",
-    key: "phoneNumber",
+    dataIndex: "phone",
+    key: "phone",
   },
   {
     title: "Country",
-    dataIndex: "country",
-    key: "country",
+    dataIndex: "countryCode",
+    key: "countryCode",
   },
   {
     title: "Actions",
@@ -263,18 +263,20 @@ export default function Search() {
   const searchUser = () => {
     setLoading(true);
     axios
-      .post(`${BASE_URL}/searchUser`, {
-        user: search,
-        token: auth.token
-      })
+      .post(
+        `${BASE_URL}/search/user/${search}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.users.map((user: any) => ({
-            username: user.username,
-            email: user.email,
-            phoneNumber: user.phone,
-            country: user.countryCode,
+          res.data?.data?.map((user: any) => ({
+            ...user,
             action: () => {
               showModal(user);
             },
@@ -286,72 +288,79 @@ export default function Search() {
   const searchMomoTopUp = () => {
     setLoading(true);
     axios
-      .post(`${BASE_URL}/searchDeposit`, {
-        txid: search,
-        token: auth.token
-      })
+      .post(
+        `${BASE_URL}/search/momo-top-up`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
-        const data = {
-          ...res.data.users,
-          transactionId: res.data.users.txid,
-          username: res.data.users.username,
-          amount: res.data.users.amount,
-          status: res.data.users.status,
-          amountUsd: res.data.users.usd,
-        };
-        setData([
-          {
-            ...data,
-            action: () => {
-              showModal(data);
-            },
+        const data = res.data?.data?.map((data: any) => ({
+          ...data,
+          transactionId: data.uniqId,
+          username: data.username,
+          amount: data.amount,
+          status: data.status,
+          amountUsd: data.usd,
+          action: () => {
+            showModal(data);
           },
-        ]);
+        }));
+        setData(data);
       });
   };
 
   const searchMomoWithdrawal = () => {
     setLoading(true);
     axios
-      .post(`${BASE_URL}/searchWithdrawal`, {
-        txid: search,
-        token: auth.token
-      })
+      .post(
+        `${BASE_URL}/search/momo-withdrawal/${search}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
-        const data = {
-          ...res.data.users,
-          transactionId: res.data.users.uniq,
-          username: res.data.users.username,
-          amount: res.data.users.rawAmount,
-          status: res.data.users.status,
-          amountUSD: res.data.users.usdAmount,
-          fee: res.data.users.netFee,
-          topupAmount: `${res.data.users.netFee} ${res.data.users.cryptoCurrency}`,
-        };
-        setData([
-          {
-            ...data,
-            action: () => {
-              showModal(data);
-            },
+        const data = res.data?.data?.map((data: any) => ({
+          ...data,
+          transactionId: data.uniq,
+          username: data.username,
+          amount: data.rawAmount,
+          status: data.status,
+          amountUSD: data.usdAmount,
+          fee: data.netFee,
+          topupAmount: `${data.netFee} ${data.cryptoCurrency}`,
+          action: () => {
+            showModal(data);
           },
-        ]);
+        }));
+        setData(data);
       });
   };
 
   const searchTransactions = () => {
     setLoading(true);
     axios
-      .post(`${BASE_URL}/searchTransaction`, {
-        txid: search,
-        token: auth.token
-      })
+      .post(
+        `${BASE_URL}/search/crypto-transaction/${search}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.users.map((item: any) => ({
+          res.data.data.map((item: any) => ({
             ...item,
             transactionId: item.txid,
             amountCrypto: `${item.cryptoValue} ${item.currency}`,
@@ -534,7 +543,7 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset amount:</p>
             <p className={styles.value} style={{ color: "#F79009" }}>
-              -{currentUser.topupAmount}{" "}
+              -{currentUser.cryptoAmount}{" "}
               <span style={{ color: "#98A2B3" }}>
                 (${currentUser.usdAmount})
               </span>
@@ -544,7 +553,7 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>Amount:</p>
             <p className={styles.value}>
-              {currentUser.localCurrency} {currentUser.amount}
+              {currentUser.localCurrency} {currentUser.receivableLocal}
             </p>
           </div>
           <div className={styles.divider} />
@@ -559,7 +568,7 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>Fee:</p>
             <p className={styles.value}>
-              {currentUser.fee} <span style={{ color: "#98A2B3" }}></span>
+              {currentUser.netFee} <span style={{ color: "#98A2B3" }}></span>
             </p>
           </div>
           <div className={styles.divider} />

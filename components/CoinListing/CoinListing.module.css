@@ -31,3 +31,7 @@
   align-items: center;
   color: #000000;
 }
+.coinImage {
+  width: 32px;
+  height: 32px;
+}
