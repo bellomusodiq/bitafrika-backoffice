@@ -10,6 +10,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
+import formatDate from "@/utils/formatDate";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -909,6 +910,9 @@ export default function Search() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
   const [statusType, setStatusType] = useState<string>("success");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const [pagination, setPaingation] = useState<any>({ pageNumber: 1 });
 
   let auth: any;
   if (typeof window !== "undefined") {
@@ -918,35 +922,46 @@ export default function Search() {
   const getTopupTransactions = () => {
     setLoading(true);
     axios
-      .post(`${BASE_URL}/topUps`, {
-        status: statusType,
-        token: auth.token,
-      })
-      .then((res) => {
+      .post(
+        `${BASE_URL}/transactions/momo-top-up?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
         setLoading(false);
-        setData(
-          res.data.data.map((item: any) => ({
-            ...item,
-            transactionId: item.txid,
-            email: item.email,
-            phoneNumber: item.phone,
-            country: item.countryCode,
-            total: `${item.currency} ${item.amount}`,
-            action: () => {
-              showModal(item);
-            },
-          }))
-        );
+        if (res.data.success) {
+          setData(
+            res.data.data.map((item: any) => ({
+              ...item,
+              transactionId: item.txid,
+              email: item.email,
+              phoneNumber: item.phone,
+              country: item.countryCode,
+              total: `${item.currency} ${item.amount}`,
+              action: () => showModal(item),
+            }))
+          );
+          setPaingation(res.data.pagination);
+        }
       });
   };
 
   const getWithdrawalTransactions = () => {
     setLoading(true);
     axios
-      .post(`${BASE_URL}/withdrawals`, {
-        status: statusType,
-        token: auth.token,
-      })
+      .post(
+        `${BASE_URL}/transactions/momo-withdrawal?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
       .then((res) => {
         setLoading(false);
         setData(
@@ -966,6 +981,135 @@ export default function Search() {
       });
   };
 
+  const getReceivedTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/receive-crypto?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+        setData(
+          res.data.data.map((item: any) => ({
+            ...item,
+            transactionId: item.txid,
+            email: item.email,
+            phoneNumber: item.phone,
+            amount: `$${item.usdAmount}`,
+            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
+            asset: item.currency,
+            action: () => {
+              showModal(item);
+            },
+          }))
+        );
+      });
+  };
+
+  const getSentTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/withdraw-crypto?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+        setData(
+          res.data.data.map((item: any) => ({
+            ...item,
+            transactionId: item.txid,
+            email: item.email,
+            phoneNumber: item.phone,
+            amount: `$${item.usdAmount}`,
+            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
+            asset: item.currency,
+            action: () => {
+              showModal(item);
+            },
+          }))
+        );
+      });
+  };
+
+  const getSwapTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/swap?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+        setData(
+          res.data.data.map((item: any) => ({
+            ...item,
+            transactionId: item.uniqId,
+            email: item.email,
+            phoneNumber: item.phone,
+            amount: `$${item.usdAmount}`,
+            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
+            asset: item.currency,
+            swapPair: {
+              from: `${item.sourceAmount} ${item.sourceCrypto}`,
+              to: `${item.destinationAmount} ${item.destinationCrypto}`,
+            },
+            from: item.sourceCrypto,
+            to: item.destinationCrypto,
+            date: item.createdOn,
+            action: () => {
+              showModal(item);
+            },
+          }))
+        );
+      });
+  };
+
+  const getGiftcardsTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/gift-card?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+        setData(
+          res.data.data.map((item: any) => ({
+            ...item,
+            transactionId: item.uniqId,
+            email: item.email,
+            amount: `$${item.amount}`,
+            date: item.newDate,
+            action: () => {
+              showModal(item);
+            },
+          }))
+        );
+      });
+  };
+
   const onSearch = () => {
     switch (searchType) {
       case "Buy":
@@ -975,13 +1119,13 @@ export default function Search() {
         getWithdrawalTransactions();
         break;
       case "Receive":
-        setData(RECEIVE_DATA);
+        getReceivedTransactions();
         break;
       case "Withdrawal":
-        setData(WITHDRAWAL_DATA);
+        getSentTransactions();
         break;
       case "Swap":
-        setData(SWAP_DATA);
+        getSwapTransactions();
         break;
       case "Utility":
         setData(UTILITY_DATA);
@@ -993,7 +1137,7 @@ export default function Search() {
         setData(CARDS_TOPUP_DATA);
         break;
       case "Giftcards":
-        setData(GIFTCARDS_DATA);
+        getGiftcardsTransactions();
         break;
       default:
         setData([]);
@@ -1037,7 +1181,7 @@ export default function Search() {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Buy (Momo Top-Up)</div>
-            <div className={styles.breadCrumb}>{currentUser.dataFour}</div>
+            <div className={styles.breadCrumb}>{currentUser.username}</div>
           </div>
         }
         headerLeft={
@@ -1106,7 +1250,7 @@ export default function Search() {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Sell (Momo withdrawal)</div>
-            <div className={styles.breadCrumb}>{currentUser.dataTwo}</div>
+            <div className={styles.breadCrumb}>{currentUser.username}</div>
           </div>
         }
         headerLeft={
@@ -1202,52 +1346,53 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.txid}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Confirmed
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset:</p>
-            <p className={styles.value}>Bitcoin</p>
+            <p className={styles.value}>{currentUser.currency}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>receive from:</p>
-            <p className={styles.value}>13423dfdwf4dafdadg435324</p>
+            <p className={styles.value}>{currentUser.recipient}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Amount:</p>
             <p className={styles.value} style={{ color: "#F79009" }}>
-              -0.001234 BTC
+              -{currentUser.cryptoValue} {currentUser.currency}
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>USD value:</p>
-            <p className={styles.value}>$7500.99</p>
+            <p className={styles.value}>${currentUser.usdAmount}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Confirmations:</p>
-            <p className={styles.value}>24/24</p>
+            <p className={styles.value}>{currentUser.confirmations}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+            <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
       </Modal>
@@ -1271,52 +1416,53 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.txid}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Confirmed
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset:</p>
-            <p className={styles.value}>Bitcoin</p>
+            <p className={styles.value}>{currentUser.currency}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>receive from:</p>
-            <p className={styles.value}>13423dfdwf4dafdadg435324</p>
+            <p className={styles.value}>{currentUser.recipient}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Amount:</p>
             <p className={styles.value} style={{ color: "#F79009" }}>
-              -0.001234 BTC
+              -{currentUser.cryptoValue} {currentUser.currency}
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>USD value:</p>
-            <p className={styles.value}>$7500.99</p>
+            <p className={styles.value}>${currentUser.usdAmount}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Confirmations:</p>
-            <p className={styles.value}>24/24</p>
+            <p className={styles.value}>{currentUser.confirmations}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+            <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
       </Modal>
@@ -1339,27 +1485,29 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.uniqId}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Successful
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>From:</p>
             <p className={styles.value}>
-              Bitcoin{" "}
-              <span style={{ color: "#98A2B3", marginRight: 10 }}>(BTC)</span>{" "}
+              <span style={{ color: "#98A2B3", marginRight: 10 }}>
+                ({currentUser.sourceCrypto})
+              </span>{" "}
               <img src="/icons/swap.svg" />
             </p>
           </div>
@@ -1367,32 +1515,38 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>To:</p>
             <p className={styles.value}>
-              USDT{" "}
               <span style={{ color: "#98A2B3", marginRight: 10 }}>
-                (Tether)
+                ({currentUser.destinationCrypto})
               </span>{" "}
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>From amount:</p>
-            <p className={styles.value}>0.001234 BTC</p>
+            <p className={styles.value}>
+              {currentUser.sourceAmount} {currentUser.sourceCrypto}
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>To amount:</p>
-            <p className={styles.value}>1200.87 USDT</p>
+            <p className={styles.value}>
+              {currentUser.destinationAmount} {currentUser.destinationCrypto}
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Rate at transaction time:</p>
-            <p className={styles.value}>0.123456 BTC is 1200.00 USDT</p>
+            <p className={styles.value}>
+              {currentUser.ratePerUnit} {currentUser.sourceCrypto} per{" "}
+              {currentUser.destinationCrypto}
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+            <p className={styles.value}>{currentUser.createdOn}</p>
           </div>
         </div>
       </Modal>
@@ -1621,25 +1775,25 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@Samuel12345</span>
+              User: <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>TX12345678909887776665</p>
+            <p className={styles.value}>{currentUser.uniqId}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
             <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> Approved
+              <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Amount:</p>
-            <p className={styles.value}>$100.99</p>
+            <p className={styles.value}>${currentUser.amount}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1649,7 +1803,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+            <p className={styles.value}>{currentUser.newDate}</p>
           </div>
         </div>
       </Modal>
@@ -1696,7 +1850,13 @@ export default function Search() {
             </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker style={{ height: 48 }} />
+              <DatePicker.RangePicker
+                onChange={(values: any) => {
+                  setFromDate(formatDate(values[0].$d));
+                  setToDate(formatDate(values[1].$d));
+                }}
+                style={{ height: 48 }}
+              />
             </div>
             <div
               style={{
@@ -1728,12 +1888,21 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => showModal(user),
-              }))}
+              dataSource={data}
               columns={getColumns()}
               loading={loading}
+              pagination={{
+                defaultCurrent: pagination.pageNumber,
+                pageSize: pagination.pageSize,
+                total: pagination.totalCount,
+                showSizeChanger: false,
+                onChange(page, pageSize) {
+                  setPaingation({
+                    pageNumber: page,
+                  });
+                  onSearch();
+                },
+              }}
             />
           </div>
         )}

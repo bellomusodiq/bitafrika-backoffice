@@ -26,8 +26,6 @@ export default function Home() {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  console.log("auth", auth);
-
   const getDashboardStats = () => {
     setLoading(true);
     axios
