@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "@/pages/users/details/details.module.css";
 import { NextPage } from "next";
 import PageLayout from "@/components/PageLayout";
@@ -9,14 +9,18 @@ import KeyValue from "@/components/KeyValue/KeyValue";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
+import axios from "axios";
+import { BASE_URL } from "@/CONFIG";
+import { useRouter } from "next/router";
+import Loader from "@/components/Loader";
 
-const PaymentAccountsTable: React.FC = () => {
+const PaymentAccountsTable: React.FC<any> = ({ data }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const columns: any = [
     {
       title: "Payment Type",
-      dataIndex: "paymentType",
-      key: "paymentType",
+      dataIndex: "type",
+      key: "type",
     },
     {
       title: "Name",
@@ -25,8 +29,8 @@ const PaymentAccountsTable: React.FC = () => {
     },
     {
       title: "Phonenumber",
-      dataIndex: "phonenumber",
-      key: "phonenumber",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Provider",
@@ -35,51 +39,8 @@ const PaymentAccountsTable: React.FC = () => {
     },
     {
       title: "Date Registered",
-      dataIndex: "data",
-      key: "data",
-    },
-  ];
-
-  const dataSource = [
-    {
-      key: "1",
-      paymentType: "MOBILE MONEY",
-      name: "EMMANUEL NKRUMAH KWABENA",
-      phonenumber: "0708 000 0000",
-      provider: "MTN - GH",
-      data: "Thur 18 Jan, 2023 11:34PM",
-    },
-    {
-      key: "2",
-      paymentType: "MOBILE MONEY",
-      name: "EMMANUEL NKRUMAH KWABENA",
-      phonenumber: "0708 000 0000",
-      provider: "MTN - GH",
-      data: "Thur 18 Jan, 2023 11:34PM",
-    },
-    {
-      key: "3",
-      paymentType: "MOBILE MONEY",
-      name: "EMMANUEL NKRUMAH KWABENA",
-      phonenumber: "0708 000 0000",
-      provider: "MTN - GH",
-      data: "Thur 18 Jan, 2023 11:34PM",
-    },
-    {
-      key: "4",
-      paymentType: "MOBILE MONEY",
-      name: "EMMANUEL NKRUMAH KWABENA",
-      phonenumber: "0708 000 0000",
-      provider: "MTN - GH",
-      data: "Thur 18 Jan, 2023 11:34PM",
-    },
-    {
-      key: "5",
-      paymentType: "MOBILE MONEY",
-      name: "EMMANUEL NKRUMAH KWABENA",
-      phonenumber: "0708 000 0000",
-      provider: "MTN - GH",
-      data: "Thur 18 Jan, 2023 11:34PM",
+      dataIndex: "createdAt",
+      key: "createdAt",
     },
   ];
 
@@ -92,14 +53,24 @@ const PaymentAccountsTable: React.FC = () => {
         boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
         overflow: "hidden",
       }}
-      dataSource={dataSource}
+      dataSource={data}
       columns={columns}
     />
   );
 };
 
-const KYCVerificationTable: React.FC = () => {
-  const [openModal, setOpenModal] = useState<boolean>(false);
+const KYCVerificationTable: React.FC<any> = ({ data }) => {
+  const [openPhotosModal, setOpenPhotosModal] = useState<any>(null);
+  const [openDocumentsModal, setOpenDocumentsModal] = useState<any>(null);
+  const [openRejectModal, setOpenRejectModal] = useState<any>(null);
+
+  const dataSource = data.map((item: any) => ({
+    ...item,
+    onOpenPhotos: () => setOpenPhotosModal(item),
+    onViewDocuments: () => setOpenDocumentsModal(item),
+    onReject: () => setOpenRejectModal(item),
+  }));
+
   const columns: any = [
     {
       title: "Username",
@@ -112,30 +83,30 @@ const KYCVerificationTable: React.FC = () => {
       render: (_: any, { status }: any) => (
         <div className={styles.statusContainer}>
           <div className={styles.statusIndicator} />
-          <span>This user is verified</span>
+          <span>{status}</span>
         </div>
       ),
     },
     {
       title: "Date completed",
-      dataIndex: "date",
-      key: "date",
+      dataIndex: "dateCompleted",
+      key: "dateCompleted",
     },
     {
       title: "",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      render: (_: any, { onOpenPhotos, onViewDocuments, onReject }: any) => (
         <div className={styles.actionButton}>
           <div style={{ marginRight: 10 }}>
-            <Button onClick={action}>View photos</Button>
+            <Button onClick={onOpenPhotos}>View photos</Button>
           </div>
           <div style={{ marginRight: 10 }}>
-            <Button color="white" onClick={action}>
+            <Button color="white" onClick={onViewDocuments}>
               View documents
             </Button>
           </div>
           <div>
-            <Button color="white" onClick={action}>
+            <Button color="white" onClick={onReject}>
               <span style={{ color: "#F04438" }}>Reject</span>
             </Button>
           </div>
@@ -144,60 +115,62 @@ const KYCVerificationTable: React.FC = () => {
     },
   ];
 
-  const dataSource = [
-    {
-      key: "1",
-      username: "@username",
-      status: "verified",
-      date: "Thur 18 Jan, 2023 11:34PM",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "2",
-      username: "@username",
-      status: "verified",
-      date: "Thur 18 Jan, 2023 11:34PM",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "3",
-      username: "@username",
-      status: "verified",
-      date: "Thur 18 Jan, 2023 11:34PM",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "4",
-      username: "@username",
-      status: "verified",
-      date: "Thur 18 Jan, 2023 11:34PM",
-      action: () => setOpenModal(true),
-    },
-    {
-      key: "5",
-      username: "@username",
-      status: "verified",
-      date: "Thur 18 Jan, 2023 11:34PM",
-      action: () => setOpenModal(true),
-    },
-  ];
-
   return (
-    <Table
-      style={{
-        fontFamily: "PP Telegraf",
-        border: "1px solid var(--Gray-200, #EAECF0)",
-        borderRadius: 12,
-        boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-        overflow: "hidden",
-      }}
-      dataSource={dataSource}
-      columns={columns}
-    />
+    <>
+      <Table
+        style={{
+          fontFamily: "PP Telegraf",
+          border: "1px solid var(--Gray-200, #EAECF0)",
+          borderRadius: 12,
+          boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+          overflow: "hidden",
+        }}
+        dataSource={dataSource}
+        columns={columns}
+      />
+      <Modal
+        openModal={Boolean(openPhotosModal)}
+        onClose={() => setOpenPhotosModal(null)}
+        customStyles={{ width: "30vw" }}
+        headerLeft={<p style={{ width: 300 }}>Photos</p>}
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.photoContainer}>
+            <p className={styles.photoTitle}>Selfie URL</p>
+            <img
+              src={openPhotosModal?.photos?.selfieUrl}
+              className={styles.photo}
+            />
+          </div>
+          <div className={styles.photoContainer}>
+            <p className={styles.photoTitle}>Photo URL</p>
+            <img
+              src={openPhotosModal?.photos?.photoUrl}
+              className={styles.photo}
+            />
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        openModal={Boolean(openDocumentsModal)}
+        onClose={() => setOpenDocumentsModal(null)}
+        customStyles={{ width: "30vw" }}
+        headerLeft={<p style={{ width: 300 }}>Documents</p>}
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.photoContainer}>
+            <p className={styles.photoTitle}>Document URL</p>
+            <a href={openPhotosModal?.documentUrl} className={styles.photo}>
+              {openPhotosModal?.documentUrl}
+            </a>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 };
 
-const AccountBalanceTable: React.FC = () => {
+const AccountBalanceTable: React.FC<any> = ({ data }) => {
   const code1 = useRef(null);
   const code2 = useRef(null);
   const code3 = useRef(null);
@@ -216,16 +189,15 @@ const AccountBalanceTable: React.FC = () => {
     {
       title: "",
       dataIndex: "wallet",
-      render: (_: any, { wallet }: any) => (
+      render: (_: any, { symbol, name, address, addressType }: any) => (
         <div className={styles.walletContainer}>
-          <p className={styles.walletTitle}>Bitcoin Cash (BCH)</p>
-          <p className={styles.walletAddress}>
-            Address:{" "}
-            <span style={{ color: "#2251FA" }}>
-              n1jFNkVNCyJZjB5wyWGxePbgcZHU8Rr2xr
-            </span>
+          <p className={styles.walletTitle}>
+            {name} ({symbol})
           </p>
-          <p className={styles.walletTitle}>Network: Legacy</p>
+          <p className={styles.walletAddress}>
+            Address: <span style={{ color: "#2251FA" }}>{address}</span>
+          </p>
+          <p className={styles.walletTitle}>Network: {addressType}</p>
         </div>
       ),
     },
@@ -233,10 +205,12 @@ const AccountBalanceTable: React.FC = () => {
       title: "",
       dataIndex: "balance",
       key: "balance",
-      render: (_: any, { balance }: any) => (
+      render: (_: any, { balance, symbol }: any) => (
         <div className={styles.walletContainer}>
           <p className={styles.walletTitle}>Balance:</p>
-          <p className={styles.walletAddress}>0 BCH</p>
+          <p className={styles.walletAddress}>
+            {balance} {symbol}
+          </p>
         </div>
       ),
     },
@@ -247,7 +221,7 @@ const AccountBalanceTable: React.FC = () => {
       render: (_: any, { usdAmount }: any) => (
         <div className={styles.walletContainer}>
           <p className={styles.walletTitle}>USD Amount:</p>
-          <p className={styles.walletAddress}>$0.00</p>
+          <p className={styles.walletAddress}>${usdAmount}</p>
         </div>
       ),
     },
@@ -266,64 +240,6 @@ const AccountBalanceTable: React.FC = () => {
           </div>
         </div>
       ),
-    },
-  ];
-
-  const dataSource = [
-    {
-      key: "1",
-      username: "@username",
-      email: "EmmanuelNkrumah@email.com",
-      biller: "MTN Ghana",
-      phonenumber: "0708 000 0000",
-      action: (deduct: boolean) => {
-        setOpenModal(true);
-        setDeduct(deduct);
-      },
-    },
-    {
-      key: "2",
-      username: "@username",
-      email: "EmmanuelNkrumah@email.com",
-      biller: "MTN Ghana",
-      phonenumber: "0708 000 0000",
-      action: (deduct: boolean) => {
-        setOpenModal(true);
-        setDeduct(deduct);
-      },
-    },
-    {
-      key: "3",
-      username: "@username",
-      email: "EmmanuelNkrumah@email.com",
-      biller: "MTN Ghana",
-      phonenumber: "0708 000 0000",
-      action: (deduct: boolean) => {
-        setOpenModal(true);
-        setDeduct(deduct);
-      },
-    },
-    {
-      key: "4",
-      username: "@username",
-      email: "EmmanuelNkrumah@email.com",
-      biller: "MTN Ghana",
-      phonenumber: "0708 000 0000",
-      action: (deduct: boolean) => {
-        setOpenModal(true);
-        setDeduct(deduct);
-      },
-    },
-    {
-      key: "5",
-      username: "@username",
-      email: "EmmanuelNkrumah@email.com",
-      biller: "MTN Ghana",
-      phonenumber: "0708 000 0000",
-      action: (deduct: boolean) => {
-        setOpenModal(true);
-        setDeduct(deduct);
-      },
     },
   ];
 
@@ -466,7 +382,7 @@ const AccountBalanceTable: React.FC = () => {
           boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
           overflow: "hidden",
         }}
-        dataSource={dataSource}
+        dataSource={data}
         columns={columns}
       />
     </>
@@ -763,219 +679,275 @@ const CardsTable: React.FC = () => {
 };
 
 const UserDetails: NextPage = () => {
+  const router = useRouter();
+
   const [currentTab, setCurrentTab] = useState<string>("paymentAccounts");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<any>({});
+
+  let auth: any;
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const getUserDetail = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/users/${router.query.id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        if (res.data.success) {
+          setUser(res.data.data);
+        }
+      });
+  };
+
+  useEffect(() => {
+    getUserDetail();
+  }, []);
+
   return (
     <PageLayout title="User Details">
-      <div className={styles.header}>
-        <NavigationStep color="white" hideButton />
-        <div className={styles.headerContainer}>
-          <h1 className={styles.headerText}>User details</h1>
-          <div className={styles.goBackBtn}>
-            <Button color="white">
-              <img src="/icons/arrow-left.svg" />
-              Go back
-            </Button>
-          </div>
+      {loading ? (
+        <div style={{ marginTop: 60 }}>
+          <Loader />
         </div>
-      </div>
-      <div className={styles.profileHeader}>
-        <img src="/images/avatar-big.png" />
-        <div className={styles.profileNameContainer}>
-          <h3>Emmanual Nkrumah</h3>
-          <p>@kwabena1</p>
-        </div>
-        <div className={styles.profileActions}>
-          <Button className={styles.profileActionBtns} color="white">
-            ...
-          </Button>
-          <Button className={styles.profileActionBtns} color="white">
-            Button CTA
-          </Button>
-          <Button className={styles.profileActionBtns}>Button CTA</Button>
-        </div>
-      </div>
-      <div className={styles.container}>
-        <Divider />
-        <div className={styles.profileDetailsContainer}>
-          <div className={styles.profileDetails}>
-            <KeyValue
-              items={[
-                {
-                  key: "First and Other Names:",
-                  value: "Emmanual",
-                },
-                {
-                  key: "Last Name:",
-                  value: "Nkrumah",
-                },
-                {
-                  key: "Username:",
-                  value: "@Kwabyna1",
-                },
-                {
-                  key: "Email Address",
-                  value: "Greatthingsinc4@gmail.com",
-                },
-                {
-                  key: "Phone Number:",
-                  value: "+23381233224",
-                },
-                {
-                  key: "State/Region:",
-                  value: "Greater accra region - Accra",
-                },
-                {
-                  key: "Address:",
-                  value: "1, greater accra",
-                },
-                {
-                  key: "Ghana Card No:",
-                  value: "012345678987",
-                },
-              ]}
-            />
-          </div>
-          <div className={styles.profileStatus}>
-            <KeyValue
-              noFooterBoder
-              items={[
-                {
-                  key: "KYC status:",
-                  valueComponent: (
-                    <div className={styles.kycStatus}>
-                      <div className={styles.indicator} />
-                      <span>Verified</span>
-                    </div>
-                  ),
-                },
-                {
-                  key: "Sign Up Date:",
-                  value: "Thur 12th May, 2022",
-                },
-                {
-                  key: "Last Active:",
-                  value: "Thur 12th May, 2022",
-                },
-                {
-                  key: "Today's Limit",
-                  valueComponent: (
-                    <div className={styles.progressContainer}>
-                      <div className={styles.progress}>
-                        <div className={styles.fill} style={{ width: "70%" }} />
-                      </div>
-                      <span>70%</span>
-                    </div>
-                  ),
-                },
-              ]}
-            />
-            <div className={styles.footer}>
-              <div>
-                <Button className={styles.footerBtns} color="white">
-                  View Buy/sell Transactions
-                </Button>
-              </div>
-              <div>
-                <Button className={styles.footerBtns} color="white">
-                  View card transactions
-                </Button>
-              </div>
-              <div>
-                <Button className={styles.footerBtns} color="white">
-                  View Deposit/withdrawal Transactions
-                </Button>
-              </div>
-              <div>
-                <Button className={styles.footerBtns} color="white">
-                  View swap transactions
-                </Button>
-              </div>
-              <div>
-                {" "}
-                <Button className={styles.footerBtns} color="white">
-                  View Utility transactions
+      ) : (
+        <>
+          <div className={styles.header}>
+            <NavigationStep color="white" hideButton />
+            <div className={styles.headerContainer}>
+              <h1 className={styles.headerText}>User details</h1>
+              <div className={styles.goBackBtn}>
+                <Button color="white">
+                  <img src="/icons/arrow-left.svg" />
+                  Go back
                 </Button>
               </div>
             </div>
           </div>
-        </div>
-        <Divider />
-        <h2 className={styles.title}>User Details</h2>
-        <div className={styles.tabContainer}>
-          <button
-            onClick={() => setCurrentTab("paymentAccounts")}
-            style={{
-              background: currentTab === "paymentAccounts" ? "white" : "none",
-              border:
-                currentTab === "paymentAccounts"
-                  ? "1px solid var(--gray-100, #f2f4f7)"
-                  : "none",
-              boxShadow:
-                currentTab === "paymentAccounts"
-                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                  : "none",
-            }}
-            className={styles.tabItem}
-          >
-            Payment Accounts
-          </button>
-          <button
-            onClick={() => setCurrentTab("accountBalance")}
-            style={{
-              background: currentTab === "accountBalance" ? "white" : "none",
-              border:
-                currentTab === "accountBalance"
-                  ? "1px solid var(--gray-100, #f2f4f7)"
-                  : "none",
-              boxShadow:
-                currentTab === "accountBalance"
-                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                  : "none",
-            }}
-            className={styles.tabItem}
-          >
-            Account Balance
-          </button>
-          <button
-            onClick={() => setCurrentTab("kycVerification")}
-            style={{
-              background: currentTab === "kycVerification" ? "white" : "none",
-              border:
-                currentTab === "kycVerification"
-                  ? "1px solid var(--gray-100, #f2f4f7)"
-                  : "none",
-              boxShadow:
-                currentTab === "kycVerification"
-                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                  : "none",
-            }}
-            className={styles.tabItem}
-          >
-            KYC Verification
-          </button>
-          <button
-            onClick={() => setCurrentTab("cards")}
-            style={{
-              background: currentTab === "cards" ? "white" : "none",
-              border:
-                currentTab === "cards"
-                  ? "1px solid var(--gray-100, #f2f4f7)"
-                  : "none",
-              boxShadow:
-                currentTab === "cards"
-                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                  : "none",
-            }}
-            className={styles.tabItem}
-          >
-            Cards
-          </button>
-        </div>
-        {currentTab === "accountBalance" && <AccountBalanceTable />}
-        {currentTab === "kycVerification" && <KYCVerificationTable />}
-        {currentTab === "paymentAccounts" && <PaymentAccountsTable />}
-        {currentTab === "cards" && <CardsTable />}
-      </div>
+          <div className={styles.profileHeader}>
+            <img src="/images/avatar-big.png" />
+            <div className={styles.profileNameContainer}>
+              <h3>
+                {user?.user?.firstName} {user?.user?.lastName}
+              </h3>
+              <p>@{user?.user?.username}</p>
+            </div>
+            <div className={styles.profileActions}>
+              <Button className={styles.profileActionBtns} color="white">
+                ...
+              </Button>
+              <Button className={styles.profileActionBtns} color="white">
+                Button CTA
+              </Button>
+              <Button className={styles.profileActionBtns}>Button CTA</Button>
+            </div>
+          </div>
+          <div className={styles.container}>
+            <Divider />
+            <div className={styles.profileDetailsContainer}>
+              <div className={styles.profileDetails}>
+                <KeyValue
+                  items={[
+                    {
+                      key: "First and Other Names:",
+                      value: user?.user?.firstName,
+                    },
+                    {
+                      key: "Last Name:",
+                      value: user?.user?.lastName,
+                    },
+                    {
+                      key: "Username:",
+                      value: `@${user?.user?.username}`,
+                    },
+                    {
+                      key: "Email Address",
+                      value: user?.user?.email,
+                    },
+                    {
+                      key: "Phone Number:",
+                      value: `+${user?.user?.phone}`,
+                    },
+                    {
+                      key: "State/Region:",
+                      value: user?.user?.stateRegion,
+                    },
+                    {
+                      key: "Address:",
+                      value: user?.user?.homeAddress,
+                    },
+                    {
+                      key: "Ghana Card No:",
+                      value: "Missing",
+                    },
+                  ]}
+                />
+              </div>
+              <div className={styles.profileStatus}>
+                <KeyValue
+                  noFooterBoder
+                  items={[
+                    {
+                      key: "KYC status:",
+                      valueComponent: (
+                        <div className={styles.kycStatus}>
+                          <div className={styles.indicator} />
+                          <span>{user?.user?.kycInfo?.status}</span>
+                        </div>
+                      ),
+                    },
+                    {
+                      key: "Sign Up Date:",
+                      value: user?.user?.signUpDate,
+                    },
+                    {
+                      key: "Last Active:",
+                      value: user?.user?.lastActive,
+                    },
+                    {
+                      key: "Today's Limit",
+                      valueComponent: (
+                        <div className={styles.progressContainer}>
+                          <div className={styles.progress}>
+                            <div
+                              className={styles.fill}
+                              style={{ width: "70%" }}
+                            />
+                          </div>
+                          <span>70%</span>
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
+                <div className={styles.footer}>
+                  <div>
+                    <Button className={styles.footerBtns} color="white">
+                      View Buy/sell Transactions
+                    </Button>
+                  </div>
+                  <div>
+                    <Button className={styles.footerBtns} color="white">
+                      View card transactions
+                    </Button>
+                  </div>
+                  <div>
+                    <Button className={styles.footerBtns} color="white">
+                      View Deposit/withdrawal Transactions
+                    </Button>
+                  </div>
+                  <div>
+                    <Button className={styles.footerBtns} color="white">
+                      View swap transactions
+                    </Button>
+                  </div>
+                  <div>
+                    {" "}
+                    <Button className={styles.footerBtns} color="white">
+                      View Utility transactions
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Divider />
+            <h2 className={styles.title}>User Details</h2>
+            <div className={styles.tabContainer}>
+              <button
+                onClick={() => setCurrentTab("paymentAccounts")}
+                style={{
+                  background:
+                    currentTab === "paymentAccounts" ? "white" : "none",
+                  border:
+                    currentTab === "paymentAccounts"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "paymentAccounts"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                Payment Accounts
+              </button>
+              <button
+                onClick={() => setCurrentTab("accountBalance")}
+                style={{
+                  background:
+                    currentTab === "accountBalance" ? "white" : "none",
+                  border:
+                    currentTab === "accountBalance"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "accountBalance"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                Account Balance
+              </button>
+              <button
+                onClick={() => setCurrentTab("kycVerification")}
+                style={{
+                  background:
+                    currentTab === "kycVerification" ? "white" : "none",
+                  border:
+                    currentTab === "kycVerification"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "kycVerification"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                KYC Verification
+              </button>
+              <button
+                onClick={() => setCurrentTab("cards")}
+                style={{
+                  background: currentTab === "cards" ? "white" : "none",
+                  border:
+                    currentTab === "cards"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "cards"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                Cards
+              </button>
+            </div>
+            {currentTab === "accountBalance" && (
+              <AccountBalanceTable data={user?.cryptoAccountBalances} />
+            )}
+            {currentTab === "kycVerification" && (
+              <KYCVerificationTable data={[user.kycInfo]} />
+            )}
+            {currentTab === "paymentAccounts" && (
+              <PaymentAccountsTable data={user?.paymentAccounts} />
+            )}
+            {currentTab === "cards" && <CardsTable />}
+          </div>
+        </>
+      )}
     </PageLayout>
   );
 };

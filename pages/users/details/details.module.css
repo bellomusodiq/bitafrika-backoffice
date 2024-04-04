@@ -352,3 +352,15 @@
   line-height: 60px; /* 125% */
   letter-spacing: -0.96px;
 }
+.photoContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.photoTitle {
+  width: 10%;
+}
+.photo {
+  flex: 1;
+  margin-left: 10px;
+}

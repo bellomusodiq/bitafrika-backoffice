@@ -22,10 +22,10 @@ const USER_COLUMNS: any = [
   {
     title: "Name",
     dataIndex: "name",
-    render: (_: any, { name }: any) => (
+    render: (_: any, { name, avatar }: any) => (
       <div className={styles.nameContainer}>
-        <span className={styles.avatar}>EN</span>
-        <span className={styles.name}>Emmanuel Nkrumah</span>
+        <span className={styles.avatar}>{avatar}</span>
+        <span className={styles.name}>{name}</span>
       </div>
     ),
   },
@@ -41,8 +41,8 @@ const USER_COLUMNS: any = [
   },
   {
     title: "Phonenumber",
-    dataIndex: "phonenumber",
-    key: "phonenumber",
+    dataIndex: "phone",
+    key: "phone",
   },
   {
     title: "Actions",
@@ -57,44 +57,6 @@ const USER_COLUMNS: any = [
   },
 ];
 
-const USER_DATA = [
-  {
-    key: "1",
-    username: "@username",
-    email: "EmmanuelNkrumah@email.com",
-    biller: "MTN Ghana",
-    phonenumber: "0708 000 0000",
-  },
-  {
-    key: "2",
-    username: "@username",
-    email: "EmmanuelNkrumah@email.com",
-    biller: "MTN Ghana",
-    phonenumber: "0708 000 0000",
-  },
-  {
-    key: "3",
-    username: "@username",
-    email: "EmmanuelNkrumah@email.com",
-    biller: "MTN Ghana",
-    phonenumber: "0708 000 0000",
-  },
-  {
-    key: "4",
-    username: "@username",
-    email: "EmmanuelNkrumah@email.com",
-    biller: "MTN Ghana",
-    phonenumber: "0708 000 0000",
-  },
-  {
-    key: "5",
-    username: "@username",
-    email: "EmmanuelNkrumah@email.com",
-    biller: "MTN Ghana",
-    phonenumber: "0708 000 0000",
-  },
-];
-
 export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
@@ -103,11 +65,50 @@ export default function Search() {
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
+
+  let auth: any;
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const getUsers = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/users?page=${page}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        if (res.data.success) {
+          const response = res.data.data.users.map((item: any) => ({
+            ...item,
+            name: `${item.firstName} ${item.lastName}`,
+            avatar: `${item.firstName?.[0]}${item.lastName?.[0]}`,
+            action: () => router.push(`/users/details/${item.username}`),
+          }));
+          if (page === 1) {
+            setData(response);
+          } else {
+            setData([...data, ...response]);
+          }
+        }
+        if (res.data.data.pageInfo?.hasNextPage) {
+          setPage((currentPage) => currentPage + 1);
+        }
+      });
+  };
 
   const onSearch = () => {
     switch (searchType) {
       case "Registered":
-        setData(USER_DATA);
+        getUsers();
         break;
       default:
         setData([]);
@@ -129,7 +130,7 @@ export default function Search() {
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
-          <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>Filter results by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -164,11 +165,9 @@ export default function Search() {
           </div>
         </div>
         {data.length === 0 ? (
-          <p className={styles.searchHint}>
-            
-          </p>
+          <p className={styles.searchHint}></p>
         ) : (
-          <div className={styles.table} style={{overflow: "hidden"}}>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
               style={{
@@ -176,15 +175,25 @@ export default function Search() {
                 border: "1px solid var(--Gray-200, #EAECF0)",
                 borderRadius: 12,
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                overflow: "hidden"
+                overflow: "hidden",
               }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => router.push("/users/details/1"),
-              }))}
+              dataSource={data}
               columns={getColumns()}
               loading={loading}
+              pagination={false}
             />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: 20,
+                marginBottom: 40,
+              }}
+            >
+              <div>
+                <Button onClick={getUsers}>Load More</Button>
+              </div>
+            </div>
           </div>
         )}
       </div>

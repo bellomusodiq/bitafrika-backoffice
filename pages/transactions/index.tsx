@@ -138,44 +138,6 @@ const SELL_COLUMN = [
   },
 ];
 
-const SELL_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    total: "GHS 750,099.00",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    total: "GHS 750,099.00",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    total: "GHS 750,099.00",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    total: "GHS 750,099.00",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
 
 const RECEIVE_COLUMN = [
   {
@@ -229,41 +191,6 @@ const RECEIVE_COLUMN = [
         </div>
       </div>
     ),
-  },
-];
-
-const RECEIVE_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
   },
 ];
 
@@ -325,45 +252,6 @@ const WITHDRAWAL_COLUMN = [
         </div>
       </div>
     ),
-  },
-];
-
-const WITHDRAWAL_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    to: "OXF1245...566645",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    to: "OXF1245...566645",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    to: "OXF1245...566645",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    asset: "Bitcoin",
-    amount: "$7500.99",
-    to: "OXF1245...566645",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
   },
 ];
 
@@ -441,54 +329,6 @@ const SWAP_COLUMN = [
         </div>
       </div>
     ),
-  },
-];
-
-const SWAP_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    swapPair: { from: "BTC", to: "USDT" },
-    from: "1.2334 BTC",
-    to: "10000.1 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    swapPair: { from: "BTC", to: "USDT" },
-    from: "1.2334 BTC",
-    to: "10000.1 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    swapPair: { from: "BTC", to: "USDT" },
-    from: "1.2334 BTC",
-    to: "10000.1 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    swapPair: { from: "BTC", to: "USDT" },
-    from: "1.2334 BTC",
-    to: "10000.1 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    swapPair: { from: "BTC", to: "USDT" },
-    from: "1.2334 BTC",
-    to: "10000.1 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
   },
 ];
 
@@ -859,49 +699,6 @@ const GIFTCARDS_COLUMN = [
   },
 ];
 
-const GIFTCARDS_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    cardType: "Apple Itunes",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    cardType: "Apple Itunes",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    cardType: "Apple Itunes",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    cardType: "Apple Itunes",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    cardType: "Apple Itunes",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
-
 export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -942,6 +739,7 @@ export default function Search() {
               phoneNumber: item.phone,
               country: item.countryCode,
               total: `${item.currency} ${item.amount}`,
+              asset: item.cryptoSymbol,
               action: () => showModal(item),
             }))
           );
@@ -971,7 +769,8 @@ export default function Search() {
             email: item.email,
             phoneNumber: item.phone,
             amount: `$${item.usdAmount}`,
-            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
+            asset: item.cryptoCurrency,
+            total: `${item.cryptoPrice} ${item.cryptoCurrency}`,
             date: item.newDate,
             action: () => {
               showModal(item);
