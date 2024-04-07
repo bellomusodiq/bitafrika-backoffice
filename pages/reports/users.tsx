@@ -8,6 +8,9 @@ import { DatePicker, Divider, Table } from "antd";
 import Modal from "@/components/Modal";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
+import { BASE_URL } from "@/CONFIG";
+import axios from "axios";
+import formatDate from "@/utils/formatDate";
 
 const BALANCE_COLUMNS = [
   {
@@ -17,50 +20,29 @@ const BALANCE_COLUMNS = [
   },
   {
     title: "Balance",
-    dataIndex: "balance",
-    key: "balance",
+    dataIndex: "usdBalance",
+    key: "usdBalance",
+    render: (_: any, { usdBalance }: any) => <>${usdBalance}</>,
   },
   {
     title: "Actions",
     dataIndex: "action",
-    render: (_: any, { action }: any) => (
+    render: (_: any, { action, loading }: any) => (
       <div className={styles.actionButton}>
         <div>
           <Button className={styles.whiteButton} onClick={action}>
-            <img src="/icons/assets.svg" />
-            <span>Asset breakdown</span>
+            {loading ? (
+              <>Loading...</>
+            ) : (
+              <>
+                <img src="/icons/assets.svg" />
+                <span>Asset breakdown</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
     ),
-  },
-];
-
-const BALANCE_DATA = [
-  {
-    key: "1",
-    username: "Mike",
-    balance: "$2,000,000.00",
-  },
-  {
-    key: "2",
-    username: "Mike",
-    balance: "$2,000,000.00",
-  },
-  {
-    key: "3",
-    username: "Mike",
-    balance: "$2,000,000.00",
-  },
-  {
-    key: "4",
-    username: "Mike",
-    balance: "$2,000,000.00",
-  },
-  {
-    key: "5",
-    username: "Mike",
-    balance: "$2,000,000.00",
   },
 ];
 
@@ -72,13 +54,13 @@ const BUY_COLUMNS = [
   },
   {
     title: "No of trnx",
-    dataIndex: "noTrx",
-    key: "noTrx",
+    dataIndex: "count",
+    key: "count",
   },
   {
     title: "USD value",
-    dataIndex: "usdValue",
-    key: "usdValue",
+    dataIndex: "total",
+    key: "total",
   },
   {
     title: "Actions",
@@ -93,39 +75,6 @@ const BUY_COLUMNS = [
         </div>
       </div>
     ),
-  },
-];
-
-const BUY_DATA = [
-  {
-    key: "1",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "2",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "3",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "4",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "5",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
   },
 ];
 
@@ -137,13 +86,13 @@ const SELL_COLUMN = [
   },
   {
     title: "No of trnx",
-    dataIndex: "noTrx",
-    key: "noTrx",
+    dataIndex: "count",
+    key: "count",
   },
   {
     title: "USD value",
-    dataIndex: "usdValue",
-    key: "usdValue",
+    dataIndex: "total",
+    key: "total",
   },
   {
     title: "Actions",
@@ -161,57 +110,196 @@ const SELL_COLUMN = [
   },
 ];
 
-const SELL_DATA = [
-  {
-    key: "1",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "2",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "3",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "4",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-  {
-    key: "5",
-    username: "Mike",
-    noTrx: 1024,
-    usdValue: "$100,009.00",
-  },
-];
-
 export default function Search() {
   const [search, setSearch] = useState<string>("");
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Balance");
+  const [sort, setSort] = useState<string>("highest");
+  const [page, setPage] = useState<number | null>(1);
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+
+  let auth: any;
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const getAssetBreakdown = (user: any, i: number) => {
+    setCurrentUser(user);
+    setLoadingIndex(i);
+    axios
+      .post(
+        `${BASE_URL}/reports/user/balance/${user.username}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoadingIndex(null);
+        setOpenModal(res.data);
+      });
+  };
+
+  const getBuyAssetBreakdown = (user: any, i: number) => {
+    setCurrentUser(user);
+    setLoadingIndex(i);
+    axios
+      .post(
+        `${BASE_URL}/reports/buy/${user.username}?from=${fromDate}&to=${toDate}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoadingIndex(null);
+        setOpenModal(res.data);
+      });
+  };
+
+  const getSellAssetBreakdown = (user: any, i: number) => {
+    setCurrentUser(user);
+    setLoadingIndex(i);
+    axios
+      .post(
+        `${BASE_URL}/reports/sell/${user.username}?from=${fromDate}&to=${toDate}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res) => {
+        setLoadingIndex(null);
+        setOpenModal(res.data);
+      });
+  };
+
+  const searchUserBalance = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/user/balance?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        const newData = res.data?.data?.map((user: any, i: any) => ({
+          ...user,
+          action: () => {
+            getAssetBreakdown(user, i);
+          },
+          loading: i === loadingIndex,
+        }));
+
+        if (page === 1) {
+          setData(newData);
+        } else {
+          setData([...data, ...newData]);
+        }
+        if (res.data.data.pageInfo?.hasNextPage) {
+          setPage((currentPage) => Number(currentPage) + 1);
+        } else {
+          setPage(null);
+        }
+      });
+  };
+
+  const searchBuyNoTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/user/buy?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        const newData = res.data?.data?.map((user: any, i: any) => ({
+          ...user,
+          action: () => {
+            getBuyAssetBreakdown(user, i);
+          },
+          loading: i === loadingIndex,
+        }));
+
+        if (page === 1) {
+          setData(newData);
+        } else {
+          setData([...data, ...newData]);
+        }
+        if (res.data.data.pageInfo?.hasNextPage) {
+          setPage((currentPage) => Number(currentPage) + 1);
+        } else {
+          setPage(null);
+        }
+      });
+  };
+
+  const searchSellNoTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/user/sell?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        const newData = res.data?.data?.map((user: any, i: any) => ({
+          ...user,
+          action: () => {
+            getSellAssetBreakdown(user, i);
+          },
+          loading: i === loadingIndex,
+        }));
+
+        if (page === 1) {
+          setData(newData);
+        } else {
+          setData([...data, ...newData]);
+        }
+        if (res.data.data.pageInfo?.hasNextPage) {
+          setPage((currentPage) => Number(currentPage) + 1);
+        } else {
+          setPage(null);
+        }
+      });
+  };
 
   const onSearch = () => {
     switch (searchType) {
       case "Balance":
-        setData(BALANCE_DATA);
+        searchUserBalance();
         break;
       case "Buy":
-        setData(BUY_DATA);
+        searchBuyNoTransactions();
         break;
       case "Sell":
-        setData(SELL_DATA);
+        searchSellNoTransactions();
         break;
     }
   };
@@ -235,7 +323,7 @@ export default function Search() {
     <PageLayout title="Hone">
       <Modal
         openModal={openModal && searchType === "Balance"}
-        onClose={() => setOpenModal(false)}
+        onClose={() => setOpenModal(null)}
         headerLeft={<img src="/icons/assets-dark.svg" />}
         headerCenter={<p>Assets breakdown</p>}
       >
@@ -250,148 +338,76 @@ export default function Search() {
           >
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                User: <span style={{ color: "#1570EF" }}>@Samuel12345</span>
+                User:{" "}
+                <span style={{ color: "#1570EF" }}>
+                  @{currentUser.username}
+                </span>
               </p>
             </div>
             <div className={styles.keyValue}>
               <p className={styles.key}>
                 Total balance:{" "}
-                <span style={{ color: "black" }}>$20,000.00</span>
+                <span style={{ color: "black" }}>
+                  ${openModal?.totalUsdAmount}
+                </span>
               </p>
             </div>
           </div>
           <div className={styles.assetPieContainer}>
             <p>Assets</p>
             <div style={{ width: 160, height: 160 }}>
-              <CustomPieChart />
+              <CustomPieChart
+                data={openModal?.data.map((item: any) => ({
+                  name: item.name,
+                  value: item.percentage,
+                }))}
+              />
             </div>
           </div>
           <div className={styles.divider} />
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+          {openModal?.data?.map((asset: any) => (
             <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
+              key={asset.name}
+              className={styles.keyValue}
+              style={{ marginBottom: 24 }}
             >
               <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              Tron (50%)
+                className={styles.key}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: "#9BB0FD",
+                    marginRight: 8,
+                    fontSize: 14,
+                    lineHeight: 20,
+                    color: "#101828",
+                  }}
+                />
+                {asset.name} ({asset.percentage * 100}%)
+              </div>
+              <div className={styles.value}>
+                <p
+                  style={{ fontSize: 14, color: "#101828", textAlign: "right" }}
+                >
+                  {asset.cryptoBalance} {asset.coin}
+                </p>
+                <p
+                  style={{ fontSize: 14, color: "#667085", textAlign: "right" }}
+                >
+                  ~${asset.usd}
+                </p>
+              </div>
             </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>1508.908 TRX</p>
-              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              Matic (30%)
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>1508.908 MATIC</p>
-              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              Binance coin (30%)
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>1.2346 BNB</p>
-              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              Bitcoin (30%)
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>0.12346 BTC</p>
-              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              Litecoin (0%)
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>0.12346 LTC</p>
-              <p style={{ fontSize: 14, color: "#667085" }}>~$100.60</p>
-            </div>
-          </div>
+          ))}
         </div>
       </Modal>
       <Modal
         openModal={openModal && searchType === "Buy"}
-        onClose={() => setOpenModal(false)}
+        onClose={() => setOpenModal(null)}
         headerLeft={<img src="/icons/assets-dark.svg" />}
         headerCenter={<p>Order breakdown</p>}
       >
@@ -406,172 +422,75 @@ export default function Search() {
           >
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                User: <span style={{ color: "#1570EF" }}>@Samuel12345</span>
+                User:{" "}
+                <span style={{ color: "#1570EF" }}>
+                  @{currentUser.username}
+                </span>
               </p>
             </div>
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                No of buy orders: <span style={{ color: "black" }}>1009</span>
+                No of buy orders:{" "}
+                <span style={{ color: "black" }}>MISSING</span>
               </p>
             </div>
           </div>
           <div className={styles.assetPieContainer}>
             <p>Assets</p>
             <div style={{ width: 160, height: 160 }}>
-              <CustomPieChart />
+              <CustomPieChart
+                data={openModal?.data?.map((item: any) => ({
+                  name: item.name,
+                  value: item.totalUSD,
+                }))}
+              />
             </div>
           </div>
           <div className={styles.divider} />
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+          {openModal?.data?.map((asset: any) => (
             <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
+              key={asset.coin}
+              className={styles.keyValue}
+              style={{ marginBottom: 24 }}
             >
               <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              BTC
+                className={styles.key}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: "#9BB0FD",
+                    marginRight: 8,
+                    fontSize: 14,
+                    lineHeight: 20,
+                    color: "#101828",
+                  }}
+                />
+                {asset.coin}
+              </div>
+              <div className={styles.value}>
+                <p style={{ fontSize: 14, color: "#101828" }}>MISSING orders</p>
+              </div>
+              <div className={styles.value}>
+                <p style={{ fontSize: 14, color: "#667085" }}>
+                  {asset.totalCrypto} {asset.coin}
+                </p>
+              </div>
+              <div className={styles.value}>
+                <p style={{ fontSize: 14, color: "#101828" }}>
+                  ~${asset.totalUSD}
+                </p>
+              </div>
             </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 BTC</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              TRX
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 TRX</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              USDT
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 USDT</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              MATIC
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 MATIC</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              LTC
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 LTC</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
+          ))}
         </div>
       </Modal>
       <Modal
         openModal={openModal && searchType === "Sell"}
-        onClose={() => setOpenModal(false)}
+        onClose={() => setOpenModal(null)}
         headerLeft={<img src="/icons/assets-dark.svg" />}
         headerCenter={<p>Order breakdown</p>}
       >
@@ -586,167 +505,70 @@ export default function Search() {
           >
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                User: <span style={{ color: "#1570EF" }}>@Samuel12345</span>
+                User:{" "}
+                <span style={{ color: "#1570EF" }}>
+                  @{currentUser.username}
+                </span>
               </p>
             </div>
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                No of sell orders: <span style={{ color: "black" }}>1009</span>
+                No of sell orders:{" "}
+                <span style={{ color: "black" }}>MISSING</span>
               </p>
             </div>
           </div>
           <div className={styles.assetPieContainer}>
             <p>Assets</p>
             <div style={{ width: 160, height: 160 }}>
-              <CustomPieChart />
+              <CustomPieChart
+                data={openModal?.data?.map((item: any) => ({
+                  name: item.name,
+                  value: item.totalUSD,
+                }))}
+              />
             </div>
           </div>
           <div className={styles.divider} />
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
+          {openModal?.data?.map((asset: any) => (
             <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
+              key={asset.coin}
+              className={styles.keyValue}
+              style={{ marginBottom: 24 }}
             >
               <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              BTC
+                className={styles.key}
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: "#9BB0FD",
+                    marginRight: 8,
+                    fontSize: 14,
+                    lineHeight: 20,
+                    color: "#101828",
+                  }}
+                />
+                {asset.coin}
+              </div>
+              <div className={styles.value}>
+                <p style={{ fontSize: 14, color: "#101828" }}>MISSING orders</p>
+              </div>
+              <div className={styles.value}>
+                <p style={{ fontSize: 14, color: "#667085" }}>
+                  {asset.totalCrypto} {asset.coin}
+                </p>
+              </div>
+              <div className={styles.value}>
+                <p style={{ fontSize: 14, color: "#101828" }}>
+                  ~${asset.totalUSD}
+                </p>
+              </div>
             </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 BTC</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              TRX
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 TRX</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              USDT
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 USDT</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              MATIC
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 MATIC</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
-          <div className={styles.keyValue} style={{ marginBottom: 24 }}>
-            <div
-              className={styles.key}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: "#9BB0FD",
-                  marginRight: 8,
-                  fontSize: 14,
-                  lineHeight: 20,
-                  color: "#101828",
-                }}
-              />
-              LTC
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>500 orders</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#667085" }}>12.6067 LTC</p>
-            </div>
-            <div className={styles.value}>
-              <p style={{ fontSize: 14, color: "#101828" }}>~$100.60</p>
-            </div>
-          </div>
+          ))}
         </div>
       </Modal>
       <div className={styles.container}>
@@ -764,6 +586,7 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
+                  setPage(1);
                   setData([]);
                 }}
               />
@@ -772,20 +595,26 @@ export default function Search() {
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Sort by</p>
               <Dropdown
-                value={searchType}
+                value={sort}
                 options={[
-                  { title: "Highest", value: "Highest" },
-                  { title: "Lowest", value: "Lowest" },
+                  { title: "Highest", value: "higest" },
+                  { title: "Lowest", value: "lowest" },
                 ]}
                 onChange={(value) => {
-                  setSearchType(String(value));
+                  setSort(String(value));
                   setData([]);
                 }}
               />
             </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker style={{ height: 48 }} />
+              <DatePicker.RangePicker
+                style={{ height: 48 }}
+                onChange={(values: any) => {
+                  setFromDate(formatDate(values[0].$d));
+                  setToDate(formatDate(values[1].$d));
+                }}
+              />
             </div>
             <div
               style={{
@@ -817,13 +646,24 @@ export default function Search() {
           >
             <Table
               style={{ fontFamily: "PP Telegraf", marginTop: 24 }}
-              dataSource={data?.map((item: any) => ({
-                ...item,
-                action: () => setOpenModal(true),
-              }))}
+              dataSource={data}
               columns={getColumns()}
               loading={loading}
+              pagination={false}
             />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                marginTop: 20,
+                marginBottom: 40,
+                paddingRight: 20,
+              }}
+            >
+              <div>
+                <Button onClick={onSearch}>Load More</Button>
+              </div>
+            </div>
           </div>
         )}
       </div>

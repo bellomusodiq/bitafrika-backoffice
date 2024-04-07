@@ -204,48 +204,6 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
   },
 ];
 
-const CRYPTO_TRANSACTIONS_DATA = [
-  {
-    transactionId: "#20022002200",
-    username: "Samuel12345",
-    amountCrypto: "0.00000034566 BTC",
-    amountUSD: "$4,000.00",
-    status: "Confirmed (24/24)",
-    txType: "Receive",
-  },
-  {
-    transactionId: "#20022002200",
-    username: "Samuel12345",
-    amountCrypto: "0.00000034566 BTC",
-    amountUSD: "$4,000.00",
-    status: "Confirmed (24/24)",
-    txType: "Receive",
-  },
-  {
-    transactionId: "#20022002200",
-    username: "Samuel12345",
-    amountCrypto: "0.00000034566 BTC",
-    amountUSD: "$4,000.00",
-    status: "Confirmed (24/24)",
-    txType: "Receive",
-  },
-  {
-    transactionId: "#20022002200",
-    username: "Samuel12345",
-    amountCrypto: "0.00000034566 BTC",
-    amountUSD: "$4,000.00",
-    status: "Confirmed (24/24)",
-    txType: "Receive",
-  },
-  {
-    transactionId: "#20022002200",
-    username: "Samuel12345",
-    amountCrypto: "0.00000034566 BTC",
-    amountUSD: "$4,000.00",
-    status: "Confirmed (24/24)",
-    txType: "Receive",
-  },
-];
 
 export default function Search() {
   const [search, setSearch] = useState<string>("");

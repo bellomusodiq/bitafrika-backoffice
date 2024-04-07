@@ -65,7 +65,7 @@ export default function Search() {
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number | null>(1);
 
   let auth: any;
   if (typeof window !== "undefined") {
@@ -100,7 +100,9 @@ export default function Search() {
           }
         }
         if (res.data.data.pageInfo?.hasNextPage) {
-          setPage((currentPage) => currentPage + 1);
+          setPage((currentPage) => Number(currentPage) + 1);
+        } else {
+          setPage(null)
         }
       });
   };

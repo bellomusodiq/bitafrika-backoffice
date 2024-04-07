@@ -14,7 +14,9 @@ const CoinListing: React.FC<CoinListingProps> = ({ title, coins }) => {
       <div style={{ padding: "0 24px" }}>
         {coins.map((coin, i) => (
           <React.Fragment key={coin.coin}>
-            <Link href="/assets/1" className={styles.coinItem}>
+            <Link href={{
+              pathname: `assets/${coin.coin_code}`,
+            }} className={styles.coinItem}>
               <img className={styles.coinImage} src={coinImage[coin.coin_code]} />
               <p className={styles.coinName}>{coin.coin}</p>
               <p className={styles.coinBalance}>
