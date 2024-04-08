@@ -212,7 +212,7 @@ export default function Search() {
         } else {
           setData([...data, ...newData]);
         }
-        if (res.data.data.pageInfo?.hasNextPage) {
+        if (res?.data?.data?.pageInfo?.hasNextPage) {
           setPage((currentPage) => Number(currentPage) + 1);
         } else {
           setPage(null);
@@ -247,7 +247,7 @@ export default function Search() {
         } else {
           setData([...data, ...newData]);
         }
-        if (res.data.data.pageInfo?.hasNextPage) {
+        if (res?.data?.data?.pageInfo?.hasNextPage) {
           setPage((currentPage) => Number(currentPage) + 1);
         } else {
           setPage(null);
@@ -282,7 +282,7 @@ export default function Search() {
         } else {
           setData([...data, ...newData]);
         }
-        if (res.data.data.pageInfo?.hasNextPage) {
+        if (res?.data?.data?.pageInfo?.hasNextPage) {
           setPage((currentPage) => Number(currentPage) + 1);
         } else {
           setPage(null);

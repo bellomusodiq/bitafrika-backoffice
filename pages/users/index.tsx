@@ -99,7 +99,7 @@ export default function Search() {
             setData([...data, ...response]);
           }
         }
-        if (res.data.data.pageInfo?.hasNextPage) {
+        if (res?.data?.data?.pageInfo?.hasNextPage) {
           setPage((currentPage) => Number(currentPage) + 1);
         } else {
           setPage(null)

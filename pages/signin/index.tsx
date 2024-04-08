@@ -37,11 +37,7 @@ const Signin: React.FC<NextPage> = () => {
   const [pin, setPin] = useState<string>("");
   const [token, setToken] = useState<any>(null);
   const [disabled, setDisabled] = useState<boolean>(true);
-  const [loginRes, setLoginRes] = useState<any>({
-    requestId: "5333cd317646b720",
-    isMfaEnabled: false,
-    dataURL: "data:image/png;base64,SOME LONG STRING",
-  });
+  const [loginRes, setLoginRes] = useState<any>({});
 
   const onLoad = () => {
     // this reaches out to the hCaptcha JS API and runs the
@@ -58,7 +54,7 @@ const Signin: React.FC<NextPage> = () => {
       .then((res) => {
         setLoading(false);
         if (res.data.success) {
-          // setLoginRes(res.data.data);
+          setLoginRes(res.data.data);
           // localStorage.setItem("auth", JSON.stringify(res.data.account));
           // router.replace("/dashboard", "/dashboard");
           setShowModal(true);
@@ -101,7 +97,7 @@ const Signin: React.FC<NextPage> = () => {
       .then((res) => {
         setLoading(false);
         if (res.data.success) {
-          // setLoginRes(res.data.data);
+          setLoginRes(res.data.data);
           localStorage.setItem("auth", JSON.stringify(res.data.data));
           router.replace("/dashboard", "/dashboard");
           setShowModal(false);
@@ -158,6 +154,9 @@ const Signin: React.FC<NextPage> = () => {
       updatePin(e.target.value);
     }
   };
+
+  console.log(loginRes);
+  
 
   return (
     <div className={styles.container}>
@@ -290,10 +289,6 @@ const Signin: React.FC<NextPage> = () => {
                 // onExpire={onExpire}
                 ref={captchaRef}
               />
-            </div>
-            <div className={styles.rememberContainer}>
-              <input className={styles.checkbox} type="checkbox" />
-              <p className={styles.rememberText}>Remember for 30 days</p>
             </div>
             {!disabled && (
               <div className={styles.buttonContainer}>
