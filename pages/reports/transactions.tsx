@@ -11,22 +11,118 @@ import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
+import formatDate from "@/utils/formatDate";
 
 export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<boolean>(false);
+  const [data, setData] = useState<any>({});
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
+  const [coin, setCoin] = useState<string>("BTC");
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+  const [status, setStatus] = useState<string>("success");
 
-  const onSearch = () => {
-    setData(true);
-  };
+  let auth: any;
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
 
   const showModal = (user: any) => {
     setCurrentUser(user);
     setOpenModal(true);
+  };
+
+  const searchBuyReports = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/transactions/buy?from=${fromDate}&to=${toDate}&status=${status}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        setData(res.data.data);
+      });
+  };
+
+  const searchSellReports = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/transactions/sell?from=${fromDate}&to=${toDate}&status=${status}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        setData(res.data.data);
+      });
+  };
+
+  const searchSendReports = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/transactions/send?from=${fromDate}&to=${toDate}&status=${status}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        setData(res.data.data);
+      });
+  };
+
+  const searchReceiveReports = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/reports/transactions/receive?from=${fromDate}&to=${toDate}&status=${status}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        setData(res.data.data);
+      });
+  };
+
+  const onSearch = () => {
+    switch (searchType) {
+      case "Buy":
+        searchBuyReports();
+        break;
+      case "Sell":
+        searchSellReports();
+        break;
+      case "Send":
+        searchSendReports();
+        break;
+      case "Receive":
+        searchReceiveReports();
+        break;
+    }
   };
 
   return (
@@ -48,26 +144,32 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData(false);
+                  setData({});
                 }}
               />
             </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker style={{ height: 48 }} />
+              <DatePicker.RangePicker
+                style={{ height: 48 }}
+                onChange={(values: any) => {
+                  setFromDate(formatDate(values[0].$d));
+                  setToDate(formatDate(values[1].$d));
+                }}
+              />
             </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Status</p>
               <Dropdown
-                value={searchType}
+                value={status}
                 options={[
-                  { title: "Successful", value: "Successful" },
-                  { title: "Pending", value: "Pending" },
-                  { title: "Failed", value: "Failed" },
+                  { title: "Successful", value: "success" },
+                  { title: "Pending", value: "pending" },
+                  { title: "Failed", value: "failed" },
                 ]}
                 onChange={(value) => {
-                  setSearchType(String(value));
-                  setData(false);
+                  setStatus(String(value));
+                  setData({});
                 }}
               />
             </div>
@@ -91,42 +193,26 @@ export default function Search() {
         {data && searchType === "Buy" && (
           <div className={styles.bodyContainer}>
             <h3 className={styles.header}>Buy transactions report</h3>
-            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
-            <p className={styles.date}>Status: Successful</p>
+            <p className={styles.date}>
+              Date: {fromDate} — {toDate}
+            </p>
+            <p className={styles.date}>Status: {status}</p>
 
             <h3 style={{ marginTop: 14 }} className={styles.header}>
               Buy orders
             </h3>
             <div className={styles.ordersContainer}>
               <div style={{ flex: 1 }}>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>BTC</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>LTC</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>DOGE</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>TRX</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
+                {data?.orders?.map((order: any) => (
+                  <div className={styles.order} key={order.coion}>
+                    <div className={styles.orderIcon} />
+                    <p className={styles.orderText}>
+                      <span>{order.coin}</span>{" "}
+                      <span> {order.count} orders</span>
+                      <span className={styles.grey}>{order.usdTotal} USD</span>
+                    </p>
+                  </div>
+                ))}
               </div>
               <div
                 style={{
@@ -158,7 +244,7 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ margin: "24px 0" }} />
             <div className={styles.totalHeader}>
-              <p>Total buy orders: 7000</p>
+              <p>Total buy orders: {data?.totalCount}</p>
               <a href="#">View orders</a>
             </div>
             <div className={styles.footerHeaderContainer}>
@@ -168,63 +254,33 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ marginTop: 5 }} />
             <div className={styles.totalContainer}>
-              <p>GHS 109,000</p>
-              <p>GHS 0.00</p>
-              <p style={{ color: "#1570EF" }}>GHS 109,000</p>
+              <p>GHS {data?.totalAmount}</p>
+              <p>GHS {data?.totalFees}</p>
+              <p style={{ color: "#1570EF" }}>GHS {data?.grandTotal}</p>
             </div>
           </div>
         )}
         {data && searchType === "Sell" && (
           <div className={styles.bodyContainer}>
             <p className={styles.header}>Sell transactions report</p>
-            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
-            <p className={styles.date}>Status: Successful</p>
+            <p className={styles.date}>
+              Date: {fromDate} — {toDate}
+            </p>
+            <p className={styles.date}>Status: {status}</p>
 
             <p className={styles.header}>Sell orders</p>
             <div className={styles.ordersContainer}>
               <div style={{ flex: 1 }}>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>BTC</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>TRX</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>LTC</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>DOGE</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>MATIC</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText}>
-                    <span>BTC</span> <span> 1001 orders</span>
-                    <span className={styles.grey}>10,000.00 USD</span>
-                  </p>
-                </div>
+                {data?.orders?.map((order: any) => (
+                  <div className={styles.order} key={order.coin}>
+                    <div className={styles.orderIcon} />
+                    <p className={styles.orderText}>
+                      <span>{order.coin}</span>{" "}
+                      <span> {order.count} orders</span>
+                      <span className={styles.grey}>{order.usdTotal} USD</span>
+                    </p>
+                  </div>
+                ))}
               </div>
               <div
                 style={{
@@ -256,7 +312,7 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ margin: "24px 0" }} />
             <div className={styles.totalHeader}>
-              <p>Total sell orders: 7000</p>
+              <p>Total sell orders: {data.totalCount}</p>
               <a href="#">View orders</a>
             </div>
             <div className={styles.footerHeaderContainer}>
@@ -266,9 +322,9 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ marginTop: 5 }} />
             <div className={styles.totalContainer}>
-              <p>GHS 109,000</p>
-              <p>GHS 1000.00</p>
-              <p style={{ color: "#1570EF" }}>GHS 109,000</p>
+              <p>GHS {data.totalAmount}</p>
+              <p>GHS {data.totalFees}</p>
+              <p style={{ color: "#1570EF" }}>GHS {data.grandTotal}</p>
             </div>
           </div>
         )}
@@ -475,8 +531,7 @@ export default function Search() {
                 </div>
               </div>
               <p className={styles.profitText}>
-                110,000 120,000 ={" "}
-                <span style={{ color: "#1570EF" }}>440</span>
+                110,000 120,000 = <span style={{ color: "#1570EF" }}>440</span>
               </p>
               <div className={styles.divider} />
               <p className={styles.profitBreakdown}>Total profit breakdown</p>
@@ -492,52 +547,27 @@ export default function Search() {
         {data && searchType === "Send" && (
           <div className={styles.bodyContainer}>
             <p className={styles.header}>Send transactions report</p>
-            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
-            <p className={styles.date}>Status: Successful</p>
+            <p className={styles.date}>
+              Date: {fromDate} — {toDate}
+            </p>
+            <p className={styles.date}>Status: {status}</p>
 
             <p className={styles.header}>Send transactions</p>
             <div className={styles.ordersContainer}>
               <div style={{ flex: 1 }}>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>BTC</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>LTC</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>TRX</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>MATIC</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>DOGE</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
+                {data?.orders?.map((order: any) => (
+                  <div className={styles.order} key={order.coin}>
+                    <div className={styles.orderIcon} />
+                    <p className={styles.orderText1}>
+                      <span>{order.coin}</span> <span>{order.count} trnx</span>{" "}
+                      <span className={styles.grey}>
+                        {" "}
+                        {order.cryptoTotal} {order.coin}
+                      </span>{" "}
+                      <span className={styles.grey}>{order.usdTotal} USD</span>
+                    </p>
+                  </div>
+                ))}
               </div>
               <div
                 style={{
@@ -569,7 +599,7 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ margin: "24px 0" }} />
             <div className={styles.totalHeader}>
-              <p>Total send transactions: 7000</p>
+              <p>Total send transactions: {data.totalCount}</p>
               <a href="#">View transactions</a>
             </div>
           </div>
@@ -577,52 +607,28 @@ export default function Search() {
         {data && searchType === "Receive" && (
           <div className={styles.bodyContainer}>
             <p className={styles.header}>Received transactions report</p>
-            <p className={styles.date}>Date: 01/01/2023 — 01/01/2023</p>
-            <p className={styles.date}>Status: Successful</p>
+            <p className={styles.date}>
+              Date: {fromDate} — {toDate}
+            </p>
+            <p className={styles.date}>Status: {status}</p>
 
             <p className={styles.header}>Received transactions</p>
             <div className={styles.ordersContainer}>
               <div style={{ flex: 1 }}>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>BTC</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>LTC</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>TRX</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>MATIC</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
-                <div className={styles.order}>
-                  <div className={styles.orderIcon} />
-                  <p className={styles.orderText1}>
-                    <span>DOGE</span> <span>1001 trnx</span>{" "}
-                    <span className={styles.grey}> 10.02231 BTC</span>{" "}
-                    <span className={styles.grey}>10,010.00 USD</span>
-                  </p>
-                </div>
+                {data?.orders?.map((order: any) => (
+                  <div className={styles.order} key={order.coin}>
+                    <div className={styles.orderIcon} />
+                    <p className={styles.orderText1}>
+                      <span>{order.coin}</span>{" "}
+                      <span>{order.cryptoTotal} trnx</span>{" "}
+                      <span className={styles.grey}>
+                        {" "}
+                        {order.cryptoTotal} {order.coin}
+                      </span>{" "}
+                      <span className={styles.grey}>{order.usdTotal} USD</span>
+                    </p>
+                  </div>
+                ))}
               </div>
               <div
                 style={{
@@ -654,7 +660,7 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ margin: "24px 0" }} />
             <div className={styles.totalHeader}>
-              <p>Total recived transactions: 7000</p>
+              <p>Total recived transactions: {data.totalCount}</p>
               <a href="#">View transactions</a>
             </div>
           </div>

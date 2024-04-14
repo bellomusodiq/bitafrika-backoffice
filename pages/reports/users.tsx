@@ -122,6 +122,7 @@ export default function Search() {
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+  const [coin, setCoin] = useState<string>("BTC");
 
   let auth: any;
   if (typeof window !== "undefined") {
@@ -189,7 +190,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/balance?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/balance?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}&coin=${coin}`,
         {},
         {
           headers: {
@@ -613,6 +614,23 @@ export default function Search() {
                 onChange={(values: any) => {
                   setFromDate(formatDate(values[0].$d));
                   setToDate(formatDate(values[1].$d));
+                }}
+              />
+            </div>
+            <div className={styles.dropdownContainer}>
+              <p className={styles.dropdownTitle}>Coin</p>
+              <Dropdown
+                value={coin}
+                options={[
+                  { title: "BTC", value: "BTC" },
+                  { title: "ETH", value: "ETH" },
+                  { title: "DOGE", value: "DOGE" },
+                  { title: "USDT", value: "USDT" },
+                  { title: "TRX", value: "TRX" },
+                ]}
+                onChange={(value) => {
+                  setCoin(String(value));
+                  setData(false);
                 }}
               />
             </div>
