@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/country-settings/country-settings.module.css";
@@ -10,11 +10,160 @@ import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import Toggle from "@/components/Toggle";
+import { BASE_URL } from "@/CONFIG";
+import axios from "axios";
+import Loader from "@/components/Loader";
+import { toast } from "react-toastify";
 
 export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<string>("Basic Information");
   const [ratesTab, setRatesTab] = useState<string>("BTC");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [basicInfoLoading, setBasicInfoLoading] = useState<boolean>(false);
+  const [data, setData] = useState<any>({});
+  const [selectedRate, setSelectedRate] = useState<string>("");
+
+  let auth: any;
+  if (typeof window !== "undefined") {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const fetchCountrySettings = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/country-settings`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        setData(res.data.data);
+      });
+  };
+
+  const updateBasicInformation = () => {
+    setBasicInfoLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/country-settings/update-basic-info`,
+        {
+          id: data.id,
+          name: data.name,
+          shortName: data.shortName,
+          currencyName: data.currencyName,
+          currencyCode: data.currencyCode,
+          phoneCode: data.phoneCode,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setBasicInfoLoading(false);
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          toast.success("data updated sucessfully ");
+        }
+      })
+      .catch((e) => {
+        setBasicInfoLoading(false);
+        toast.error("Something went wrong! Try again");
+      });
+  };
+
+  const updatePaymentMethod = (method: string, value: boolean) => {
+    const newData = { ...data };
+    newData[method] = value;
+    setData(newData);
+    setBasicInfoLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/country-settings/update-payment-methods`,
+        {
+          id: data.id,
+          momo: data.momo,
+          bank: data.bank,
+          chipper: data.chipper,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setBasicInfoLoading(false);
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          toast.success("data updated sucessfully ");
+        }
+      })
+      .catch((e) => {
+        setBasicInfoLoading(false);
+        toast.error("Something went wrong! Try again");
+      });
+  };
+
+  const updateRate = () => {
+    setBasicInfoLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/country-settings/update-rates`,
+        {
+          id: data.id,
+          type: selectedRate,
+          sell: data.rates[selectedRate].sell,
+          buy: data.rates[selectedRate].buy,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setBasicInfoLoading(false);
+        if (!res.data.success) {
+          toast.error(res.data.message);
+        } else {
+          toast.success("data updated sucessfully ");
+        }
+      })
+      .catch((e) => {
+        setBasicInfoLoading(false);
+        toast.error("Something went wrong! Try again");
+      });
+  };
+
+  useEffect(() => {
+    fetchCountrySettings();
+  }, []);
+
+  const changeRate = (value: string, rateType: string) => {
+    const newData = { ...data };
+    newData.rates[selectedRate][rateType] = value;
+    setData(newData);
+  };
+
+  if (loading) {
+    return (
+      <PageLayout title="Home">
+        <div style={{ marginTop: 60 }}>
+          <Loader />
+        </div>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout title="Hone">
@@ -24,14 +173,19 @@ export default function Search() {
         onClose={() => setOpenModal(false)}
       >
         <div className={styles.modalContainer}>
-          <p className={styles.modalHeader}>Update (BITCOIN) rate</p>
+          <p className={styles.modalHeader}>Update {selectedRate} rate</p>
           <div className={styles.inputContainer}>
             <p>New Buy rate</p>
-            <input className={styles.modalInput} defaultValue={"0.00"} />
+            <input
+              className={styles.modalInput}
+              value={data.rates?.[selectedRate]?.buy}
+              onChange={(e: any) => changeRate(e.target.value, "buy")}
+            />
             <p>New Sell rate</p>
             <input
               className={styles.modalInput}
-              defaultValue={"0.00"}
+              value={data.rates?.[selectedRate]?.sell}
+              onChange={(e: any) => changeRate(e.target.value, "sell")}
             />
           </div>
 
@@ -44,7 +198,8 @@ export default function Search() {
               Cancel
             </Button>
             <Button
-              onClick={() => setOpenModal(false)}
+              onClick={updateRate}
+              loading={basicInfoLoading}
               className={styles.modalButton}
             >
               Add
@@ -101,10 +256,11 @@ export default function Search() {
               <p>Country</p>
               <div>
                 <Dropdown
+                  value={data.shortName}
                   options={[
-                    { title: "Ghana", value: "Ghana" },
-                    { title: "Cameroon", value: "Cameroon" },
-                    { title: "Nigeria", value: "Nigeria" },
+                    { title: "Ghana", value: "GN" },
+                    { title: "Cameroon", value: "CM" },
+                    { title: "Nigeria", value: "NG" },
                   ]}
                   onChange={() => {}}
                 />
@@ -114,28 +270,48 @@ export default function Search() {
             <div className={styles.bodyInputContainer}>
               <p>Country annotation (eg. USA)</p>
               <div>
-                <Input />
+                <Input
+                  value={data.shortName}
+                  onChange={(e) =>
+                    setData({ ...data, shortName: e.target.value })
+                  }
+                />
               </div>
             </div>
             <Divider style={{ margin: 0 }} />
             <div className={styles.bodyInputContainer}>
               <p>Currency</p>
               <div>
-                <Input />
+                <Input
+                  value={data.currencyName}
+                  onChange={(e) =>
+                    setData({ ...data, currencyName: e.target.value })
+                  }
+                />
               </div>
             </div>
             <Divider style={{ margin: 0 }} />
             <div className={styles.bodyInputContainer}>
               <p>Currency code (eg. USD)</p>
               <div>
-                <Input />
+                <Input
+                  value={data.currencyCode}
+                  onChange={(e) =>
+                    setData({ ...data, currencyCode: e.target.value })
+                  }
+                />
               </div>
             </div>
             <Divider style={{ margin: 0 }} />
             <div className={styles.bodyInputContainer}>
               <p>Phone code</p>
               <div>
-                <Input />
+                <Input
+                  value={data.phoneCode}
+                  onChange={(e) =>
+                    setData({ ...data, phoneCode: e.target.value })
+                  }
+                />
               </div>
             </div>
             <Divider style={{ margin: 0 }} />
@@ -146,7 +322,12 @@ export default function Search() {
                   <Button color="white">Cancel</Button>
                 </div>
                 <div>
-                  <Button>Save</Button>
+                  <Button
+                    loading={basicInfoLoading}
+                    onClick={updateBasicInformation}
+                  >
+                    Save
+                  </Button>
                 </div>
               </div>
             </div>
@@ -158,21 +339,30 @@ export default function Search() {
               <div className={styles.bodyInputContainer}>
                 <p>Mobile money</p>
                 <div>
-                  <Toggle />
+                  <Toggle
+                    defaultValue={data.momo}
+                    onToggle={(value) => updatePaymentMethod("momo", value)}
+                  />
                 </div>
               </div>
               <Divider style={{ margin: 0 }} />
               <div className={styles.bodyInputContainer}>
                 <p>Bank Transfer</p>
                 <div>
-                  <Toggle />
+                  <Toggle
+                    defaultValue={data.bank}
+                    onToggle={(value) => updatePaymentMethod("bank", value)}
+                  />
                 </div>
               </div>
               <Divider style={{ margin: 0 }} />
               <div className={styles.bodyInputContainer}>
                 <p>Chipper cash</p>
                 <div>
-                  <Toggle />
+                  <Toggle
+                    defaultValue={data.chipper}
+                    onToggle={(value) => updatePaymentMethod("chipper", value)}
+                  />
                 </div>
               </div>
             </div>
@@ -189,12 +379,32 @@ export default function Search() {
                   <p style={{ width: "15%" }}>Actions</p>
                 </div>
                 <div className={styles.tableRow}>
+                  <p style={{ flex: 1 }}>{data.currencyCode}</p>
+                  <p style={{ width: "15%" }}>{data.rates?.currency?.buy}</p>
+                  <p style={{ width: "15%" }}>{data.rates?.currency?.sell}</p>
+                  <p style={{ width: "15%" }}>
+                    <Button
+                      onClick={() => {
+                        setOpenModal(true);
+                        setSelectedRate("currency");
+                      }}
+                      className={styles.editButton}
+                      color="white"
+                    >
+                      Edit
+                    </Button>
+                  </p>
+                </div>
+                <div className={styles.tableRow}>
                   <p style={{ flex: 1 }}>USDT</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ width: "15%" }}>{data?.rates?.usdt?.buy}</p>
+                  <p style={{ width: "15%" }}>{data?.rates?.usdt?.sell}</p>
                   <p style={{ width: "15%" }}>
                     <Button
-                      onClick={() => setOpenModal(true)}
+                      onClick={() => {
+                        setOpenModal(true);
+                        setSelectedRate("usdt");
+                      }}
                       className={styles.editButton}
                       color="white"
                     >
@@ -203,45 +413,18 @@ export default function Search() {
                   </p>
                 </div>
                 <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>Bitcoin</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>11.60</p>
+                  <p style={{ flex: 1 }}>EVM</p>
+                  <p style={{ width: "15%" }}>{data?.rates?.evm?.buy}</p>
+                  <p style={{ width: "15%" }}>{data?.rates?.evm?.sell}</p>
                   <p style={{ width: "15%" }}>
                     <Button
-                      onClick={() => setOpenModal(true)}
                       className={styles.editButton}
+                      onClick={() => {
+                        setOpenModal(true);
+                        setSelectedRate("evm");
+                      }}
                       color="white"
                     >
-                      Edit
-                    </Button>
-                  </p>
-                </div>
-                <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>Tron</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>
-                    <Button className={styles.editButton} color="white">
-                      Edit
-                    </Button>
-                  </p>
-                </div>
-                <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>Litecoin</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>
-                    <Button className={styles.editButton} color="white">
-                      Edit
-                    </Button>
-                  </p>
-                </div>
-                <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>Binance</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>11.60</p>
-                  <p style={{ width: "15%" }}>
-                    <Button className={styles.editButton} color="white">
                       Edit
                     </Button>
                   </p>
