@@ -21,11 +21,10 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
 
-  let auth: any;
-  // if (typeof window !== "undefined") {
+  let auth: any = {};
+  // if (typeof window !== "undefined" && localStorage.getItem("auth")) {
   //   auth = JSON.parse(localStorage.getItem("auth") || "");
   // }
-
 
   useEffect(() => {
     router.replace("/signin");

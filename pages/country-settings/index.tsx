@@ -14,8 +14,10 @@ import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import Loader from "@/components/Loader";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 export default function Search() {
+  const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<string>("Basic Information");
   const [ratesTab, setRatesTab] = useState<string>("BTC");
@@ -24,8 +26,8 @@ export default function Search() {
   const [data, setData] = useState<any>({});
   const [selectedRate, setSelectedRate] = useState<string>("");
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -43,7 +45,12 @@ export default function Search() {
       )
       .then((res: any) => {
         setLoading(false);
-        setData(res.data.data);
+        if (res.data.success) {
+          setData(res.data.data);
+        } else {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -89,10 +96,10 @@ export default function Search() {
       .post(
         `${BASE_URL}/country-settings/update-payment-methods`,
         {
-          id: data.id,
-          momo: data.momo,
-          bank: data.bank,
-          chipper: data.chipper,
+          id: newData.id,
+          momo: newData.momo,
+          bank: newData.bank,
+          chipper: newData.chipper,
         },
         {
           headers: {
@@ -133,6 +140,7 @@ export default function Search() {
       )
       .then((res: any) => {
         setBasicInfoLoading(false);
+        setOpenModal(false);
         if (!res.data.success) {
           toast.error(res.data.message);
         } else {

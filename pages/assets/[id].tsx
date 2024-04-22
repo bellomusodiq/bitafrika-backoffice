@@ -20,8 +20,8 @@ const AssetsDetail: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [asset, setAsset] = useState<any>({});
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -41,13 +41,18 @@ const AssetsDetail: NextPage = () => {
         setLoading(false);
         if (res.data.success) {
           setAsset(res.data.data);
+        } else {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
 
   useEffect(() => {
-    getAsset();
-  }, [filter]);
+    if (assetCodeLower !== "undefined") {
+      getAsset();
+    }
+  }, [filter, router.query]);
 
   const graphsItem = asset?.trades?.chart?.options?.xAxis?.categories?.map(
     (item: any, i: number) => ({
@@ -56,7 +61,22 @@ const AssetsDetail: NextPage = () => {
       sell: asset?.trades?.chart?.series[0].data[i],
       buy: asset?.trades?.chart?.series[1].data[i],
     })
-  );  
+  );
+
+  const pieChartData = [
+    {
+      value: asset?.trades?.totalBuy?.usd,
+    },
+    {
+      value: asset?.trades?.totalSell?.usd,
+    },
+    {
+      value: asset?.transactions?.totalReceived?.usd,
+    },
+    {
+      value: asset?.transactions?.totalSent?.usd,
+    },
+  ];
 
   return (
     <PageLayout>
@@ -224,7 +244,7 @@ const AssetsDetail: NextPage = () => {
                   }}
                 >
                   <div style={{ width: "100%", height: 200 }}>
-                    <CustomPieChart />
+                    <CustomPieChart data={pieChartData} />
                   </div>
                   <h4 className={styles.pieTitle}>1021</h4>
                   <div className={styles.legend}>
@@ -322,7 +342,7 @@ const AssetsDetail: NextPage = () => {
                     <div>
                       <p className={styles.balanceTitle}>Received</p>
                       <h3 className={styles.balanceAmount}>
-                      {asset?.transactions?.totalReceived?.crypto} {assetCode}
+                        {asset?.transactions?.totalReceived?.crypto} {assetCode}
                       </h3>
                       <div className={styles.balanceFooter}>
                         <p>${asset?.transactions?.totalReceived?.usd}</p>

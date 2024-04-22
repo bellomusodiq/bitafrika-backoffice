@@ -18,6 +18,8 @@ export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>({});
+  console.log(data?.orders);
+
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
   const [coin, setCoin] = useState<string>("BTC");
@@ -26,8 +28,8 @@ export default function Search() {
   const [toDate, setToDate] = useState<string>("");
   const [status, setStatus] = useState<string>("success");
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -204,7 +206,7 @@ export default function Search() {
             <div className={styles.ordersContainer}>
               <div style={{ flex: 1 }}>
                 {data?.orders?.map((order: any) => (
-                  <div className={styles.order} key={order.coion}>
+                  <div className={styles.order} key={order.coin}>
                     <div className={styles.orderIcon} />
                     <p className={styles.orderText}>
                       <span>{order.coin}</span>{" "}
@@ -224,7 +226,11 @@ export default function Search() {
                 }}
               >
                 <div style={{ width: 200, height: 200 }}>
-                  <CustomPieChart />
+                  <CustomPieChart
+                    value={data?.orders?.map((order: any) => ({
+                      value: order.usdTotal,
+                    }))}
+                  />
                 </div>
                 <div className={styles.pieIndicators}>
                   <div className={styles.pieIndicator}>
@@ -292,7 +298,11 @@ export default function Search() {
                 }}
               >
                 <div style={{ width: 200, height: 200 }}>
-                  <CustomPieChart />
+                  <CustomPieChart
+                    value={data?.orders?.map((order: any) => ({
+                      value: order.usdTotal,
+                    }))}
+                  />
                 </div>
                 <div className={styles.pieIndicators}>
                   <div className={styles.pieIndicator}>
@@ -389,7 +399,11 @@ export default function Search() {
                       }}
                     >
                       <div style={{ width: 200, height: 200 }}>
-                        <CustomPieChart />
+                        <CustomPieChart
+                          value={data?.orders?.map((order: any) => ({
+                            value: order.usdTotal,
+                          }))}
+                        />
                       </div>
                       <div className={styles.pieIndicators}>
                         <div className={styles.pieIndicator}>
@@ -481,7 +495,11 @@ export default function Search() {
                       }}
                     >
                       <div style={{ width: 200, height: 200 }}>
-                        <CustomPieChart />
+                        <CustomPieChart
+                          value={data?.orders?.map((order: any) => ({
+                            value: order.usdTotal,
+                          }))}
+                        />
                       </div>
                       <div className={styles.pieIndicators}>
                         <div className={styles.pieIndicator}>
@@ -579,7 +597,11 @@ export default function Search() {
                 }}
               >
                 <div style={{ width: 200, height: 200 }}>
-                  <CustomPieChart />
+                  <CustomPieChart
+                    value={data?.orders?.map((order: any) => ({
+                      value: order.usdTotal,
+                    }))}
+                  />
                 </div>
                 <div className={styles.pieIndicators}>
                   <div className={styles.pieIndicator}>
@@ -640,7 +662,11 @@ export default function Search() {
                 }}
               >
                 <div style={{ width: 200, height: 200 }}>
-                  <CustomPieChart />
+                  <CustomPieChart
+                    value={data?.orders?.map((order: any) => ({
+                      value: order.usdTotal,
+                    }))}
+                  />
                 </div>
                 <div className={styles.pieIndicators}>
                   <div className={styles.pieIndicator}>

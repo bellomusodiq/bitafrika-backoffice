@@ -11,6 +11,7 @@ import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
+import Loader from "@/components/Loader";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -65,10 +66,10 @@ export default function Search() {
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("");
-  const [page, setPage] = useState<number | null>(1);
+  const [pagination, setPagination] = useState<any>({ current: 1 });
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -76,8 +77,8 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/users?page=${page}`,
-        {},
+        `${BASE_URL}/users?page=${pagination.current}`,
+        { filter: searchType },
         {
           headers: {
             Authorization: auth.accessToken,
@@ -93,28 +94,18 @@ export default function Search() {
             avatar: `${item.firstName?.[0]}${item.lastName?.[0]}`,
             action: () => router.push(`/users/details/${item.username}`),
           }));
-          if (page === 1) {
-            setData(response);
-          } else {
-            setData([...data, ...response]);
-          }
-        }
-        if (res?.data?.data?.pageInfo?.hasNextPage) {
-          setPage((currentPage) => Number(currentPage) + 1);
-        } else {
-          setPage(null)
+          setData(response);
+          setPagination({
+            current: res.data.pageInfo?.currentPage,
+            pageSize: res.data.pageInfo?.perPage,
+            total: res.data.totalCount,
+          });
         }
       });
   };
 
   const onSearch = () => {
-    switch (searchType) {
-      case "Registered":
-        getUsers();
-        break;
-      default:
-        setData([]);
-    }
+    getUsers();
   };
 
   const showModal = (user: any) => {
@@ -123,10 +114,7 @@ export default function Search() {
   };
 
   const getColumns = () => {
-    switch (searchType) {
-      case "Registered":
-        return USER_COLUMNS;
-    }
+    return USER_COLUMNS;
   };
 
   return (
@@ -141,7 +129,10 @@ export default function Search() {
                 value={searchType}
                 options={[
                   { title: "Select", value: "" },
-                  { title: "Registered users", value: "Registered" },
+                  { title: "Verified users", value: "verified" },
+                  { title: "Unverified users", value: "unverified" },
+                  { title: "Active users", value: "active" },
+                  { title: "In Active users", value: "not_active" },
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
@@ -159,15 +150,19 @@ export default function Search() {
               }}
             >
               <div>
-                <Button onClick={onSearch} className={styles.searchButton}>
+                <Button
+                  onClick={onSearch}
+                  disabled={loading}
+                  className={styles.searchButton}
+                >
                   Apply filter
                 </Button>
               </div>
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <p className={styles.searchHint}></p>
+        {loading ? (
+          <Loader />
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
@@ -182,20 +177,13 @@ export default function Search() {
               dataSource={data}
               columns={getColumns()}
               loading={loading}
-              pagination={false}
-            />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                marginTop: 20,
-                marginBottom: 40,
+              pagination={{
+                ...pagination,
+                onChange(page, pageSize) {
+                  getUsers();
+                },
               }}
-            >
-              <div>
-                <Button onClick={getUsers}>Load More</Button>
-              </div>
-            </div>
+            />
           </div>
         )}
       </div>

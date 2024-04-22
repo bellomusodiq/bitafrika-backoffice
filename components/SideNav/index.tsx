@@ -83,7 +83,8 @@ const SideNav: React.FC = () => {
       <SideNavItem
         title="Overview"
         icon="/icons/overview.svg"
-        isActive={router.route === "/"}
+        isActive={router.route === "/dashboard"}
+        url="/dashboard"
       />
       <SideNavItem
         title="Search"

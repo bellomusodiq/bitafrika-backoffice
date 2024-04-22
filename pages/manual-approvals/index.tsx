@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
@@ -10,57 +10,9 @@ import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import { toast } from "react-toastify";
-
-const columns: any = [
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId, onCopy }: any) => (
-      <div onClick={onCopy} className={styles.transactionId}>
-        <p>
-          {transactionId?.slice(0, 5)} . . .
-          {transactionId?.slice(transactionId?.length - 5)}
-        </p>
-        <img src="/icons/copy.svg" />
-      </div>
-    ),
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-    render: (_: any, { amount }: any) => (
-      <div className={styles.amountContainer}>
-        <p className={styles.currency}>
-          <span style={{ color: "#98A2B3" }}>GHC</span> {amount.currencyAmount}
-        </p>
-        <p className={styles.crypto}>({amount.currencyAmount} BTC)</p>
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
+import { BASE_URL } from "@/CONFIG";
+import axios from "axios";
+import Loader from "@/components/Loader";
 
 export default function Search() {
   const code1 = useRef(null);
@@ -77,125 +29,175 @@ export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [pin, setPin] = useState<string>("");
+  const [data, setData] = useState<any>([]);
+  const [detail, setDetail] = useState<any>({});
+  const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
 
-  const dataSource = [
+  const columns: any = [
     {
-      key: "1",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: {
-        currencyAmount: "100,998.00",
-        cryptoAmount: "0.00023400014",
-      },
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
     },
     {
-      key: "2",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: {
-        currencyAmount: "100,998.00",
-        cryptoAmount: "0.00023400014",
-      },
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId, onCopy }: any) => (
+        <div onClick={onCopy} className={styles.transactionId}>
+          <p>
+            {transactionId?.slice(0, 5)} . . .
+            {transactionId?.slice(transactionId?.length - 5)}
+          </p>
+          <img src="/icons/copy.svg" />
+        </div>
+      ),
     },
     {
-      key: "3",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: {
-        currencyAmount: "100,998.00",
-        cryptoAmount: "0.00023400014",
-      },
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (
+        _: any,
+        { rawAmount, cryptoAmount, localCurrency, cryptoCurrency }: any
+      ) => (
+        <div className={styles.amountContainer}>
+          <p className={styles.currency}>
+            <span style={{ color: "#98A2B3" }}>{localCurrency}</span>{" "}
+            {rawAmount}
+          </p>
+          <p className={styles.crypto}>
+            ({cryptoAmount} {cryptoCurrency})
+          </p>
+        </div>
+      ),
     },
     {
-      key: "4",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: {
-        currencyAmount: "100,998.00",
-        cryptoAmount: "0.00023400014",
-      },
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
     },
     {
-      key: "5",
-      username: "@username",
-      transactionId: "TRX123456784344545",
-      paymentMethod: "Mobile Money",
-      amount: {
-        currencyAmount: "100,998.00",
-        cryptoAmount: "0.00023400014",
-      },
-      date: "Thur 18 Jan, 2023",
-      onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
-      action: () => setOpenModal(true),
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
     },
   ];
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const fetchManualApprovalDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/manual-approvals/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        setOpenModal(true);
+        setDetail(res.data.data);
+      });
+  };
+
+  const fetchManualApproval = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/manual-approvals?page=${pagination.pageNumber}&coin=all`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        setData(
+          res.data.data.map((item: any) => ({
+            ...item,
+            transactionId: item.uniq,
+            onCopy: () => {
+              toast.success("Copied to clipboard");
+            },
+            action: () => fetchManualApprovalDetail(item.uniq),
+          }))
+        );
+        // setPagination(res.data.pageInfo);
+      });
+  };
+
+  const markAsSuccess = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/manual-approvals/mark-pending-withdrawal-success/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        if (res.data.success) {
+          setLoadingDetail(false);
+          setOpenModal(false);
+          toast.success(res.data.message);
+          fetchManualApproval();
+        } else {
+          toast.error(res.data.message);
+        }
+      });
+  };
+
+  const declineManualApproval = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/manual-approvals/decline-manual-top-up/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        if (res.data.success) {
+          setLoadingDetail(false);
+          setOpenModal(false);
+          toast.success(res.data.message);
+          fetchManualApproval();
+        } else {
+          toast.error(res.data.message);
+        }
+      });
+  };
+
+  useEffect(() => {
+    fetchManualApproval();
+  }, []);
 
   const updatePin = (digit: string) => {
     if (pin.length < 4) {
@@ -339,13 +341,13 @@ export default function Search() {
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                User: <span style={{ color: "black" }}>@Samuel12345</span>
+                User: <span style={{ color: "black" }}>@{detail.username}</span>
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction ID:</p>
-              <p className={styles.value}>TX12345678909887776665</p>
+              <p className={styles.value}>{detail.trxId}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
@@ -356,77 +358,87 @@ export default function Search() {
             <div className={styles.keyValue}>
               <p className={styles.key}>Sell amount:</p>
               <p className={styles.value}>
-                GHS 7488.00 (0.001234 BTC) -{" "}
-                <span style={{ color: "#667085" }}>$120.66</span>
+                {detail.localCurrency} {detail.rawAmount} ({detail.cryptoAmount}{" "}
+                {detail.cryptoCurrency}) -{" "}
+                <span style={{ color: "#667085" }}>${detail.usdAmount}</span>
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Rate:</p>
               <p className={styles.value}>
-                Sold @ 11.60 (Crypto price - $27776.50)
+                Sold @ {detail.rate} (Crypto price - ${detail.cryptoPrice})
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Fees:</p>
               <p className={styles.value}>
-                $1.28 <span style={{ color: "#667085" }}>(GHS 1.98)</span>
+                $1.28{" "}
+                <span style={{ color: "#667085" }}>
+                  ({detail.localCurrency} {detail.netFee})
+                </span>
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Net payout Amount:</p>
-              <p className={styles.value}>GHS 7488.00</p>
+              <p className={styles.value}>
+                {detail.localCurrency} {detail.rawAmount}
+              </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Status:</p>
               <div className={styles.statusContainer}>
-                <div className={styles.statusIndicator} /> Approved
+                <div className={styles.statusIndicator} /> {detail.status}
               </div>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Amount:</p>
-              <p className={styles.value}>$100.99</p>
+              <p className={styles.value}>${detail.usdAmount}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Payment method:</p>
               <div>
                 <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Account:</span> Account
-                  name
+                  <span style={{ color: "#667085" }}>Account:</span>{" "}
+                  {detail.accountName}
                 </p>
                 <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Network:</span> MTN
+                  <span style={{ color: "#667085" }}>Network:</span>{" "}
+                  {detail.providerName}
                 </p>
                 <p className={styles.value} style={{ textAlign: "right" }}>
                   <span style={{ color: "#667085" }}>Phone number:</span>{" "}
-                  08000000000
+                  {detail.accountName}
                 </p>
                 <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Amount:</span> GHS 7488
+                  <span style={{ color: "#667085" }}>Amount:</span>{" "}
+                  {detail.localCurrency} {detail.rawAmount}
                 </p>
               </div>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction data:</p>
-              <p className={styles.value}>Mon 23 jan 07:40:03AM</p>
+              <p className={styles.value}>{detail.date}</p>
             </div>
           </div>
           <div className={styles.modalFooter}>
             <Button
-              onClick={() => setOpenModal(false)}
+              onClick={() => declineManualApproval(detail.trxId)}
               className={styles.modalButton}
               color="white"
             >
               Close
             </Button>
             <Button
-              onClick={() => setOpenModal(false)}
+              onClick={() => markAsSuccess(detail.trxId)}
+              loading={loadingDetail}
+              disabled={loadingDetail}
               className={styles.modalButton}
             >
               Mark as success
@@ -453,17 +465,21 @@ export default function Search() {
         <p className={styles.subHeader}>120 pending</p>
         <div className={styles.searchContainer}>
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <Table
-              style={{
-                fontFamily: "PP Telegraf",
-                border: "1px solid var(--Gray-200, #EAECF0)",
-                borderRadius: 12,
-                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                overflow: "hidden"
-              }}
-              dataSource={dataSource}
-              columns={columns}
-            />
+            {loading ? (
+              <Loader />
+            ) : (
+              <Table
+                style={{
+                  fontFamily: "PP Telegraf",
+                  border: "1px solid var(--Gray-200, #EAECF0)",
+                  borderRadius: 12,
+                  boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                  overflow: "hidden",
+                }}
+                dataSource={data}
+                columns={columns}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -685,8 +685,8 @@ const UserDetails: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<any>({});
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -712,7 +712,7 @@ const UserDetails: NextPage = () => {
 
   useEffect(() => {
     getUserDetail();
-  }, []);
+  }, [router.query]);
 
   return (
     <PageLayout title="User Details">

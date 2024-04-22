@@ -11,6 +11,7 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import formatDate from "@/utils/formatDate";
+import Loader from "@/components/Loader";
 
 const BALANCE_COLUMNS = [
   {
@@ -123,15 +124,17 @@ export default function Search() {
   const [toDate, setToDate] = useState<string>("");
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const [coin, setCoin] = useState<string>("BTC");
+  const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
   const getAssetBreakdown = (user: any, i: number) => {
     setCurrentUser(user);
     setLoadingIndex(i);
+    setLoading(true);
     axios
       .post(
         `${BASE_URL}/reports/user/balance/${user.username}`,
@@ -144,6 +147,7 @@ export default function Search() {
       )
       .then((res) => {
         setLoadingIndex(null);
+        setLoading(false);
         setOpenModal(res.data);
       });
   };
@@ -151,9 +155,10 @@ export default function Search() {
   const getBuyAssetBreakdown = (user: any, i: number) => {
     setCurrentUser(user);
     setLoadingIndex(i);
+    setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/buy/${user.username}?from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -162,6 +167,7 @@ export default function Search() {
         }
       )
       .then((res) => {
+        setLoading(false);
         setLoadingIndex(null);
         setOpenModal(res.data);
       });
@@ -170,9 +176,10 @@ export default function Search() {
   const getSellAssetBreakdown = (user: any, i: number) => {
     setCurrentUser(user);
     setLoadingIndex(i);
+    setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/sell/${user.username}?from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/sell/${user.username}?from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -183,6 +190,7 @@ export default function Search() {
       .then((res) => {
         setLoadingIndex(null);
         setOpenModal(res.data);
+        setLoading(false);
       });
   };
 
@@ -190,7 +198,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/balance?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}&coin=${coin}`,
+        `${BASE_URL}/reports/user/balance?page=${pagination.pageNumber}&sortBy=${sort}&from=${fromDate}&to=${toDate}&coin=${coin}`,
         {},
         {
           headers: {
@@ -208,16 +216,8 @@ export default function Search() {
           loading: i === loadingIndex,
         }));
 
-        if (page === 1) {
-          setData(newData);
-        } else {
-          setData([...data, ...newData]);
-        }
-        if (res?.data?.data?.pageInfo?.hasNextPage) {
-          setPage((currentPage) => Number(currentPage) + 1);
-        } else {
-          setPage(null);
-        }
+        setData(newData);
+        setPagination(res.data.pageInfo);
       });
   };
 
@@ -225,7 +225,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/buy?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/buy?page=${pagination.pageNumber}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -243,16 +243,8 @@ export default function Search() {
           loading: i === loadingIndex,
         }));
 
-        if (page === 1) {
-          setData(newData);
-        } else {
-          setData([...data, ...newData]);
-        }
-        if (res?.data?.data?.pageInfo?.hasNextPage) {
-          setPage((currentPage) => Number(currentPage) + 1);
-        } else {
-          setPage(null);
-        }
+        setData(newData);
+        setPagination(res.data.pageInfo);
       });
   };
 
@@ -260,7 +252,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/sell?page=${page}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/sell?page=${pagination.pageNumber}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -278,16 +270,8 @@ export default function Search() {
           loading: i === loadingIndex,
         }));
 
-        if (page === 1) {
-          setData(newData);
-        } else {
-          setData([...data, ...newData]);
-        }
-        if (res?.data?.data?.pageInfo?.hasNextPage) {
-          setPage((currentPage) => Number(currentPage) + 1);
-        } else {
-          setPage(null);
-        }
+        setData(newData);
+        setPagination(res.data.pageInfo);
       });
   };
 
@@ -644,14 +628,20 @@ export default function Search() {
               }}
             >
               <div>
-                <Button onClick={onSearch} className={styles.searchButton}>
+                <Button
+                  onClick={onSearch}
+                  disabled={loading}
+                  className={styles.searchButton}
+                >
                   Apply filter
                 </Button>
               </div>
             </div>
           </div>
         </div>
-        {data?.length > 0 && (
+        {loading ? (
+          <Loader />
+        ) : (
           <div
             className={styles.table}
             style={{
@@ -667,21 +657,18 @@ export default function Search() {
               dataSource={data}
               columns={getColumns()}
               loading={loading}
-              pagination={false}
-            />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                marginTop: 20,
-                marginBottom: 40,
-                paddingRight: 20,
+              pagination={{
+                defaultCurrent: pagination.currentPage,
+                pageSize: pagination.pageSize,
+                showSizeChanger: false,
+                onChange(page, pageSize) {
+                  setPagination({
+                    pageNumber: page,
+                  });
+                  onSearch();
+                },
               }}
-            >
-              <div>
-                <Button onClick={onSearch}>Load More</Button>
-              </div>
-            </div>
+            />
           </div>
         )}
       </div>

@@ -14,6 +14,7 @@ const Button: React.FC<ButtonProps> = ({
   <button
     onClick={onClick}
     disabled={disabled || loading}
+    style={{ backgroundColor: disabled ? "#98A2B3" : "" }}
     className={`${
       color === "white" ? styles.buttonWhite : styles.button
     } ${className}`}

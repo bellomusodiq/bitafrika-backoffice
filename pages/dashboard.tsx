@@ -21,8 +21,8 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [dashboardStats, setDashboardStats] = useState<any>({});
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -42,6 +42,9 @@ export default function Home() {
         setLoading(false);
         if (res.data.success) {
           setDashboardStats(res.data.data);
+        } else {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
@@ -53,8 +56,6 @@ export default function Home() {
     }
     getDashboardStats();
   }, []);
-
-  console.log("dashboardStats", dashboardStats);
 
   const COIN_LISTING = dashboardStats.availableCryptoBalance
     ? Object.keys(dashboardStats.availableCryptoBalance).map((key: string) => ({
@@ -106,7 +107,20 @@ export default function Home() {
                   <>
                     <div className={styles.statsCardContainer}>
                       <div style={{ width: 120, height: 120 }}>
-                        <CustomPieChart />
+                        <CustomPieChart
+                          data={[
+                            {
+                              value:
+                                dashboardStats?.availableMomoBalance
+                                  ?.totalBalance + 0.000001,
+                            },
+                            {
+                              value:
+                                dashboardStats?.availableMomoBalance
+                                  ?.totalBalance + 0.000001,
+                            },
+                          ]}
+                        />
                       </div>
                       <div className={styles.statsTextContainer}>
                         <p className={styles.statsTextGray}>

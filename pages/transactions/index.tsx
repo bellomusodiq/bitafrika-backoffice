@@ -11,6 +11,7 @@ import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import formatDate from "@/utils/formatDate";
+import Loader from "@/components/Loader";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -18,709 +19,784 @@ const COUNTRY_MAP: { [k: string]: string } = {
   NG: "Nigeria",
 };
 
-const BUY_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Asset",
-    dataIndex: "asset",
-    key: "asset",
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Total (GHS)",
-    dataIndex: "total",
-    key: "total",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const SELL_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Asset",
-    dataIndex: "asset",
-    key: "asset",
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Total (GHS)",
-    dataIndex: "total",
-    key: "total",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-
-const RECEIVE_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Asset",
-    dataIndex: "asset",
-    key: "asset",
-  },
-  {
-    title: "Asset amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const WITHDRAWAL_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "To",
-    dataIndex: "to",
-    key: "to",
-    render: (_: any, { to }: any) => <p className={styles.username}>{to}</p>,
-  },
-  {
-    title: "Asset",
-    dataIndex: "asset",
-    key: "asset",
-  },
-  {
-    title: "Asset amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const SWAP_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Swap pair",
-    dataIndex: "swapPair",
-    key: "swapPair",
-    render: (_: any, { swapPair }: any) => (
-      <p
-        className={styles.username}
-        style={{
-          color: "black",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }}
-      >
-        {swapPair.from}{" "}
-        <span style={{ marginBottom: -4.5 }}>
-          <img src="/icons/swap-arrow.svg" />
-        </span>{" "}
-        {swapPair.to}
-      </p>
-    ),
-  },
-  {
-    title: "From",
-    dataIndex: "from",
-    key: "from",
-  },
-  {
-    title: "To",
-    dataIndex: "to",
-    key: "to",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const UTILITY_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Product",
-    dataIndex: "product",
-    key: "product",
-  },
-  {
-    title: "Phone number",
-    dataIndex: "phoneNumber",
-    key: "phoneNumber",
-  },
-  {
-    title: "Paid with",
-    dataIndex: "paidWith",
-    key: "paidWith",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const UTILITY_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    product: "Airtime topup",
-    phoneNumber: "0708 000 0000",
-    amount: "200 GHC",
-    paidWith: "10 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    product: "Airtime topup",
-    phoneNumber: "0708 000 0000",
-    amount: "200 GHC",
-    paidWith: "10 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    product: "Airtime topup",
-    phoneNumber: "0708 000 0000",
-    amount: "200 GHC",
-    paidWith: "10 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    product: "Airtime topup",
-    phoneNumber: "0708 000 0000",
-    amount: "200 GHC",
-    paidWith: "10 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    product: "Airtime topup",
-    phoneNumber: "0708 000 0000",
-    amount: "200 GHC",
-    paidWith: "10 USDT",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
-
-const CARDS_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Biller",
-    dataIndex: "biller",
-    key: "biller",
-    render: (_: any, { biller }: any) => (
-      <p className={styles.username}>{biller}</p>
-    ),
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const CARDS_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    biller: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    biller: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    biller: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    biller: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    biller: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
-
-const CARDS_TOPUP_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Paid with",
-    dataIndex: "paidWith",
-    key: "paidWith",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
-const CARDS_TOPUP_DATA = [
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    paidWith: "USDT",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    paidWith: "USDT",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    paidWith: "USDT",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    paidWith: "USDT",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#1234554533453",
-    username: "@samual12345",
-    paidWith: "USDT",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
-
-const GIFTCARDS_COLUMN = [
-  {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
-    ),
-  },
-  {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-    render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
-    ),
-  },
-  {
-    title: "Card type",
-    dataIndex: "cardType",
-    key: "cardType",
-  },
-  {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
-    ),
-  },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
-      </div>
-    ),
-  },
-];
-
 export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
   const [statusType, setStatusType] = useState<string>("success");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
-  const [pagination, setPaingation] = useState<any>({ pageNumber: 1 });
+  const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  const BUY_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Total (GHS)",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const SELL_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Total (GHS)",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const RECEIVE_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Asset amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const WITHDRAWAL_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "To",
+      dataIndex: "to",
+      key: "to",
+      render: (_: any, { to }: any) => <p className={styles.username}>{to}</p>,
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Asset amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const SWAP_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Swap pair",
+      dataIndex: "swapPair",
+      key: "swapPair",
+      render: (_: any, { swapPair }: any) => (
+        <p
+          className={styles.username}
+          style={{
+            color: "black",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          {swapPair.from}{" "}
+          <span style={{ marginBottom: -4.5 }}>
+            <img src="/icons/swap-arrow.svg" />
+          </span>{" "}
+          {swapPair.to}
+        </p>
+      ),
+    },
+    {
+      title: "From",
+      dataIndex: "from",
+      key: "from",
+    },
+    {
+      title: "To",
+      dataIndex: "to",
+      key: "to",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const UTILITY_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Product",
+      dataIndex: "product",
+      key: "product",
+    },
+    {
+      title: "Phone number",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
+    },
+    {
+      title: "Paid with",
+      dataIndex: "paidWith",
+      key: "paidWith",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const UTILITY_DATA = [
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      product: "Airtime topup",
+      phoneNumber: "0708 000 0000",
+      amount: "200 GHC",
+      paidWith: "10 USDT",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      product: "Airtime topup",
+      phoneNumber: "0708 000 0000",
+      amount: "200 GHC",
+      paidWith: "10 USDT",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      product: "Airtime topup",
+      phoneNumber: "0708 000 0000",
+      amount: "200 GHC",
+      paidWith: "10 USDT",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      product: "Airtime topup",
+      phoneNumber: "0708 000 0000",
+      amount: "200 GHC",
+      paidWith: "10 USDT",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      product: "Airtime topup",
+      phoneNumber: "0708 000 0000",
+      amount: "200 GHC",
+      paidWith: "10 USDT",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+  ];
+
+  const CARDS_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Biller",
+      dataIndex: "biller",
+      key: "biller",
+      render: (_: any, { biller }: any) => (
+        <p className={styles.username}>{biller}</p>
+      ),
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const CARDS_DATA = [
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      biller: "AppleMusic.com",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      biller: "AppleMusic.com",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      biller: "AppleMusic.com",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      biller: "AppleMusic.com",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      biller: "AppleMusic.com",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+  ];
+
+  const CARDS_TOPUP_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Paid with",
+      dataIndex: "paidWith",
+      key: "paidWith",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  const CARDS_TOPUP_DATA = [
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      paidWith: "USDT",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      paidWith: "USDT",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      paidWith: "USDT",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      paidWith: "USDT",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+    {
+      transactionId: "#1234554533453",
+      username: "@samual12345",
+      paidWith: "USDT",
+      amount: "$9.99",
+      status: "Successful",
+      date: "Thur 18 Jan, 2023",
+    },
+  ];
+
+  const GIFTCARDS_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Card type",
+      dataIndex: "cardType",
+      key: "cardType",
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button disabled={loadingDetail} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
+
+  const getTopupTransactionsDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/momo-top-up/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        if (res.data.success) {
+          setCurrentUser(res.data.data);
+          setOpenModal(true);
+        }
+      });
+  };
 
   const getTopupTransactions = () => {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/momo-top-up?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        `${BASE_URL}/transactions/momo-top-up?status=${statusType}&from=${fromDate}&to=${toDate}&pageSize=30`,
         {},
         {
           headers: {
@@ -740,10 +816,31 @@ export default function Search() {
               country: item.countryCode,
               total: `${item.currency} ${item.amount}`,
               asset: item.cryptoSymbol,
-              action: () => showModal(item),
+              action: () => getTopupTransactionsDetail(item.uniqId),
             }))
           );
-          setPaingation(res.data.pagination);
+          setPagination(res.data.pageInfo);
+        }
+      });
+  };
+
+  const getWithdrawalTransactionsDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/momo-withdrawal/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        if (res.data.success) {
+          setCurrentUser(res.data.data);
+          setOpenModal(true);
         }
       });
   };
@@ -770,13 +867,34 @@ export default function Search() {
             phoneNumber: item.phone,
             amount: `$${item.usdAmount}`,
             asset: item.cryptoCurrency,
-            total: `${item.cryptoPrice} ${item.cryptoCurrency}`,
+            total: `${item.rawAmount} ${item.localCurrency}`,
             date: item.newDate,
             action: () => {
-              showModal(item);
+              getWithdrawalTransactionsDetail(item.uniq);
             },
           }))
         );
+      });
+  };
+
+  const getReceivedTransactionsDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/receive-crypto/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        if (res.data.success) {
+          setCurrentUser(res.data.data);
+          setOpenModal(true);
+        }
       });
   };
 
@@ -800,14 +918,35 @@ export default function Search() {
             transactionId: item.txid,
             email: item.email,
             phoneNumber: item.phone,
-            amount: `$${item.usdAmount}`,
+            amount: `$${item.cryptoValue}`,
             total: `${item.cryptoPrice} ${item.cryptoPrice}`,
             asset: item.currency,
             action: () => {
-              showModal(item);
+              getReceivedTransactionsDetail(item.txid);
             },
           }))
         );
+      });
+  };
+
+  const getSentTransactionsDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/withdraw-crypto/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        if (res.data.success) {
+          setCurrentUser(res.data.data);
+          setOpenModal(true);
+        }
       });
   };
 
@@ -831,14 +970,37 @@ export default function Search() {
             transactionId: item.txid,
             email: item.email,
             phoneNumber: item.phone,
-            amount: `$${item.usdAmount}`,
-            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
+            to: `${item.recipient.slice(0, 6)}...${item.recipient.slice(
+              item.recipient.length - 6
+            )}`,
+            amount: `${item.cryptoValue} ${item.currency}`,
             asset: item.currency,
             action: () => {
-              showModal(item);
+              getSentTransactionsDetail(item.txid);
             },
           }))
         );
+      });
+  };
+
+  const getSwapTransactionsDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/swap/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        if (res.data.success) {
+          setCurrentUser(res.data.data);
+          setOpenModal(true);
+        }
       });
   };
 
@@ -873,10 +1035,31 @@ export default function Search() {
             to: item.destinationCrypto,
             date: item.createdOn,
             action: () => {
-              showModal(item);
+              getSwapTransactionsDetail(item.uniqId);
             },
           }))
         );
+      });
+  };
+
+  const getGiftCardsTransactionsDetail = (id: string) => {
+    setLoadingDetail(true);
+    axios
+      .post(
+        `${BASE_URL}/transactions/gift-card/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingDetail(false);
+        if (res.data.success) {
+          setCurrentUser(res.data.data);
+          setOpenModal(true);
+        }
       });
   };
 
@@ -900,9 +1083,10 @@ export default function Search() {
             transactionId: item.uniqId,
             email: item.email,
             amount: `$${item.amount}`,
-            date: item.newDate,
+            date: item.date,
+            cardType: item.dataSix,
             action: () => {
-              showModal(item);
+              getGiftCardsTransactionsDetail(item.uniqId);
             },
           }))
         );
@@ -1013,7 +1197,7 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>Asset amount:</p>
             <p className={styles.value} style={{ color: "#16B364" }}>
-              {currentUser.crypto} {currentUser.cryptoSymbol}
+              {currentUser.amount} {currentUser.cryptoSymbol}
             </p>
           </div>
           <div className={styles.divider} />
@@ -1033,7 +1217,9 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Payment account:</p>
-            <p className={styles.status}>{currentUser.methodId}</p>
+            <p className={styles.value}>
+              {currentUser.name} ({currentUser.phoneNumber})
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1111,7 +1297,10 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Payment account:</p>
-            <p className={styles.status}>{currentUser.dataFive}</p>
+            <p className={styles.value}>
+              {currentUser?.paymentAccount?.name} (
+              {currentUser?.paymentAccount?.phoneNumber})
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1169,7 +1358,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>receive from:</p>
-            <p className={styles.value}>{currentUser.recipient}</p>
+            <p className={styles.value}>{currentUser.from}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1239,7 +1428,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>receive from:</p>
-            <p className={styles.value}>{currentUser.recipient}</p>
+            <p className={styles.value}>{currentUser.to}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1291,7 +1480,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.uniqId}</p>
+            <p className={styles.value}>{currentUser.txid}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1305,7 +1494,7 @@ export default function Search() {
             <p className={styles.key}>From:</p>
             <p className={styles.value}>
               <span style={{ color: "#98A2B3", marginRight: 10 }}>
-                ({currentUser.sourceCrypto})
+                {currentUser.sourceCryptoName} ({currentUser.sourceCrypto})
               </span>{" "}
               <img src="/icons/swap.svg" />
             </p>
@@ -1315,7 +1504,8 @@ export default function Search() {
             <p className={styles.key}>To:</p>
             <p className={styles.value}>
               <span style={{ color: "#98A2B3", marginRight: 10 }}>
-                ({currentUser.destinationCrypto})
+                {currentUser.destinationCryptoName} (
+                {currentUser.destinationCrypto})
               </span>{" "}
             </p>
           </div>
@@ -1574,7 +1764,8 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>
-              User: <span style={{ color: "black" }}>@{currentUser.username}</span>
+              User:{" "}
+              <span style={{ color: "black" }}>@{currentUser.username}</span>
             </p>
           </div>
           <div className={styles.divider} />
@@ -1591,18 +1782,27 @@ export default function Search() {
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>Amount:</p>
-            <p className={styles.value}>${currentUser.amount}</p>
+            <p className={styles.key}>Card type:</p>
+            <p className={styles.value}>
+              {currentUser.dataSix} (${currentUser.amount})
+            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>Payment method:</p>
-            <p className={styles.value}>USDT balance</p>
+            <p className={styles.key}>Amount paid:</p>
+            <p className={styles.value}>
+              {currentUser.amount} {currentUser.dataFive}
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Recipient email:</p>
+            <p className={styles.value}>{currentUser.recipient}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>{currentUser.newDate}</p>
+            <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
       </Modal>
@@ -1667,15 +1867,19 @@ export default function Search() {
               }}
             >
               <div>
-                <Button onClick={onSearch} className={styles.searchButton}>
+                <Button
+                  disabled={loading}
+                  onClick={onSearch}
+                  className={styles.searchButton}
+                >
                   Apply filter
                 </Button>
               </div>
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <p className={styles.searchHint}></p>
+        {loading ? (
+          <Loader />
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
@@ -1691,12 +1895,12 @@ export default function Search() {
               columns={getColumns()}
               loading={loading}
               pagination={{
-                defaultCurrent: pagination.pageNumber,
+                defaultCurrent: pagination.currentPage,
                 pageSize: pagination.pageSize,
-                total: pagination.totalCount,
+                // total: pagination.totalCount,
                 showSizeChanger: false,
                 onChange(page, pageSize) {
-                  setPaingation({
+                  setPagination({
                     pageNumber: page,
                   });
                   onSearch();

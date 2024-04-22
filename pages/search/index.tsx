@@ -10,6 +10,9 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
+import Loader from "@/components/Loader";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -204,8 +207,8 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
   },
 ];
 
-
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -213,8 +216,8 @@ export default function Search() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("User");
 
-  let auth: any;
-  if (typeof window !== "undefined") {
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
@@ -232,14 +235,22 @@ export default function Search() {
       )
       .then((res) => {
         setLoading(false);
-        setData(
-          res.data?.data?.map((user: any) => ({
-            ...user,
-            action: () => {
-              showModal(user);
-            },
-          }))
-        );
+        if (res.data.success) {
+          setData(
+            res.data?.data?.map((user: any) => ({
+              ...user,
+              action: () => {
+                router.push(`/users/details/${user.username}`);
+              },
+            }))
+          );
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err.response.data.message);
       });
   };
 
@@ -269,6 +280,10 @@ export default function Search() {
           },
         }));
         setData(data);
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err.response.data.message);
       });
   };
 
@@ -300,6 +315,10 @@ export default function Search() {
           },
         }));
         setData(data);
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err.response.data.message);
       });
   };
 
@@ -327,6 +346,10 @@ export default function Search() {
             action: () => showModal(item),
           }))
         );
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast.error(err.response.data.message);
       });
   };
 
@@ -710,14 +733,14 @@ export default function Search() {
               />
             </div>
             <div>
-              <Button onClick={onSearch} className={styles.searchButton}>
+              <Button onClick={onSearch} disabled={loading}>
                 Search
               </Button>
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <p className={styles.searchHint}></p>
+        {loading ? (
+          <Loader />
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
