@@ -145,8 +145,8 @@ export default function Search() {
     },
     {
       title: "Date",
-      dataIndex: "date",
-      key: "date",
+      dataIndex: "createdOn",
+      key: "createdOn",
       width: "20%",
     },
     {
@@ -1255,7 +1255,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.uniq}</p>
+            <p className={styles.value}>{currentUser.trxId}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>

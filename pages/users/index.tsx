@@ -88,7 +88,7 @@ export default function Search() {
       .then((res: any) => {
         setLoading(false);
         if (res.data.success) {
-          const response = res.data.data.users.map((item: any) => ({
+          const response = res.data.data.map((item: any) => ({
             ...item,
             name: `${item.firstName} ${item.lastName}`,
             avatar: `${item.firstName?.[0]}${item.lastName?.[0]}`,
@@ -129,10 +129,10 @@ export default function Search() {
                 value={searchType}
                 options={[
                   { title: "Select", value: "" },
-                  { title: "Verified users", value: "verified" },
-                  { title: "Unverified users", value: "unverified" },
-                  { title: "Active users", value: "active" },
-                  { title: "In Active users", value: "not_active" },
+                  { title: "Verified users", value: "VERIFIED" },
+                  { title: "Unverified users", value: "UNVERIFIED" },
+                  { title: "Active users", value: "ACTIVE" },
+                  { title: "In Active users", value: "NOT_ACTIVE" },
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));

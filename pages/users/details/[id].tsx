@@ -788,7 +788,7 @@ const UserDetails: NextPage = () => {
                     },
                     {
                       key: "Ghana Card No:",
-                      value: "Missing",
+                      value: user?.user?.cardNo,
                     },
                   ]}
                 />

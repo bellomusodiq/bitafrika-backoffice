@@ -21,7 +21,7 @@ export default function Search() {
   const [currentTab, setCurrentTab] = useState<string>("Fees");
   const [ratesTab, setRatesTab] = useState<string>("BTC");
   const [loading, setLoading] = useState<boolean>(false);
-  const [siteSettings, setSiteSettings] = useState<any>({});
+  const [siteSettings, setSiteSettings] = useState<any>([]);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -54,6 +54,21 @@ export default function Search() {
   useEffect(() => {
     fetchSiteSettings();
   }, []);
+
+  const getSettingsValue = (name: string) => {
+    return siteSettings.find((settings: any) => settings.name === name)?.value;
+  };
+
+  const changeSettingsValue = (name: string, value: any) => {
+    const newSiteSettings = [...siteSettings];
+    const index = newSiteSettings.findIndex(
+      (settings) => settings.name === name
+    );
+    const newSettingsItem = { ...newSiteSettings[index] };
+    newSettingsItem.value = value;
+    newSiteSettings[index] = newSettingsItem;
+    setSiteSettings(newSiteSettings);
+  };
 
   return (
     <PageLayout title="Hone">
@@ -305,12 +320,26 @@ export default function Search() {
                       <p>Percentage fee for internal transfers</p>
                       <Input
                         leftIcon={<div className={styles.leftIcon}>$</div>}
+                        value={getSettingsValue("internalBanFeePercentage")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "internalBanFeePercentage",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                     <div className={styles.ratesInputContainer}>
                       <p>Percentage fee for external transfers</p>
                       <Input
                         leftIcon={<div className={styles.leftIcon}>$</div>}
+                        value={getSettingsValue("externalFeePercentage")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "externalFeePercentage",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -319,6 +348,13 @@ export default function Search() {
                       <p>Percentage fee for withdrawals</p>
                       <Input
                         leftIcon={<div className={styles.leftIcon}>$</div>}
+                        value={getSettingsValue("withdrawalFeePercentage")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "withdrawalFeePercentage",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -336,7 +372,14 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("momopayid")}
+                        onChange={(e) =>
+                          changeSettingsValue("momopayid", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -352,9 +395,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("momopayname")}
+                        onChange={(e) =>
+                          changeSettingsValue("momopayname", e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -370,7 +416,14 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("chippertag")}
+                        onChange={(e) =>
+                          changeSettingsValue("chippertag", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -385,7 +438,14 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("chipperName")}
+                        onChange={(e) =>
+                          changeSettingsValue("chipperName", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                 </>
@@ -403,7 +463,14 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("SMS_SOURCE")}
+                        onChange={(e) =>
+                          changeSettingsValue("SMS_SOURCE", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -416,7 +483,14 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("SMS_GATEWAY")}
+                        onChange={(e) =>
+                          changeSettingsValue("SMS_GATEWAY", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                 </>
@@ -435,7 +509,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("BTC_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "BTC_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -451,7 +535,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("BCH_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "BCH_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -467,7 +561,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("LTC_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "LTC_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -483,7 +587,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("DOGE_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "DOGE_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -499,7 +613,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("TRON_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "TRON_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -510,7 +634,7 @@ export default function Search() {
                   <div className={styles.keyValue}>
                     <div className={styles.key}>
                       <p className={styles.keyText}>
-                        Number of fee types used for -{" "}
+                        Network Fee Type used for -{" "}
                         <span className={styles.blueText}>Bitcoin</span>
                       </p>
                       <p className={styles.keySubText}>
@@ -518,14 +642,24 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("BSC_SELLING_NETWORK_FEE_TYPE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "BSC_SELLING_NETWORK_FEE_TYPE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
                   <div className={styles.keyValue}>
                     <div className={styles.key}>
                       <p className={styles.keyText}>
-                        Number of fee types used for -{" "}
+                        Network Fee Type used for -{" "}
                         <span className={styles.blueText}>Bitcoin cash</span>
                       </p>
                       <p className={styles.keySubText}>
@@ -533,14 +667,24 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("BCH_NETWORK_FEE_TYPE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "BCH_NETWORK_FEE_TYPE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
                   <div className={styles.keyValue}>
                     <div className={styles.key}>
                       <p className={styles.keyText}>
-                        Number of fee types used for -{" "}
+                        Network Fee Type used for -{" "}
                         <span className={styles.blueText}>Litecoin</span>
                       </p>
                       <p className={styles.keySubText}>
@@ -548,14 +692,24 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("LTC_NETWORK_FEE_TYPE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "LTC_NETWORK_FEE_TYPE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
                   <div className={styles.keyValue}>
                     <div className={styles.key}>
                       <p className={styles.keyText}>
-                        Number of fee types used for -{" "}
+                        Network Fee Type used for -{" "}
                         <span className={styles.blueText}>Dogecoin</span>
                       </p>
                       <p className={styles.keySubText}>
@@ -563,7 +717,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("DOGE_NETWORK_FEE_TYPE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "DOGE_NETWORK_FEE_TYPE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -581,6 +745,13 @@ export default function Search() {
                       <Input
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("KOLLET_TRANSFER_MODE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "KOLLET_TRANSFER_MODE",
+                            e.target.value
+                          )
+                        }
                         onUpdate={() => {}}
                       />
                     </div>
@@ -590,7 +761,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         FIXED NETWORK FEE - DOGECOIN -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DOGE_FIXED_FEE") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Enable fixed network fee for dogecoin
@@ -598,7 +773,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("DOGE_FIXED_FEE")}
+                          onToggle={(value) =>
+                            changeSettingsValue("DOGE_FIXED_FEE", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -612,7 +792,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("DOGE_FIXED_SEND_FEE_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "DOGE_FIXED_SEND_FEE_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -620,7 +810,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         FIXED NETWORK FEE - LITECOIN -
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("LTC_FIXED_FEE") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Enable fixed network fee for Litecoin
@@ -628,7 +822,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("LTC_FIXED_FEE")}
+                          onToggle={(value) =>
+                            changeSettingsValue("LTC_FIXED_FEE", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -642,7 +841,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("LTC_FIXED_SEND_FEE_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "LTC_FIXED_SEND_FEE_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -650,7 +859,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         FIXED NETWORK FEE - BITCOIN CASH -
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("BCH_FIXED_FEE") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Enable fixed network fee for Bitcoin cash
@@ -658,7 +871,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("BCH_FIXED_FEE")}
+                          onToggle={(value) =>
+                            changeSettingsValue("BCH_FIXED_FEE", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -673,7 +891,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("BCH_FIXED_SEND_FEE_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "BCH_FIXED_SEND_FEE_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                 </>
@@ -684,7 +912,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Automated system deposits for mobile money -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         This option allows for automated Momo prompt for Account
@@ -693,7 +925,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("DEPOSIT_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -702,7 +939,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         System withdrawal status for mobile money -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for all cryptocurrency should be
@@ -712,7 +953,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("WITHDRAWAL_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("WITHDRAWAL_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -721,7 +967,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         System sending status for all cryptos -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("SEND_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         System SENDING status for all cryptos
@@ -729,7 +979,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("SEND_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("SEND_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -741,7 +996,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Manual Momo deposits for all networks -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DEPOSIT_MANUAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         This option allows for manual deposits for Account
@@ -751,7 +1010,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DEPOSIT_MANUAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("DEPOSIT_MANUAL_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -760,7 +1026,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Manual Momo deposits for all Vodafone -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DEPOSIT_VODAFONE_MANUAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether manual topups for Vodafone should be disabled
@@ -768,7 +1038,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DEPOSIT_VODAFONE_MANUAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "DEPOSIT_VODAFONE_MANUAL_ENABLED",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -777,7 +1057,13 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Manual Momo deposits for AirtelTigo -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue(
+                          "DEPOSIT_AIRTELTIGO_MANUAL_ENABLED"
+                        ) ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether manual topups for AirtelTigo should be disabled
@@ -785,7 +1071,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DEPOSIT_AIRTELTIGO_MANUAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "DEPOSIT_AIRTELTIGO_MANUAL_ENABLED",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -794,7 +1090,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Manual Momo deposits for MTN -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DEPOSIT_MTN_MANUAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether manual topups for MTN should be disabled
@@ -802,7 +1102,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DEPOSIT_MTN_MANUAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "DEPOSIT_MTN_MANUAL_ENABLED",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -814,7 +1124,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo deposits for all networks -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("MOMO_DEPOSIT_FOR_ALL_NETWORKS") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for bitcoin should be disabled. Used
@@ -823,7 +1137,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                        // defaultValue={getSettingsValue(
+                        //   "DEPOSIT_MTN_MANUAL_ENABLED"
+                        // )}
+                        // onToggle={(value) =>
+                        //   changeSettingsValue(
+                        //     "DEPOSIT_MTN_MANUAL_ENABLED",
+                        //     value
+                        //   )
+                        // }
+                        />
                       </div>
                     </div>
                   </div>
@@ -832,7 +1156,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo deposit status for Bitcoin -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("BTC_DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for bitcoin should be disabled. Used
@@ -841,7 +1169,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("BTC_DEPOSIT_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("BTC_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -850,7 +1183,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo deposit status for Bitcoin cash -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("BCH_DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for bitcoin should be disabled. Used
@@ -859,7 +1196,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("BCH_DEPOSIT_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("BCH_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -868,7 +1210,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo deposit status for Dogecoin -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DOGE_DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for Dogecoin should be disabled.
@@ -877,7 +1223,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DOGE_DEPOSIT_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("DOGE_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -886,7 +1239,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo deposit status for Litecoin -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("LTC_DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for Litecoin should be disabled.
@@ -895,7 +1252,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("LTC_DEPOSIT_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("LTC_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -903,17 +1265,55 @@ export default function Search() {
                   <div className={styles.keyValue}>
                     <div className={styles.key}>
                       <p className={styles.keyText}>
-                        Momo deposit status for Tron -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        Momo deposit status for TRX - TRON -{" "}
+                        {getSettingsValue("TRX_DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
-                        Whether withdrawals for Tron should be disabled. Used
-                        only for TrON deposit maintenance
+                        Whether deposits for only TRX - TRON should be disabled.
+                        Used during TRX - TRON maintenance
                       </p>
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("TRX_DEPOSIT_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("TRX_DEPOSIT_ENABLED", value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.spacer} />
+                  <div className={styles.keyValue}>
+                    <div className={styles.key}>
+                      <p className={styles.keyText}>
+                        Momo deposit status for USDT - TRON -{" "}
+                        {getSettingsValue("USDT_DEPOSIT_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
+                      </p>
+                      <p className={styles.keySubText}>
+                        Whether deposits for only USDT - TRON should be
+                        disabled. Used during USDT - TRON maintenance
+                      </p>
+                    </div>
+                    <div className={styles.value}>
+                      <div className={styles.switchContainer}>
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "USDT_DEPOSIT_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("USDT_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -925,7 +1325,13 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo withdrawal for all networks -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue(
+                          "MOMO_WITHDRAWAL_FOR_ALL_NETWORKS"
+                        ) ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for bitcoin should be disabled. Used
@@ -943,7 +1349,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo withdrawal status for Bitcoin -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("BTC_WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for bitcoin should be disabled. Used
@@ -952,7 +1362,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "BTC_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("BTC_WITHDRAWAL_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -961,7 +1378,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo withdrawal status for Bitcoin cash -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("BCH_WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for bitcoin should be disabled. Used
@@ -970,7 +1391,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "BCH_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("BCH_WITHDRAWAL_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -979,7 +1407,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo withdrawal status for Dogecoin -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("DOGE_WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for Dogecoin should be disabled.
@@ -988,7 +1420,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DOGE_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "DOGE_WITHDRAWAL_ENABLED",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -997,7 +1439,11 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         Momo withdrawal status for Litecoin -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        {getSettingsValue("LTC_WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         Whether withdrawals for Litecoin should be disabled.
@@ -1006,7 +1452,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "LTC_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("LTC_WITHDRAWAL_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1014,17 +1467,60 @@ export default function Search() {
                   <div className={styles.keyValue}>
                     <div className={styles.key}>
                       <p className={styles.keyText}>
-                        Momo withdrawal status for Tron -{" "}
-                        <span className={styles.greenText}>Enabled</span>
+                        Momo withdrawal status for TRX -{" "}
+                        {getSettingsValue("TRX_WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
-                        Whether withdrawals for Tron should be disabled. Used
-                        only for TrON withdrawal maintenance
+                        Whether withdrawal for only TRX - TRON should be
+                        disabled. Used during TRX - TRON maintenance
                       </p>
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "TRX_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("TRX_WITHDRAWAL_ENABLED", value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className={styles.spacer} />
+                  <div className={styles.keyValue}>
+                    <div className={styles.key}>
+                      <p className={styles.keyText}>
+                        Momo withdrawal status for USDT -{" "}
+                        {getSettingsValue("USDT_WITHDRAWAL_ENABLED") ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
+                      </p>
+                      <p className={styles.keySubText}>
+                        Whether withdrawal for only USDT - TRON should be
+                        disabled. Used during USDT - TRON maintenance
+                      </p>
+                    </div>
+                    <div className={styles.value}>
+                      <div className={styles.switchContainer}>
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "USDT_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "USDT_WITHDRAWAL_ENABLED",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1046,6 +1542,10 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("BUY_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue("BUY_LIMIT_USD", e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -1062,6 +1562,10 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("SELL_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue("SELL_LIMIT_USD", e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -1080,6 +1584,13 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("USDT_BUY_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_BUY_LIMIT_USD",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1098,6 +1609,10 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("SELL_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue("SELL_LIMIT_USD", e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -1116,6 +1631,10 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("BUY_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue("BUY_LIMIT_USD", e.target.value)
+                        }
                       />
                     </div>
                   </div>
@@ -1133,7 +1652,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("CENTRAL_TRON_ADDRESS")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "CENTRAL_TRON_ADDRESS",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1148,7 +1677,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("TRON_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "TRON_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1163,7 +1702,14 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("BUY_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue("BUY_LIMIT_USD", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1178,7 +1724,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_BUY_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_BUY_LIMIT_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1193,7 +1749,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_SELL_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_SELL_LIMIT_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1208,7 +1774,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("TRX_SELL_LIMIT_USD")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "TRX_SELL_LIMIT_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1224,7 +1800,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("TRX_SEND_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("TRX_SEND_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1241,7 +1822,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "TRX_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("TRX_WITHDRAWAL_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1258,7 +1846,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("USDT_SEND_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("USDT_SEND_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1275,7 +1868,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "USDT_WITHDRAWAL_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "USDT_WITHDRAWAL_ENABLED",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1292,7 +1895,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("TRX_DEPOSIT_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("TRX_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1309,7 +1917,14 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "USDT_DEPOSIT_ENABLED"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue("USDT_DEPOSIT_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1328,6 +1943,13 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("MINIMUM_TRX_SEND")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "MINIMUM_TRX_SEND",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1344,6 +1966,15 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue(
+                          "NATIVE_TRX_FEE_TRANSFER_PLATFORM"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "NATIVE_TRX_FEE_TRANSFER_PLATFORM",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1362,6 +1993,13 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("MINIMUM_USDT_SEND")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "MINIMUM_USDT_SEND",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1377,7 +2015,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_TRX_FEE_TRANSFER")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_TRX_FEE_TRANSFER",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1392,7 +2040,19 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue(
+                          "USDT_TRX_FEE_TRANSFER_PLATFORM_USD"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_TRX_FEE_TRANSFER_PLATFORM_USD",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1405,7 +2065,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("NATIVE_TRX_FEE_TRANSFER")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "NATIVE_TRX_FEE_TRANSFER",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1418,7 +2088,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_TRX_FEE_TRANSFER_SELL")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_TRX_FEE_TRANSFER_SELL",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1426,7 +2106,13 @@ export default function Search() {
                     <div className={styles.key}>
                       <p className={styles.keyText}>
                         DON_T_PROCESS_TRON_DEPOSITS -{" "}
-                        <span className={styles.redText}>Disabled</span>
+                        {getSettingsValue(
+                          "DONT_PROCESS_INCOMING_TRON_DEPOSITS"
+                        ) ? (
+                          <span className={styles.greenText}>Enabled</span>
+                        ) : (
+                          <span className={styles.redText}>Disabled</span>
+                        )}
                       </p>
                       <p className={styles.keySubText}>
                         incoming TRON deposits won’t be processed. Used in case
@@ -1435,7 +2121,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DONT_PROCESS_INCOMING_TRON_DEPOSITS"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "DONT_PROCESS_INCOMING_TRON_DEPOSITS",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1446,7 +2142,17 @@ export default function Search() {
                       <p className={styles.keySubText}>State of TRON sweeps</p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("TRON_SWEEP_STATE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "TRON_SWEEP_STATE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1458,7 +2164,17 @@ export default function Search() {
                       <p className={styles.keySubText}>State of TRON sweeps</p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_TRX_FEE_SWEEP")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_TRX_FEE_SWEEP",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1477,7 +2193,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("EVM_CONFIRMATION")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "EVM_CONFIRMATION",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1493,7 +2219,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("ETH_SEND_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("ETH_SEND_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1510,7 +2241,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue("BSC_SEND_ENABLED")}
+                          onToggle={(value) =>
+                            changeSettingsValue("BSC_SEND_ENABLED", value)
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1524,7 +2260,14 @@ export default function Search() {
                       <p className={styles.keySubText}>Email for support</p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("SUPPORT_EMAIL")}
+                        onChange={(e) =>
+                          changeSettingsValue("SUPPORT_EMAIL", e.target.value)
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />
@@ -1536,7 +2279,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("SUPPORT_WHATSAPP")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "SUPPORT_WHATSAPP",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1552,6 +2305,13 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("TELEGRAM_BOT_IDENTIFIER")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "TELEGRAM_BOT_IDENTIFIER",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1568,6 +2328,13 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue("TELEGRAM_CHAT_IDENTIFIER")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "TELEGRAM_CHAT_IDENTIFIER",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1645,6 +2412,15 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue(
+                          "EMERGENCY_MESSAGE_NOTIFICATION_1"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "EMERGENCY_MESSAGE_NOTIFICATION_1",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1665,6 +2441,15 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue(
+                          "EMERGENCY_MESSAGE_NOTIFICATION_2"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "EMERGENCY_MESSAGE_NOTIFICATION_2",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1685,6 +2470,15 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue(
+                          "EMERGENCY_MESSAGE_NOTIFICATION_3"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "EMERGENCY_MESSAGE_NOTIFICATION_3",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1705,6 +2499,15 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue(
+                          "EMERGENCY_MESSAGE_NOTIFICATION_4"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "EMERGENCY_MESSAGE_NOTIFICATION_4",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1725,6 +2528,15 @@ export default function Search() {
                         onUpdate={() => {}}
                         placeholder=""
                         className={styles.valueInput}
+                        value={getSettingsValue(
+                          "EMERGENCY_MESSAGE_NOTIFICATION_5"
+                        )}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "EMERGENCY_MESSAGE_NOTIFICATION_5",
+                            e.target.value
+                          )
+                        }
                       />
                     </div>
                   </div>
@@ -1737,7 +2549,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_EXCHANGE_PRICE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_EXCHANGE_PRICE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                 </>
@@ -1754,7 +2576,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("MOMO_1_MERCHANT_MAIN_BALANCE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "MOMO_1_MERCHANT_MAIN_BALANCE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1766,7 +2598,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("PLATFORM_2FA_KEY")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "PLATFORM_2FA_KEY",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <Divider />
@@ -1783,7 +2625,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "MANUAL_WITHDRAWAL_PROCESSING"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "MANUAL_WITHDRAWAL_PROCESSING",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1800,7 +2652,17 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <div className={styles.switchContainer}>
-                        <Toggle />
+                        <Toggle
+                          defaultValue={getSettingsValue(
+                            "DISABLE_ADDRESS_GENERATION"
+                          )}
+                          onToggle={(value) =>
+                            changeSettingsValue(
+                              "DISABLE_ADDRESS_GENERATION",
+                              value
+                            )
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -1813,7 +2675,17 @@ export default function Search() {
                       </p>
                     </div>
                     <div className={styles.value}>
-                      <Input placeholder="" className={styles.valueInput} />
+                      <Input
+                        placeholder=""
+                        className={styles.valueInput}
+                        value={getSettingsValue("USDT_EXCHANGE_PRICE")}
+                        onChange={(e) =>
+                          changeSettingsValue(
+                            "USDT_EXCHANGE_PRICE",
+                            e.target.value
+                          )
+                        }
+                      />
                     </div>
                   </div>
                   <div className={styles.spacer} />

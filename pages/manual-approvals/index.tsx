@@ -77,8 +77,9 @@ export default function Search() {
     },
     {
       title: "Date",
-      dataIndex: "date",
-      key: "date",
+      dataIndex: "createdOn",
+      key: "createdOn",
+      width: "20%",
     },
     {
       title: "Actions",
