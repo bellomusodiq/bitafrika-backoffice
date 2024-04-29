@@ -11,6 +11,8 @@ const Input: React.FC<InputProps> = ({
   className,
   leftIcon,
   noBorder,
+  disabled,
+  loading,
 }) => (
   <div className={`${styles.inputContainer} ${className}`}>
     {leftIcon && <div className={styles.leftIconContainer}>{leftIcon}</div>}
@@ -20,6 +22,7 @@ const Input: React.FC<InputProps> = ({
       onChange={onChange}
       className={styles.input}
       placeholder={placeholder}
+      disabled={disabled}
       style={{
         borderBottomLeftRadius: leftIcon ? 0 : 8,
         borderTopLeftRadius: leftIcon ? 0 : 8,
@@ -31,7 +34,16 @@ const Input: React.FC<InputProps> = ({
         outline: noBorder ? "none" : "",
       }}
     />
-    {onUpdate && <button className={styles.updateButton}>Update</button>}
+    {onUpdate && (
+      <button
+        disabled={loading}
+        onClick={onUpdate}
+        className={styles.updateButton}
+        style={{ backgroundColor: loading ? "lightgrey" : "" }}
+      >
+        {loading ? <span className="loader"></span> : "Update"}
+      </button>
+    )}
   </div>
 );
 

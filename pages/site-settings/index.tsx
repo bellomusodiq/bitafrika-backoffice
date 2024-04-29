@@ -14,6 +14,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 export default function Search() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function Search() {
   const [ratesTab, setRatesTab] = useState<string>("BTC");
   const [loading, setLoading] = useState<boolean>(false);
   const [siteSettings, setSiteSettings] = useState<any>([]);
+  const [loadingKey, setLoadingKey] = useState<string>("");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -68,6 +70,50 @@ export default function Search() {
     newSettingsItem.value = value;
     newSiteSettings[index] = newSettingsItem;
     setSiteSettings(newSiteSettings);
+  };
+
+  const updateFields = (field: string, value?: any) => {
+    console.log("value", value);
+
+    let newValue: any = value;
+    if (value === undefined) {
+      newValue = getSettingsValue(field);
+    }
+    if (typeof value === "boolean") {
+      if (value === true) {
+        newValue = "TRUE";
+      } else {
+        newValue = "FALSE";
+      }
+    }
+    const settingsItem = siteSettings.find(
+      (settings: any) => settings.name === field
+    );
+    console.log("settingsItem", settingsItem);
+    changeSettingsValue(field, value);
+    setLoadingKey(field);
+    axios
+      .post(
+        `${BASE_URL}/site-settings/update-site-settings`,
+        {
+          category: settingsItem.category,
+          name: settingsItem.name,
+          value: newValue,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingKey("");
+        if (res.data.success) {
+          toast.success(`${settingsItem.title} updated sucessfully`);
+        } else {
+          toast.error(res.data.message);
+        }
+      });
   };
 
   return (
@@ -321,6 +367,7 @@ export default function Search() {
                       <Input
                         leftIcon={<div className={styles.leftIcon}>$</div>}
                         value={getSettingsValue("internalBanFeePercentage")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "internalBanFeePercentage",
@@ -334,6 +381,7 @@ export default function Search() {
                       <Input
                         leftIcon={<div className={styles.leftIcon}>$</div>}
                         value={getSettingsValue("externalFeePercentage")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "externalFeePercentage",
@@ -349,6 +397,7 @@ export default function Search() {
                       <Input
                         leftIcon={<div className={styles.leftIcon}>$</div>}
                         value={getSettingsValue("withdrawalFeePercentage")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "withdrawalFeePercentage",
@@ -376,6 +425,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("momopayid")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue("momopayid", e.target.value)
                         }
@@ -401,6 +451,8 @@ export default function Search() {
                         onChange={(e) =>
                           changeSettingsValue("momopayname", e.target.value)
                         }
+                        onUpdate={() => updateFields("momopayname")}
+                        loading={loadingKey === "momopayname"}
                       />
                     </div>
                   </div>
@@ -420,6 +472,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("chippertag")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue("chippertag", e.target.value)
                         }
@@ -442,6 +495,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("chipperName")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue("chipperName", e.target.value)
                         }
@@ -646,6 +700,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("BSC_SELLING_NETWORK_FEE_TYPE")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "BSC_SELLING_NETWORK_FEE_TYPE",
@@ -671,6 +726,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("BCH_NETWORK_FEE_TYPE")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "BCH_NETWORK_FEE_TYPE",
@@ -696,6 +752,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("LTC_NETWORK_FEE_TYPE")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "LTC_NETWORK_FEE_TYPE",
@@ -721,6 +778,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("DOGE_NETWORK_FEE_TYPE")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "DOGE_NETWORK_FEE_TYPE",
@@ -752,7 +810,8 @@ export default function Search() {
                             e.target.value
                           )
                         }
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("KOLLET_TRANSFER_MODE")}
+                        loading={loadingKey === "KOLLET_TRANSFER_MODE"}
                       />
                     </div>
                   </div>
@@ -775,9 +834,9 @@ export default function Search() {
                       <div className={styles.switchContainer}>
                         <Toggle
                           defaultValue={getSettingsValue("DOGE_FIXED_FEE")}
-                          onToggle={(value) =>
-                            changeSettingsValue("DOGE_FIXED_FEE", value)
-                          }
+                          onToggle={(value) => {
+                            updateFields("DOGE_FIXED_FEE", value);
+                          }}
                         />
                       </div>
                     </div>
@@ -796,6 +855,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("DOGE_FIXED_SEND_FEE_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "DOGE_FIXED_SEND_FEE_USD",
@@ -825,7 +885,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("LTC_FIXED_FEE")}
                           onToggle={(value) =>
-                            changeSettingsValue("LTC_FIXED_FEE", value)
+                            updateFields("LTC_FIXED_FEE", value)
                           }
                         />
                       </div>
@@ -845,6 +905,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("LTC_FIXED_SEND_FEE_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "LTC_FIXED_SEND_FEE_USD",
@@ -874,7 +935,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("BCH_FIXED_FEE")}
                           onToggle={(value) =>
-                            changeSettingsValue("BCH_FIXED_FEE", value)
+                            updateFields("BCH_FIXED_FEE", value)
                           }
                         />
                       </div>
@@ -895,6 +956,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("BCH_FIXED_SEND_FEE_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "BCH_FIXED_SEND_FEE_USD",
@@ -928,7 +990,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("DEPOSIT_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("DEPOSIT_ENABLED", value)
+                            updateFields("DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -956,7 +1018,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("WITHDRAWAL_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("WITHDRAWAL_ENABLED", value)
+                            updateFields("WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -982,7 +1044,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("SEND_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("SEND_ENABLED", value)
+                            updateFields("SEND_ENABLED", value)
                           }
                         />
                       </div>
@@ -1015,7 +1077,7 @@ export default function Search() {
                             "DEPOSIT_MANUAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("DEPOSIT_MANUAL_ENABLED", value)
+                            updateFields("DEPOSIT_MANUAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1043,7 +1105,7 @@ export default function Search() {
                             "DEPOSIT_VODAFONE_MANUAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
+                            updateFields(
                               "DEPOSIT_VODAFONE_MANUAL_ENABLED",
                               value
                             )
@@ -1076,7 +1138,7 @@ export default function Search() {
                             "DEPOSIT_AIRTELTIGO_MANUAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
+                            updateFields(
                               "DEPOSIT_AIRTELTIGO_MANUAL_ENABLED",
                               value
                             )
@@ -1107,10 +1169,7 @@ export default function Search() {
                             "DEPOSIT_MTN_MANUAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
-                              "DEPOSIT_MTN_MANUAL_ENABLED",
-                              value
-                            )
+                            updateFields("DEPOSIT_MTN_MANUAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1172,7 +1231,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("BTC_DEPOSIT_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("BTC_DEPOSIT_ENABLED", value)
+                            updateFields("BTC_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1199,7 +1258,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("BCH_DEPOSIT_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("BCH_DEPOSIT_ENABLED", value)
+                            updateFields("BCH_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1228,7 +1287,7 @@ export default function Search() {
                             "DOGE_DEPOSIT_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("DOGE_DEPOSIT_ENABLED", value)
+                            updateFields("DOGE_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1255,7 +1314,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("LTC_DEPOSIT_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("LTC_DEPOSIT_ENABLED", value)
+                            updateFields("LTC_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1282,7 +1341,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("TRX_DEPOSIT_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("TRX_DEPOSIT_ENABLED", value)
+                            updateFields("TRX_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1311,7 +1370,7 @@ export default function Search() {
                             "USDT_DEPOSIT_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("USDT_DEPOSIT_ENABLED", value)
+                            updateFields("USDT_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1367,7 +1426,7 @@ export default function Search() {
                             "BTC_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("BTC_WITHDRAWAL_ENABLED", value)
+                            updateFields("BTC_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1396,7 +1455,7 @@ export default function Search() {
                             "BCH_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("BCH_WITHDRAWAL_ENABLED", value)
+                            updateFields("BCH_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1425,10 +1484,7 @@ export default function Search() {
                             "DOGE_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
-                              "DOGE_WITHDRAWAL_ENABLED",
-                              value
-                            )
+                            updateFields("DOGE_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1457,7 +1513,7 @@ export default function Search() {
                             "LTC_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("LTC_WITHDRAWAL_ENABLED", value)
+                            updateFields("LTC_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1486,7 +1542,7 @@ export default function Search() {
                             "TRX_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("TRX_WITHDRAWAL_ENABLED", value)
+                            updateFields("TRX_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1515,10 +1571,7 @@ export default function Search() {
                             "USDT_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
-                              "USDT_WITHDRAWAL_ENABLED",
-                              value
-                            )
+                            updateFields("USDT_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1539,7 +1592,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("BUY_LIMIT_USD")}
+                        loading={loadingKey === "BUY_LIMIT_USD"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("BUY_LIMIT_USD")}
@@ -1559,7 +1613,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("SELL_LIMIT_USD")}
+                        loading={loadingKey === "SELL_LIMIT_USD"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("SELL_LIMIT_USD")}
@@ -1581,7 +1636,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("USDT_BUY_LIMIT_USD")}
+                        loading={loadingKey === "USDT_BUY_LIMIT_USD"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_BUY_LIMIT_USD")}
@@ -1606,7 +1662,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("SELL_LIMIT_USD")}
+                        loading={loadingKey === "SELL_LIMIT_USD"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("SELL_LIMIT_USD")}
@@ -1628,7 +1685,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("BUY_LIMIT_USD")}
+                        loading={loadingKey === "BUY_LIMIT_USD"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("BUY_LIMIT_USD")}
@@ -1656,6 +1714,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("CENTRAL_TRON_ADDRESS")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "CENTRAL_TRON_ADDRESS",
@@ -1681,6 +1740,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("TRON_CONFIRMATION")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "TRON_CONFIRMATION",
@@ -1706,6 +1766,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("BUY_LIMIT_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue("BUY_LIMIT_USD", e.target.value)
                         }
@@ -1728,6 +1789,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_BUY_LIMIT_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_BUY_LIMIT_USD",
@@ -1753,6 +1815,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_SELL_LIMIT_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_SELL_LIMIT_USD",
@@ -1778,6 +1841,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("TRX_SELL_LIMIT_USD")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "TRX_SELL_LIMIT_USD",
@@ -1803,7 +1867,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("TRX_SEND_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("TRX_SEND_ENABLED", value)
+                            updateFields("TRX_SEND_ENABLED", value)
                           }
                         />
                       </div>
@@ -1827,7 +1891,7 @@ export default function Search() {
                             "TRX_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("TRX_WITHDRAWAL_ENABLED", value)
+                            updateFields("TRX_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1849,7 +1913,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("USDT_SEND_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("USDT_SEND_ENABLED", value)
+                            updateFields("USDT_SEND_ENABLED", value)
                           }
                         />
                       </div>
@@ -1873,10 +1937,7 @@ export default function Search() {
                             "USDT_WITHDRAWAL_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
-                              "USDT_WITHDRAWAL_ENABLED",
-                              value
-                            )
+                            updateFields("USDT_WITHDRAWAL_ENABLED", value)
                           }
                         />
                       </div>
@@ -1898,7 +1959,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("TRX_DEPOSIT_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("TRX_DEPOSIT_ENABLED", value)
+                            updateFields("TRX_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1922,7 +1983,7 @@ export default function Search() {
                             "USDT_DEPOSIT_ENABLED"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue("USDT_DEPOSIT_ENABLED", value)
+                            updateFields("USDT_DEPOSIT_ENABLED", value)
                           }
                         />
                       </div>
@@ -1940,7 +2001,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("MINIMUM_TRX_SEND")}
+                        loading={loadingKey === "MINIMUM_TRX_SEND"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("MINIMUM_TRX_SEND")}
@@ -1963,7 +2025,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("NATIVE_TRX_FEE_TRANSFER_PLATFORM")
+                        }
+                        loading={
+                          loadingKey === "NATIVE_TRX_FEE_TRANSFER_PLATFORM"
+                        }
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue(
@@ -1990,7 +2057,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("MINIMUM_USDT_SEND")}
+                        loading={loadingKey === "MINIMUM_USDT_SEND"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("MINIMUM_USDT_SEND")}
@@ -2019,6 +2087,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_TRX_FEE_TRANSFER")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_TRX_FEE_TRANSFER",
@@ -2046,6 +2115,7 @@ export default function Search() {
                         value={getSettingsValue(
                           "USDT_TRX_FEE_TRANSFER_PLATFORM_USD"
                         )}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_TRX_FEE_TRANSFER_PLATFORM_USD",
@@ -2069,6 +2139,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("NATIVE_TRX_FEE_TRANSFER")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "NATIVE_TRX_FEE_TRANSFER",
@@ -2092,6 +2163,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_TRX_FEE_TRANSFER_SELL")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_TRX_FEE_TRANSFER_SELL",
@@ -2126,7 +2198,7 @@ export default function Search() {
                             "DONT_PROCESS_INCOMING_TRON_DEPOSITS"
                           )}
                           onToggle={(value) =>
-                            changeSettingsValue(
+                            updateFields(
                               "DONT_PROCESS_INCOMING_TRON_DEPOSITS",
                               value
                             )
@@ -2146,6 +2218,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("TRON_SWEEP_STATE")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "TRON_SWEEP_STATE",
@@ -2168,6 +2241,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_TRX_FEE_SWEEP")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_TRX_FEE_SWEEP",
@@ -2197,6 +2271,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("EVM_CONFIRMATION")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "EVM_CONFIRMATION",
@@ -2222,7 +2297,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("ETH_SEND_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("ETH_SEND_ENABLED", value)
+                            updateFields("ETH_SEND_ENABLED", value)
                           }
                         />
                       </div>
@@ -2244,7 +2319,7 @@ export default function Search() {
                         <Toggle
                           defaultValue={getSettingsValue("BSC_SEND_ENABLED")}
                           onToggle={(value) =>
-                            changeSettingsValue("BSC_SEND_ENABLED", value)
+                            updateFields("BSC_SEND_ENABLED", value)
                           }
                         />
                       </div>
@@ -2264,6 +2339,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("SUPPORT_EMAIL")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue("SUPPORT_EMAIL", e.target.value)
                         }
@@ -2283,6 +2359,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("SUPPORT_WHATSAPP")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "SUPPORT_WHATSAPP",
@@ -2302,7 +2379,8 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() => updateFields("TELEGRAM_BOT_IDENTIFIER")}
+                        loading={loadingKey === "TELEGRAM_BOT_IDENTIFIER"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("TELEGRAM_BOT_IDENTIFIER")}
@@ -2325,7 +2403,10 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("TELEGRAM_CHAT_IDENTIFIER")
+                        }
+                        loading={loadingKey === "TELEGRAM_CHAT_IDENTIFIER"}
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("TELEGRAM_CHAT_IDENTIFIER")}
@@ -2409,7 +2490,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("EMERGENCY_MESSAGE_NOTIFICATION_1")
+                        }
+                        loading={
+                          loadingKey === "EMERGENCY_MESSAGE_NOTIFICATION_1"
+                        }
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue(
@@ -2438,7 +2524,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("EMERGENCY_MESSAGE_NOTIFICATION_2")
+                        }
+                        loading={
+                          loadingKey === "EMERGENCY_MESSAGE_NOTIFICATION_2"
+                        }
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue(
@@ -2467,7 +2558,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("EMERGENCY_MESSAGE_NOTIFICATION_3")
+                        }
+                        loading={
+                          loadingKey === "EMERGENCY_MESSAGE_NOTIFICATION_3"
+                        }
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue(
@@ -2496,7 +2592,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("EMERGENCY_MESSAGE_NOTIFICATION_4")
+                        }
+                        loading={
+                          loadingKey === "EMERGENCY_MESSAGE_NOTIFICATION_4"
+                        }
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue(
@@ -2525,7 +2626,12 @@ export default function Search() {
                     </div>
                     <div className={styles.value}>
                       <Input
-                        onUpdate={() => {}}
+                        onUpdate={() =>
+                          updateFields("EMERGENCY_MESSAGE_NOTIFICATION_5")
+                        }
+                        loading={
+                          loadingKey === "EMERGENCY_MESSAGE_NOTIFICATION_5"
+                        }
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue(
@@ -2553,6 +2659,7 @@ export default function Search() {
                         placeholder=""
                         className={styles.valueInput}
                         value={getSettingsValue("USDT_EXCHANGE_PRICE")}
+                        disabled
                         onChange={(e) =>
                           changeSettingsValue(
                             "USDT_EXCHANGE_PRICE",
