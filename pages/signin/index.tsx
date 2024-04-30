@@ -72,7 +72,11 @@ const Signin: React.FC<NextPage> = () => {
           });
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setLoading(false);
         toast.error("Something went wrong, try again", {
           position: "top-center",
@@ -115,7 +119,11 @@ const Signin: React.FC<NextPage> = () => {
           });
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setLoading(false);
         toast.error("Something went wrong, try again", {
           position: "top-center",
@@ -156,7 +164,6 @@ const Signin: React.FC<NextPage> = () => {
   };
 
   console.log(loginRes);
-  
 
   return (
     <div className={styles.container}>

@@ -24,6 +24,10 @@ const Header: React.FC = () => {
           router.replace("/signin", "/signin");
         })
         .catch((res) => {
+          if (res.response.status === 401) {
+            localStorage.removeItem("auth");
+            router.replace("/", "/");
+          }
           toast.error(res.data.message, {
             position: "top-center",
             autoClose: 5000,

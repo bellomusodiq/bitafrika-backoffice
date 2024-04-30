@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/country-settings/country-settings.module.css";
@@ -24,7 +24,10 @@ export default function Search() {
   const [loading, setLoading] = useState<boolean>(false);
   const [basicInfoLoading, setBasicInfoLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>({});
+  const previousData = useRef<any>({});
   const [selectedRate, setSelectedRate] = useState<string>("");
+
+  console.log("previousData", previousData);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -48,6 +51,12 @@ export default function Search() {
         if (res.data.success) {
           setData(res.data.data);
         } else {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -82,6 +91,10 @@ export default function Search() {
         }
       })
       .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setBasicInfoLoading(false);
         toast.error("Something went wrong! Try again");
       });
@@ -116,6 +129,10 @@ export default function Search() {
         }
       })
       .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setBasicInfoLoading(false);
         toast.error("Something went wrong! Try again");
       });
@@ -148,6 +165,10 @@ export default function Search() {
         }
       })
       .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setBasicInfoLoading(false);
         toast.error("Something went wrong! Try again");
       });
@@ -178,7 +199,10 @@ export default function Search() {
       <Modal
         customStyles={{ width: "30vw" }}
         openModal={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={() => {
+          setOpenModal(false);
+          setData(previousData.current);
+        }}
       >
         <div className={styles.modalContainer}>
           <p className={styles.modalHeader}>Update {selectedRate} rate</p>
@@ -199,7 +223,10 @@ export default function Search() {
 
           <div className={styles.modalFooter}>
             <Button
-              onClick={() => setOpenModal(false)}
+              onClick={() => {
+                setData(previousData.current);
+                setOpenModal(false);
+              }}
               className={styles.modalButton}
               color="white"
             >
@@ -393,6 +420,7 @@ export default function Search() {
                   <p style={{ width: "15%" }}>
                     <Button
                       onClick={() => {
+                        previousData.current = { ...data };
                         setOpenModal(true);
                         setSelectedRate("currency");
                       }}
@@ -410,6 +438,7 @@ export default function Search() {
                   <p style={{ width: "15%" }}>
                     <Button
                       onClick={() => {
+                        previousData.current = { ...data };
                         setOpenModal(true);
                         setSelectedRate("usdt");
                       }}
@@ -428,6 +457,7 @@ export default function Search() {
                     <Button
                       className={styles.editButton}
                       onClick={() => {
+                        previousData.current = data;
                         setOpenModal(true);
                         setSelectedRate("evm");
                       }}

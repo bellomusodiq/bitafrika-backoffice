@@ -50,6 +50,12 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -112,6 +118,12 @@ export default function Search() {
           toast.success(`${settingsItem.title} updated sucessfully`);
         } else {
           toast.error(res.data.message);
+        }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };

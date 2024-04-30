@@ -77,6 +77,12 @@ export default function Search() {
       .then((res: any) => {
         setUsers(res.data.users);
       })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      })
       .finally(() => {
         setLoading(false);
       });
@@ -193,7 +199,7 @@ export default function Search() {
         </div>
 
         <div className={styles.searchContainer}>
-          <div className={styles.table} style={{overflow: "hidden"}}>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
             <Table
               onRow={(record, rowIndex) => {
                 return {

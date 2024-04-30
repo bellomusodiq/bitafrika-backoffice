@@ -12,6 +12,7 @@ import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
+import { useRouter } from "next/router";
 
 const BALANCE_COLUMNS = [
   {
@@ -112,6 +113,7 @@ const SELL_COLUMN = [
 ];
 
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -149,6 +151,12 @@ export default function Search() {
         setLoadingIndex(null);
         setLoading(false);
         setOpenModal(res.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -170,6 +178,12 @@ export default function Search() {
         setLoading(false);
         setLoadingIndex(null);
         setOpenModal(res.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -191,6 +205,12 @@ export default function Search() {
         setLoadingIndex(null);
         setOpenModal(res.data);
         setLoading(false);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -218,6 +238,12 @@ export default function Search() {
 
         setData(newData);
         setPagination(res.data.pageInfo);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -245,6 +271,12 @@ export default function Search() {
 
         setData(newData);
         setPagination(res.data.pageInfo);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -272,6 +304,12 @@ export default function Search() {
 
         setData(newData);
         setPagination(res.data.pageInfo);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 

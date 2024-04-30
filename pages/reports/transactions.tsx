@@ -12,8 +12,10 @@ import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
 import formatDate from "@/utils/formatDate";
+import { useRouter } from "next/router";
 
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,6 +55,12 @@ export default function Search() {
       .then((res: any) => {
         setLoading(false);
         setData(res.data.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -71,6 +79,12 @@ export default function Search() {
       .then((res: any) => {
         setLoading(false);
         setData(res.data.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -89,6 +103,12 @@ export default function Search() {
       .then((res: any) => {
         setLoading(false);
         setData(res.data.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -107,6 +127,12 @@ export default function Search() {
       .then((res: any) => {
         setLoading(false);
         setData(res.data.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 

@@ -46,6 +46,12 @@ export default function Home() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 

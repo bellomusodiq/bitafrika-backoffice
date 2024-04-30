@@ -249,6 +249,10 @@ export default function Search() {
         }
       })
       .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setLoading(false);
         toast.error(err.response.data.message);
       });
@@ -282,6 +286,10 @@ export default function Search() {
         setData(data);
       })
       .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setLoading(false);
         toast.error(err.response.data.message);
       });
@@ -317,6 +325,10 @@ export default function Search() {
         setData(data);
       })
       .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setLoading(false);
         toast.error(err.response.data.message);
       });
@@ -348,6 +360,10 @@ export default function Search() {
         );
       })
       .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
         setLoading(false);
         toast.error(err.response.data.message);
       });

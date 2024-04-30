@@ -101,6 +101,12 @@ export default function Search() {
             total: res.data.totalCount,
           });
         }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 

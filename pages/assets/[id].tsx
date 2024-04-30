@@ -45,6 +45,12 @@ const AssetsDetail: NextPage = () => {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 

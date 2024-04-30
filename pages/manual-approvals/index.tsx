@@ -13,8 +13,10 @@ import { toast } from "react-toastify";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import Loader from "@/components/Loader";
+import { useRouter } from "next/router";
 
 export default function Search() {
+  const router = useRouter();
   const code1 = useRef(null);
   const code2 = useRef(null);
   const code3 = useRef(null);
@@ -117,6 +119,12 @@ export default function Search() {
         setLoadingDetail(false);
         setOpenModal(true);
         setDetail(res.data.data);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -145,6 +153,12 @@ export default function Search() {
           }))
         );
         // setPagination(res.data.pageInfo);
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -169,6 +183,12 @@ export default function Search() {
         } else {
           toast.error(res.data.message);
         }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -192,6 +212,12 @@ export default function Search() {
           fetchManualApproval();
         } else {
           toast.error(res.data.message);
+        }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };

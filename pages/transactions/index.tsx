@@ -12,6 +12,7 @@ import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
+import { useRouter } from "next/router";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -20,6 +21,7 @@ const COUNTRY_MAP: { [k: string]: string } = {
 };
 
 export default function Search() {
+  const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -789,6 +791,12 @@ export default function Search() {
           setCurrentUser(res.data.data);
           setOpenModal(true);
         }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -821,6 +829,12 @@ export default function Search() {
           );
           setPagination(res.data.pageInfo);
         }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -841,6 +855,11 @@ export default function Search() {
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
+        }
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
@@ -874,6 +893,11 @@ export default function Search() {
             },
           }))
         );
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -894,6 +918,11 @@ export default function Search() {
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
+        }
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
@@ -926,6 +955,11 @@ export default function Search() {
             },
           }))
         );
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -946,6 +980,11 @@ export default function Search() {
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
+        }
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
@@ -980,6 +1019,11 @@ export default function Search() {
             },
           }))
         );
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -1000,6 +1044,11 @@ export default function Search() {
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
+        }
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
@@ -1039,6 +1088,11 @@ export default function Search() {
             },
           }))
         );
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
@@ -1059,6 +1113,11 @@ export default function Search() {
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
+        }
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
         }
       });
   };
@@ -1090,6 +1149,11 @@ export default function Search() {
             },
           }))
         );
+      }).catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
       });
   };
 
