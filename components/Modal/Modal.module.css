@@ -47,8 +47,9 @@
   cursor: pointer;
 }
 .headerCenter {
-  flex: 1;  
+  flex: 1;
   margin: 0 16px;
 }
 .body {
+  max-height: 70vh;
 }

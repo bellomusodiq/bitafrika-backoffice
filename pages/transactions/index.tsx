@@ -36,6 +36,14 @@ export default function Search() {
 
   const BUY_COLUMN = [
     {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
       title: "Transaction ID",
       dataIndex: "transactionId",
       key: "transactionId",
@@ -47,27 +55,25 @@ export default function Search() {
       ),
     },
     {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
       title: "Asset",
       dataIndex: "asset",
       key: "asset",
     },
     {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Total (GHS)",
+      title: "Amount (GHS)",
       dataIndex: "total",
       key: "total",
+    },
+    {
+      title: "Amount (USD)",
+      dataIndex: "usd",
+      key: "usd",
+      render: (_: any, { usd }: any) => <>${usd}</>,
+    },
+    {
+      title: "Amount (CRYPTO)",
+      dataIndex: "crypto",
+      key: "crypto",
     },
     {
       title: "Status",
@@ -102,6 +108,14 @@ export default function Search() {
 
   const SELL_COLUMN = [
     {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
       title: "Transaction ID",
       dataIndex: "transactionId",
       key: "transactionId",
@@ -113,44 +127,46 @@ export default function Search() {
       ),
     },
     {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
       title: "Asset",
       dataIndex: "asset",
       key: "asset",
     },
     {
-      title: "Amount",
+      title: "Amount (USD)",
       dataIndex: "amount",
       key: "amount",
     },
     {
-      title: "Total (GHS)",
+      title: "Amount (GHS)",
       dataIndex: "total",
       key: "total",
     },
     {
-      title: "Status",
+      title: "Fee",
+      dataIndex: "fee",
+      key: "fee",
+    },
+    {
+      title: "Status/Date",
       dataIndex: "status",
       key: "status",
-      render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
+      width: "25%",
+      render: (_: any, { status, createdOn }: any) => (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <div className={styles.statusContainer}>
+            <div className={styles.statusIndicator} /> {status}
+          </div>
+          <p style={{ marginLeft: 5 }}>{createdOn}</p>
         </div>
       ),
     },
-    {
-      title: "Date",
-      dataIndex: "createdOn",
-      key: "createdOn",
-      width: "20%",
-    },
+
     {
       title: "Actions",
       dataIndex: "action",
@@ -856,7 +872,8 @@ export default function Search() {
           setCurrentUser(res.data.data);
           setOpenModal(true);
         }
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -893,7 +910,8 @@ export default function Search() {
             },
           }))
         );
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -919,7 +937,8 @@ export default function Search() {
           setCurrentUser(res.data.data);
           setOpenModal(true);
         }
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -955,7 +974,8 @@ export default function Search() {
             },
           }))
         );
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -981,7 +1001,8 @@ export default function Search() {
           setCurrentUser(res.data.data);
           setOpenModal(true);
         }
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -1019,7 +1040,8 @@ export default function Search() {
             },
           }))
         );
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -1045,7 +1067,8 @@ export default function Search() {
           setCurrentUser(res.data.data);
           setOpenModal(true);
         }
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -1088,7 +1111,8 @@ export default function Search() {
             },
           }))
         );
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -1114,7 +1138,8 @@ export default function Search() {
           setCurrentUser(res.data.data);
           setOpenModal(true);
         }
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -1149,7 +1174,8 @@ export default function Search() {
             },
           }))
         );
-      }).catch((e) => {
+      })
+      .catch((e) => {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -1250,16 +1276,27 @@ export default function Search() {
             <p className={styles.key}>Transaction ID:</p>
             <p className={styles.value}>{currentUser.txid}</p>
           </div>
+
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> {currentUser.status}
-            </div>
+            <p className={styles.key}>Asset:</p>
+            <p className={styles.value}>{currentUser.cryptoSymbol}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>Asset amount:</p>
+            <p className={styles.key}>Amount (USD):</p>
+            <p className={styles.value}>${currentUser.usd}</p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Amount (GHS):</p>
+            <p className={styles.value}>
+              {currentUser.currency} {currentUser.amount}
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Amount ({currentUser.cryptoSymbol}):</p>
             <p className={styles.value} style={{ color: "#16B364" }}>
               {currentUser.amount} {currentUser.cryptoSymbol}
             </p>
@@ -1273,11 +1310,12 @@ export default function Search() {
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>Total GHS:</p>
-            <p className={styles.value}>
-              {currentUser.currency} {currentUser.amount}
-            </p>
+            <p className={styles.key}>Transaction Status:</p>
+            <div className={styles.statusContainer}>
+              <div className={styles.statusIndicator} /> {currentUser.status}
+            </div>
           </div>
+
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Payment account:</p>
@@ -1901,6 +1939,7 @@ export default function Search() {
               <Dropdown
                 value={statusType}
                 options={[
+                  { title: "All", value: "all" },
                   { title: "Successful", value: "success" },
                   { title: "Pending", value: "pending" },
                   { title: "Failed", value: "failed" },

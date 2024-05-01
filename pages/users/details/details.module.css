@@ -49,6 +49,12 @@
   width: fit-content;
   margin: 0 7.5px;
 }
+.profileActionBtnsDanger {
+  width: fit-content;
+  margin: 0 7.5px;
+  background-color: #d92d20;
+  color: white;
+}
 .container {
   padding: 0 32px;
 }

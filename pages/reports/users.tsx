@@ -13,6 +13,7 @@ import axios from "axios";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 const BALANCE_COLUMNS = [
   {
@@ -157,6 +158,9 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+        setLoadingIndex(null);
+        setLoading(false);
+        toast.error(e.response.data.message);
       });
   };
 
@@ -184,6 +188,9 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+        setLoadingIndex(null);
+        setLoading(false);
+        toast.error(e.response.data.message);
       });
   };
 
@@ -211,6 +218,9 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+        setLoadingIndex(null);
+        setLoading(false);
+        toast.error(e.response.data.message);
       });
   };
 
@@ -244,6 +254,9 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+        setLoadingIndex(null);
+        setLoading(false);
+        toast.error(e.response.data.message);
       });
   };
 
@@ -277,6 +290,9 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+        setLoadingIndex(null);
+        setLoading(false);
+        toast.error(e.response.data.message);
       });
   };
 
@@ -310,6 +326,9 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
+        setLoadingIndex(null);
+        setLoading(false);
+        toast.error(e.response.data.message);
       });
   };
 

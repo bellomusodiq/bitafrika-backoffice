@@ -14,13 +14,19 @@ const CoinListing: React.FC<CoinListingProps> = ({ title, coins }) => {
       <div style={{ padding: "0 24px" }}>
         {coins.map((coin, i) => (
           <React.Fragment key={coin.coin}>
-            <Link href={{
-              pathname: `assets/${coin.coin_code}`,
-            }} className={styles.coinItem}>
-              <img className={styles.coinImage} src={coinImage[coin.coin_code]} />
+            <Link
+              href={{
+                pathname: `assets/${coin.coin_code}`,
+              }}
+              className={styles.coinItem}
+            >
+              <img
+                className={styles.coinImage}
+                src={coinImage[coin.coin_code]}
+              />
               <p className={styles.coinName}>{coin.coin}</p>
               <p className={styles.coinBalance}>
-                {coin.amount || 0} {coin.coin_code}
+                {coin.amount.toFixed(8)} {coin.coin_code}
               </p>
             </Link>
             {i !== coins.length - 1 && <div className={styles.divider} />}

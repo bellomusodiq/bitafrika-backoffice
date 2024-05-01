@@ -14,6 +14,20 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import formatDate from "@/utils/formatDate";
 import { useRouter } from "next/router";
 
+const TOKEN_TO_COLOR: { [k: string]: string } = {
+  USDT: "#008F39",
+  BTC: "#AEA04B",
+  LTC: "#6C4675",
+  TRX: "#9D9101",
+  DOGE: "#7FB5B5",
+  BCH: "#D84B20",
+  USDC: "#5D9B9B",
+  BNB: "#B5B8B1",
+  ETH: "#E4A010",
+  MATIC: "#2271B3",
+  BSC: "#9E9764",
+};
+
 export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
@@ -233,7 +247,10 @@ export default function Search() {
               <div style={{ flex: 1 }}>
                 {data?.orders?.map((order: any) => (
                   <div className={styles.order} key={order.coin}>
-                    <div className={styles.orderIcon} />
+                    <div
+                      className={styles.orderIcon}
+                      style={{ backgroundColor: TOKEN_TO_COLOR[order.coin] }}
+                    />
                     <p className={styles.orderText}>
                       <span>{order.coin}</span>{" "}
                       <span> {order.count} orders</span>
@@ -253,24 +270,25 @@ export default function Search() {
               >
                 <div style={{ width: 200, height: 200 }}>
                   <CustomPieChart
-                    value={data?.orders?.map((order: any) => ({
+                    data={data?.orders?.map((order: any) => ({
                       value: order.usdTotal,
+                      color: TOKEN_TO_COLOR[order.coin],
                     }))}
                   />
                 </div>
                 <div className={styles.pieIndicators}>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
+                  {data?.orders?.map((order: any) => (
+                    <div key={order.coin} className={styles.pieIndicator}>
+                      <div
+                        style={{ backgroundColor: TOKEN_TO_COLOR[order.coin] }}
+                      />{" "}
+                      {(
+                        (order.amountTotal * 100) /
+                        (data.totalAmount + 0.000001)
+                      ).toFixed(2)}
+                      %
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -305,7 +323,10 @@ export default function Search() {
               <div style={{ flex: 1 }}>
                 {data?.orders?.map((order: any) => (
                   <div className={styles.order} key={order.coin}>
-                    <div className={styles.orderIcon} />
+                    <div
+                      className={styles.orderIcon}
+                      style={{ backgroundColor: TOKEN_TO_COLOR[order.coin] }}
+                    />
                     <p className={styles.orderText}>
                       <span>{order.coin}</span>{" "}
                       <span> {order.count} orders</span>
@@ -325,24 +346,25 @@ export default function Search() {
               >
                 <div style={{ width: 200, height: 200 }}>
                   <CustomPieChart
-                    value={data?.orders?.map((order: any) => ({
+                    data={data?.orders?.map((order: any) => ({
                       value: order.usdTotal,
+                      color: TOKEN_TO_COLOR[order.coin],
                     }))}
                   />
                 </div>
                 <div className={styles.pieIndicators}>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
-                  <div className={styles.pieIndicator}>
-                    <div /> 50%
-                  </div>
+                  {data?.orders?.map((order: any) => (
+                    <div key={order.coin} className={styles.pieIndicator}>
+                      <div
+                        style={{ backgroundColor: TOKEN_TO_COLOR[order.coin] }}
+                      />{" "}
+                      {(
+                        (order.amountTotal * 100) /
+                        (data.totalAmount + 0.000001)
+                      ).toFixed(2)}
+                      %
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

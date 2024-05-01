@@ -71,16 +71,20 @@ const AssetsDetail: NextPage = () => {
 
   const pieChartData = [
     {
-      value: asset?.trades?.totalBuy?.usd,
+      value: asset?.trades?.totalBuy?.usd + 0.000001,
+      color: "red",
     },
     {
-      value: asset?.trades?.totalSell?.usd,
+      value: asset?.trades?.totalSell?.usd + 0.000001,
+      color: "blue",
     },
     {
-      value: asset?.transactions?.totalReceived?.usd,
+      value: asset?.transactions?.totalReceived?.usd + 0.000001,
+      color: "green",
     },
     {
-      value: asset?.transactions?.totalSent?.usd,
+      value: asset?.transactions?.totalSent?.usd + 0.000001,
+      color: "yellow",
     },
   ];
 
@@ -94,12 +98,12 @@ const AssetsDetail: NextPage = () => {
         <>
           <div className={styles.headerContainer}>
             <div className={styles.assetTitleContainer}>
-              <h1>Bitcoin - (BTC) balance </h1>
-              <span>${asset.overview?.totalCrypto?.usd}</span>
+              <h1>{assetCode} balance </h1>
+              <span>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</span>
             </div>
             <div>
-              <Button color="white" onClick={() => router.back()}>
-                <img src="/icons/arrow-left.svg" /> Back
+              <Button color="white" onClick={getAsset}>
+                Refresh
               </Button>
             </div>
           </div>
@@ -115,7 +119,7 @@ const AssetsDetail: NextPage = () => {
                     {asset.overview?.totalCrypto?.crypto} {assetCode}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.totalCrypto?.crypto}</p>
+                    <p>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -123,7 +127,8 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>Users balance</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.usersBalance?.crypto} {assetCode}
+                    {asset.overview?.usersBalance?.crypto?.toFixed(8)}{" "}
+                    {assetCode}
                   </p>
                   <div className={styles.balanceAmount}>
                     <p>${asset.overview?.usersBalance?.crypto}</p>
@@ -134,10 +139,11 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>Our balance</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.platformBalance?.crypto} {assetCode}
+                    {asset.overview?.platformBalance?.crypto?.toFixed(8)}{" "}
+                    {assetCode}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.platformBalance?.crypto}</p>
+                    <p>${asset.overview?.platformBalance?.usd?.toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -145,10 +151,10 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>External wallet</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.external?.crypto} {assetCode}
+                    {asset.overview?.external?.crypto?.toFixed(8)} {assetCode}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.external?.crypto}</p>
+                    <p>${asset.overview?.external?.usd?.toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -204,10 +210,11 @@ const AssetsDetail: NextPage = () => {
                       <div>
                         <p className={styles.balanceTitle}>Bought</p>
                         <h3 className={styles.balanceAmount}>
-                          {asset?.trades?.totalBuy?.crypto} {assetCode}
+                          {asset?.trades?.totalBuy?.crypto?.toFixed(8)}{" "}
+                          {assetCode}
                         </h3>
                         <div className={styles.balanceFooter}>
-                          <p>${asset?.trades?.totalBuy?.usd}</p>
+                          <p>${asset?.trades?.totalBuy?.usd?.toFixed(2)}</p>
                           <div
                             className={styles.verticalDivider}
                             style={{ margin: "0 10px" }}
@@ -224,10 +231,11 @@ const AssetsDetail: NextPage = () => {
                       <div>
                         <p className={styles.balanceTitle}>Sold</p>
                         <h3 className={styles.balanceAmount}>
-                          {asset?.trades?.totalSell?.crypto} {assetCode}
+                          {asset?.trades?.totalSell?.crypto?.toFixed(8)}{" "}
+                          {assetCode}
                         </h3>
                         <div className={styles.balanceFooter}>
-                          <p>${asset?.trades?.totalSell?.usd}</p>
+                          <p>${asset?.trades?.totalSell?.usd?.toFixed(2)}</p>
                           <div
                             className={styles.verticalDivider}
                             style={{ margin: "0 10px" }}
@@ -258,17 +266,14 @@ const AssetsDetail: NextPage = () => {
                       <div style={{ backgroundColor: "red" }} /> Buy Orders
                     </p>
                     <p>
-                      <div style={{ backgroundColor: "red" }} /> Sell Orders
+                      <div style={{ backgroundColor: "green" }} /> Sell Orders
                     </p>
                     <p>
-                      <div style={{ backgroundColor: "red" }} /> Deposits
+                      <div style={{ backgroundColor: "blue" }} /> Deposits
                     </p>
                     <p>
-                      <div style={{ backgroundColor: "red" }} /> Withdrawals
+                      <div style={{ backgroundColor: "yellow" }} /> Withdrawals
                     </p>
-                  </div>
-                  <div>
-                    <Button color="white">View transactions</Button>
                   </div>
                 </div>
               </div>
@@ -336,7 +341,9 @@ const AssetsDetail: NextPage = () => {
                         {asset?.transactions?.totalSent?.crypto} {assetCode}
                       </h3>
                       <div className={styles.balanceFooter}>
-                        <p>${asset?.transactions?.totalSent?.usd}</p>
+                        <p>
+                          ${asset?.transactions?.totalSent?.usd?.toFixed(2)}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -351,7 +358,9 @@ const AssetsDetail: NextPage = () => {
                         {asset?.transactions?.totalReceived?.crypto} {assetCode}
                       </h3>
                       <div className={styles.balanceFooter}>
-                        <p>${asset?.transactions?.totalReceived?.usd}</p>
+                        <p>
+                          ${asset?.transactions?.totalReceived?.usd?.toFixed(2)}
+                        </p>
                       </div>
                     </div>
                   </div>

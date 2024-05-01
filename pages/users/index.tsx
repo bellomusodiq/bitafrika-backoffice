@@ -46,6 +46,11 @@ const USER_COLUMNS: any = [
     key: "phone",
   },
   {
+    title: "KYC Status",
+    dataIndex: "kycStatus",
+    key: "kycStatus",
+  },
+  {
     title: "Actions",
     dataIndex: "action",
     render: (_: any, { action }: any) => (
@@ -65,7 +70,7 @@ export default function Search() {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("");
+  const [searchType, setSearchType] = useState<string>("all");
   const [pagination, setPagination] = useState<any>({ current: 1 });
 
   let auth: any = {};
@@ -134,7 +139,7 @@ export default function Search() {
               <Dropdown
                 value={searchType}
                 options={[
-                  { title: "Select", value: "" },
+                  { title: "All", value: "all" },
                   { title: "Verified users", value: "VERIFIED" },
                   { title: "Unverified users", value: "UNVERIFIED" },
                   { title: "Active users", value: "ACTIVE" },

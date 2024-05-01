@@ -36,7 +36,10 @@ const CustomPieChart: React.FC<any> = ({ data }) => {
           dataKey="value"
         >
           {data?.map((entry: any, index: number) => (
-            <Cell key={`cell-${index}`} fill={getRandomColor()} />
+            <Cell
+              key={`cell-${index}`}
+              fill={entry.color || getRandomColor()}
+            />
           ))}
         </Pie>
       </PieChart>

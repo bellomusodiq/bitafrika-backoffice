@@ -749,13 +749,15 @@ const UserDetails: NextPage = () => {
               <p>@{user?.user?.username}</p>
             </div>
             <div className={styles.profileActions}>
-              <Button className={styles.profileActionBtns} color="white">
-                ...
+              <Button className={styles.profileActionBtnsDanger} color="white">
+                Disable Account
               </Button>
               <Button className={styles.profileActionBtns} color="white">
-                Button CTA
+                Send SMS
               </Button>
-              <Button className={styles.profileActionBtns}>Button CTA</Button>
+              <Button className={styles.profileActionBtns}>
+                Update Buy Limits
+              </Button>
             </div>
           </div>
           <div className={styles.container}>

@@ -109,7 +109,7 @@ export default function Home() {
                 coins={COIN_LISTING}
               />
               <div className={styles.avaibleContainer}>
-                <StatsCard headerTitle="Available Mobile money Balances:">
+                <StatsCard headerTitle="Transaction Stats">
                   <>
                     <div className={styles.statsCardContainer}>
                       <div style={{ width: 120, height: 120 }}>
@@ -117,58 +117,85 @@ export default function Home() {
                           data={[
                             {
                               value:
-                                dashboardStats?.availableMomoBalance
-                                  ?.totalBalance + 0.000001,
+                                dashboardStats?.currencyBuySell?.totalBuy
+                                  ?.todayTotal + 0.000001,
                             },
                             {
                               value:
-                                dashboardStats?.availableMomoBalance
-                                  ?.totalBalance + 0.000001,
+                                dashboardStats?.currencyBuySell?.totalBuy
+                                  ?.monthTotal + 0.000001,
                             },
                           ]}
                         />
                       </div>
                       <div className={styles.statsTextContainer}>
                         <p className={styles.statsTextGray}>
-                          Total available (GHS):
+                          Total Buy Today (GHS):
                         </p>
                         <p className={styles.statsTextBold}>
-                          {dashboardStats?.availableMomoBalance?.totalBalance}
+                          {
+                            dashboardStats?.currencyBuySell?.totalBuy
+                              ?.todayTotal
+                          }
                         </p>
                         <p
                           className={styles.statsTextGray}
                           style={{ marginTop: 16 }}
                         >
-                          Total fees (GHS):
+                          Total Buy Month (GHS):
                         </p>
                         <p className={styles.statsTextNormal}>
-                          {dashboardStats?.availableMomoBalance?.totalFees}
+                          {
+                            dashboardStats?.currencyBuySell?.totalBuy
+                              ?.monthTotal
+                          }
                         </p>
                       </div>
                     </div>
-                    <div className={styles.divider} />
+                    <div className={styles.spacer} />
                     <div className={styles.statsCardContainer}>
-                      <div className={styles.statsCardFooter}>
-                        <div className={styles.statsCardFooterContainer}>
-                          <p className={styles.statsTextGray}>
-                            Total deposits (GHS):
-                          </p>
-                          <p className={styles.statsTextNormal}>47,771.08</p>
-                        </div>
-                        <div
-                          className={styles.statsCardFooterContainer}
-                          style={{ textAlign: "right" }}
+                      <div style={{ width: 120, height: 120 }}>
+                        <CustomPieChart
+                          data={[
+                            {
+                              value:
+                                dashboardStats?.currencyBuySell?.totalBuy
+                                  ?.todayTotal + 0.000001,
+                            },
+                            {
+                              value:
+                                dashboardStats?.currencyBuySell?.totalBuy
+                                  ?.monthTotal + 0.000001,
+                            },
+                          ]}
+                        />
+                      </div>
+                      <div className={styles.statsTextContainer}>
+                        <p className={styles.statsTextGray}>
+                          Total Sell Today (GHS):
+                        </p>
+                        <p className={styles.statsTextBold}>
+                          {
+                            dashboardStats?.currencyBuySell?.totalSell
+                              ?.todayTotal
+                          }
+                        </p>
+                        <p
+                          className={styles.statsTextGray}
+                          style={{ marginTop: 16 }}
                         >
-                          <p className={styles.statsTextGray}>
-                            Total withdrawals (GHS):
-                          </p>
-                          <p className={styles.statsTextNormal}>47,771.08</p>
-                        </div>
+                          Total Sell Month (GHS):
+                        </p>
+                        <p className={styles.statsTextNormal}>
+                          {
+                            dashboardStats?.currencyBuySell?.totalSell
+                              ?.monthTotal
+                          }
+                        </p>
                       </div>
                     </div>
                   </>
                 </StatsCard>
-                <div className={styles.spacer} />
               </div>
             </div>
             {/* 

@@ -45,6 +45,14 @@ const USER_COLUMNS = [
     key: "countryCode",
   },
   {
+    title: "KYC Status",
+    dataIndex: "kycVerified",
+    key: "kycVerified",
+    render: (_: any, { kycVerified }: any) => (
+      <p>{kycVerified ? "Verfied" : "Not Verfied"}</p>
+    ),
+  },
+  {
     title: "Actions",
     dataIndex: "action",
     render: (_: any, { action }: any) => (
@@ -59,7 +67,12 @@ const USER_COLUMNS = [
 
 const MOMO_TOPUP_COLUMNS = [
   {
-    title: "#Transaction ID",
+    title: "Username",
+    dataIndex: "username",
+    key: "username",
+  },
+  {
+    title: "Transaction ID",
     dataIndex: "transactionId",
     key: "transactionId",
     render: (_: any, { transactionId }: any) => (
@@ -67,15 +80,24 @@ const MOMO_TOPUP_COLUMNS = [
     ),
   },
   {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
+    title: "Asset",
+    dataIndex: "cryptoSymbol",
+    key: "cryptoSymbol",
   },
-
   {
     title: "Amount (GHS)",
     dataIndex: "amount",
     key: "amount",
+  },
+  {
+    title: "Amount (USD)",
+    dataIndex: "amountUsd",
+    key: "amountUsd",
+  },
+  {
+    title: "Amount (CRYPTO)",
+    dataIndex: "crypto",
+    key: "crypto",
   },
   {
     title: "Status",
@@ -94,11 +116,6 @@ const MOMO_TOPUP_COLUMNS = [
         <span style={{ fontSize: 12 }}>{status}</span>
       </div>
     ),
-  },
-  {
-    title: "Amount (USD)",
-    dataIndex: "amountUsd",
-    key: "amountUsd",
   },
   {
     title: "Actions",
@@ -120,7 +137,7 @@ const MOMO_WITHDRWAL_COLUMNS = [
     key: "username",
   },
   {
-    title: "#Transaction ID",
+    title: "Transaction ID",
     dataIndex: "transactionId",
     key: "transactionId",
     render: (_: any, { transactionId }: any) => (
@@ -128,9 +145,9 @@ const MOMO_WITHDRWAL_COLUMNS = [
     ),
   },
   {
-    title: "Amount (USD)",
-    dataIndex: "amountUSD",
-    key: "amountUSD",
+    title: "Asset",
+    dataIndex: "cryptoCurrency",
+    key: "cryptoCurrency",
   },
   {
     title: "Amount (GHS)",
@@ -138,14 +155,32 @@ const MOMO_WITHDRWAL_COLUMNS = [
     key: "amount",
   },
   {
-    title: "Fee (USD)",
-    dataIndex: "fee",
-    key: "fee",
+    title: "Amount (USD)",
+    dataIndex: "amountUSD",
+    key: "amountUSD",
   },
   {
-    title: "Topup amount (C)",
+    title: "Amount (CRYPTO)",
     dataIndex: "topupAmount",
     key: "topupAmount",
+  },
+  {
+    title: "status",
+    dataIndex: "status",
+    key: "status",
+    render: (_: any, { status }: any) => (
+      <div
+        style={{
+          padding: 4,
+          borderRadius: 16,
+          backgroundColor: "#EDFCF2",
+          color: "#087443",
+          textAlign: "center",
+        }}
+      >
+        <span style={{ fontSize: 12, margin: "0px 10px" }}>{status}</span>
+      </div>
+    ),
   },
   {
     title: "Actions",
@@ -162,7 +197,12 @@ const MOMO_WITHDRWAL_COLUMNS = [
 
 const CRYPTO_TRANSACTIONS_COLUMNS = [
   {
-    title: "#Transaction ID",
+    title: "Username",
+    dataIndex: "username",
+    key: "username",
+  },
+  {
+    title: "Transaction ID",
     dataIndex: "transactionId",
     key: "transactionId",
     render: (_: any, { transactionId }: any) => (
@@ -170,12 +210,17 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
     ),
   },
   {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
+    title: "Asset",
+    dataIndex: "currency",
+    key: "currency",
   },
   {
-    title: "Amount (C)",
+    title: "Amount (GHS)",
+    dataIndex: "amount",
+    key: "amount",
+  },
+  {
+    title: "Amount (CRYPTO)",
     dataIndex: "amountCrypto",
     key: "amountCrypto",
   },
@@ -188,12 +233,25 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
     title: "Status",
     dataIndex: "status",
     key: "status",
+    render: (_: any, { status }: any) => (
+      <div
+        style={{
+          padding: 4,
+          borderRadius: 16,
+          backgroundColor: "#EDFCF2",
+          color: "#087443",
+          textAlign: "center",
+        }}
+      >
+        <span style={{ fontSize: 12 }}>{status}</span>
+      </div>
+    ),
   },
-  {
-    title: "TX type",
-    dataIndex: "txType",
-    key: "txType",
-  },
+  // {
+  //   title: "TX type",
+  //   dataIndex: "txType",
+  //   key: "txType",
+  // },
   {
     title: "Actions",
     dataIndex: "action",
@@ -409,7 +467,7 @@ export default function Search() {
   const renderPlaceHolder = () => {
     switch (searchType) {
       case "User":
-        return "Search by user";
+        return "Phone, username or email address";
       case "Momo topup":
         return "Reference ID";
       case "Momo withdrawal":
