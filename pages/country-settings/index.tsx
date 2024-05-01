@@ -112,7 +112,6 @@ export default function Search() {
           id: newData.id,
           momo: newData.momo,
           bank: newData.bank,
-          chipper: newData.chipper,
         },
         {
           headers: {
@@ -267,16 +266,6 @@ export default function Search() {
             Payment methods
           </div>
           <div
-            onClick={() => setCurrentTab("Payout methods")}
-            className={
-              currentTab === "Payout methods"
-                ? styles.tabItemActive
-                : styles.tabItem
-            }
-          >
-            Payout methods
-          </div>
-          <div
             onClick={() => setCurrentTab("Rates")}
             className={
               currentTab === "Rates" ? styles.tabItemActive : styles.tabItem
@@ -387,16 +376,6 @@ export default function Search() {
                   <Toggle
                     defaultValue={data.bank}
                     onToggle={(value) => updatePaymentMethod("bank", value)}
-                  />
-                </div>
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Chipper cash</p>
-                <div>
-                  <Toggle
-                    defaultValue={data.chipper}
-                    onToggle={(value) => updatePaymentMethod("chipper", value)}
                   />
                 </div>
               </div>
