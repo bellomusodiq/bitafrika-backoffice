@@ -137,7 +137,7 @@ const SideNav: React.FC = () => {
           },
         ]}
       />
-      <SideNavItem
+      {/* <SideNavItem
         title="Broadcasts"
         icon="/icons/broadcasts.svg"
         isActive={router.route.split("/")[1] === "broadcast"}
@@ -155,7 +155,7 @@ const SideNav: React.FC = () => {
             url: "/broadcast/push-notification",
           },
         ]}
-      />
+      /> */}
       <SideNavItem
         title="Country settings"
         isActive={router.route.split("/")[1] === "country-settings"}
