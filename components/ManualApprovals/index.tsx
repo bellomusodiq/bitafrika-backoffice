@@ -90,22 +90,6 @@ const withdrawal = [
     key: "createdOn",
     width: "20%",
   },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button
-            // disabled={loadingDetail}
-            onClick={action}
-          >
-            View
-          </Button>
-        </div>
-      </div>
-    ),
-  },
 ];
 
 const topUp: any = [
