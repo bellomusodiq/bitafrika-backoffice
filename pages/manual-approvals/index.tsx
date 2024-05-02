@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
@@ -14,6 +13,8 @@ import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
+import { TManualApprovalFilter } from "@/types";
+import { getTableColumn } from "@/components/ManualApprovals";
 
 export default function Search() {
   const router = useRouter();
@@ -37,66 +38,7 @@ export default function Search() {
   const [data, setData] = useState<any>([]);
   const [detail, setDetail] = useState<any>({});
   const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
-
-  const columns: any = [
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-    },
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId, onCopy }: any) => (
-        <div onClick={onCopy} className={styles.transactionId}>
-          <p>
-            {transactionId?.slice(0, 5)} . . .
-            {transactionId?.slice(transactionId?.length - 5)}
-          </p>
-          <img src="/icons/copy.svg" />
-        </div>
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (
-        _: any,
-        { rawAmount, cryptoAmount, localCurrency, cryptoCurrency }: any
-      ) => (
-        <div className={styles.amountContainer}>
-          <p className={styles.currency}>
-            <span style={{ color: "#98A2B3" }}>{localCurrency}</span>{" "}
-            {rawAmount}
-          </p>
-          <p className={styles.crypto}>
-            ({cryptoAmount} {cryptoCurrency})
-          </p>
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "createdOn",
-      key: "createdOn",
-      width: "20%",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button disabled={loadingDetail} onClick={action}>
-              View
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
+  const [filterBy, setFilterBy] = useState<TManualApprovalFilter>("withdrawal");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -104,10 +46,11 @@ export default function Search() {
   }
 
   const fetchManualApprovalDetail = (id: string) => {
+    const URL = `${BASE_URL}/manual-approvals/${filterBy}/${id}`;
     setLoadingDetail(true);
     axios
       .post(
-        `${BASE_URL}/manual-approvals/${id}`,
+        URL,
         {},
         {
           headers: {
@@ -121,6 +64,7 @@ export default function Search() {
         setDetail(res.data.data);
       })
       .catch((e) => {
+        setLoadingDetail(false);
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -129,32 +73,37 @@ export default function Search() {
   };
 
   const fetchManualApproval = () => {
+    const topUp = `${BASE_URL}/manual-approvals/top-up/list-awaiting-admin-approval-transactions?page=${pagination.pageNumber}`;
+    const withdrawal = `${BASE_URL}/manual-approvals/${filterBy}?page=${pagination.pageNumber}`;
+    const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/manual-approvals?page=${pagination.pageNumber}&coin=all`,
+        URL,
         {},
         {
-          headers: {
-            Authorization: auth.accessToken,
-          },
+          headers: { Authorization: auth.accessToken },
         }
       )
       .then((res: any) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
-            ...item,
-            transactionId: item.uniq,
-            onCopy: () => {
-              toast.success("Copied to clipboard");
-            },
-            action: () => fetchManualApprovalDetail(item.uniq),
-          }))
+          res.data.data.map((item: any) => {
+            const id = filterBy === "withdrawal" ? item.uniq : item.txid;
+            return {
+              ...item,
+              transactionId: id,
+              onCopy: () => {
+                toast.success("Copied to clipboard");
+              },
+              action: () => fetchManualApprovalDetail(id),
+            };
+          })
         );
         // setPagination(res.data.pageInfo);
       })
       .catch((e) => {
+        setLoading(false);
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -163,10 +112,11 @@ export default function Search() {
   };
 
   const markAsSuccess = (id: string) => {
+    const URL = `${BASE_URL}/manual-approvals/mark-pending-withdrawal-success/${id}`;
     setLoadingDetail(true);
     axios
       .post(
-        `${BASE_URL}/manual-approvals/mark-pending-withdrawal-success/${id}`,
+        URL,
         {},
         {
           headers: {
@@ -185,6 +135,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
+        setLoadingDetail(false);
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -193,10 +144,11 @@ export default function Search() {
   };
 
   const declineManualApproval = (id: string) => {
+    const URL = `${BASE_URL}/manual-approvals/decline-manual-top-up/${id}`;
     setLoadingDetail(true);
     axios
       .post(
-        `${BASE_URL}/manual-approvals/decline-manual-top-up/${id}`,
+        URL,
         {},
         {
           headers: {
@@ -215,6 +167,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
+        setLoadingDetail(false);
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -249,6 +202,10 @@ export default function Search() {
     } else {
       updatePin(e.target.value);
     }
+  };
+
+  const onSearch = () => {
+    fetchManualApproval();
   };
 
   return (
@@ -363,98 +320,96 @@ export default function Search() {
           </div>
         }
       >
-        <>
-          <div className={styles.modalContainer} style={{ width: "100%" }}>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                User: <span style={{ color: "black" }}>@{detail.username}</span>
+        <div className={styles.modalContainer} style={{ width: "100%" }}>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>
+              User: <span style={{ color: "black" }}>@{detail.username}</span>
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Transaction ID:</p>
+            <p className={styles.value}>{detail.trxId}</p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Transaction type:</p>
+            <p className={styles.value}>Sell (Momo withdrawal)</p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Sell amount:</p>
+            <p className={styles.value}>
+              {detail.localCurrency} {detail.rawAmount} ({detail.cryptoAmount}{" "}
+              {detail.cryptoCurrency}) -{" "}
+              <span style={{ color: "#667085" }}>${detail.usdAmount}</span>
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Rate:</p>
+            <p className={styles.value}>
+              Sold @ {detail.rate} (Crypto price - ${detail.cryptoPrice})
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Fees:</p>
+            <p className={styles.value}>
+              $1.28{" "}
+              <span style={{ color: "#667085" }}>
+                ({detail.localCurrency} {detail.netFee})
+              </span>
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Net payout Amount:</p>
+            <p className={styles.value}>
+              {detail.localCurrency} {detail.rawAmount}
+            </p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Status:</p>
+            <div className={styles.statusContainer}>
+              <div className={styles.statusIndicator} /> {detail.status}
+            </div>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Amount:</p>
+            <p className={styles.value}>${detail.usdAmount}</p>
+          </div>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Payment method:</p>
+            <div>
+              <p className={styles.value} style={{ textAlign: "right" }}>
+                <span style={{ color: "#667085" }}>Account:</span>{" "}
+                {detail.accountName}
               </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Transaction ID:</p>
-              <p className={styles.value}>{detail.trxId}</p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Transaction type:</p>
-              <p className={styles.value}>Sell (Momo withdrawal)</p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Sell amount:</p>
-              <p className={styles.value}>
-                {detail.localCurrency} {detail.rawAmount} ({detail.cryptoAmount}{" "}
-                {detail.cryptoCurrency}) -{" "}
-                <span style={{ color: "#667085" }}>${detail.usdAmount}</span>
+              <p className={styles.value} style={{ textAlign: "right" }}>
+                <span style={{ color: "#667085" }}>Network:</span>{" "}
+                {detail.providerName}
               </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Rate:</p>
-              <p className={styles.value}>
-                Sold @ {detail.rate} (Crypto price - ${detail.cryptoPrice})
+              <p className={styles.value} style={{ textAlign: "right" }}>
+                <span style={{ color: "#667085" }}>Phone number:</span>{" "}
+                {detail.accountName}
               </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Fees:</p>
-              <p className={styles.value}>
-                $1.28{" "}
-                <span style={{ color: "#667085" }}>
-                  ({detail.localCurrency} {detail.netFee})
-                </span>
-              </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Net payout Amount:</p>
-              <p className={styles.value}>
+              <p className={styles.value} style={{ textAlign: "right" }}>
+                <span style={{ color: "#667085" }}>Amount:</span>{" "}
                 {detail.localCurrency} {detail.rawAmount}
               </p>
             </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Status:</p>
-              <div className={styles.statusContainer}>
-                <div className={styles.statusIndicator} /> {detail.status}
-              </div>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Amount:</p>
-              <p className={styles.value}>${detail.usdAmount}</p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Payment method:</p>
-              <div>
-                <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Account:</span>{" "}
-                  {detail.accountName}
-                </p>
-                <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Network:</span>{" "}
-                  {detail.providerName}
-                </p>
-                <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Phone number:</span>{" "}
-                  {detail.accountName}
-                </p>
-                <p className={styles.value} style={{ textAlign: "right" }}>
-                  <span style={{ color: "#667085" }}>Amount:</span>{" "}
-                  {detail.localCurrency} {detail.rawAmount}
-                </p>
-              </div>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Transaction data:</p>
-              <p className={styles.value}>{detail.date}</p>
-            </div>
           </div>
-          <div className={styles.modalFooter}>
+          <div className={styles.divider} />
+          <div className={styles.keyValue}>
+            <p className={styles.key}>Transaction data:</p>
+            <p className={styles.value}>{detail.date}</p>
+          </div>
+          <div style={{ marginBottom: 30 }} className={styles.modalFooter}>
             <Button
               onClick={() => declineManualApproval(detail.trxId)}
               className={styles.modalButton}
@@ -471,7 +426,7 @@ export default function Search() {
               Mark as success
             </Button>
           </div>
-        </>
+        </div>
       </Modal>
       <NavigationStep hideButton />
       <div className={styles.container}>
@@ -489,7 +444,31 @@ export default function Search() {
             </Button>
           </div>
         </div>
-        <p className={styles.subHeader}>120 pending</p>
+        <p className={styles.filterTitle}>Filter results by</p>
+        <div className={styles.filterContainer}>
+          <div className={styles.searchCard}>
+            <div className={styles.dropdownContainer2}>
+              <p className={styles.dropdownTitle}>Transaction type</p>
+              <Dropdown
+                value={filterBy}
+                options={[
+                  { title: "Withdrawal", value: "withdrawal" },
+                  { title: "Top up", value: "top-up" },
+                ]}
+                onChange={(value) => {
+                  setFilterBy(value as typeof filterBy);
+                  setData([]);
+                }}
+              />
+            </div>
+            <div className={styles.searchButtonContainer}>
+              <Button onClick={onSearch} className={styles.searchButton}>
+                Apply filter
+              </Button>
+            </div>
+          </div>
+        </div>
+        <p className={styles.subHeader}>{data.length} pending</p>
         <div className={styles.searchContainer}>
           <div className={styles.table} style={{ overflow: "hidden" }}>
             {loading ? (
@@ -504,7 +483,7 @@ export default function Search() {
                   overflow: "hidden",
                 }}
                 dataSource={data}
-                columns={columns}
+                columns={getTableColumn(filterBy, loadingDetail)}
               />
             )}
           </div>
