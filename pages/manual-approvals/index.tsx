@@ -39,6 +39,7 @@ export default function Search() {
   const [detail, setDetail] = useState<any>({});
   const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
   const [filterBy, setFilterBy] = useState<TManualApprovalFilter>("withdrawal");
+  const [mfaToken, setMfaToken] = useState<string>("");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -46,7 +47,9 @@ export default function Search() {
   }
 
   const fetchManualApprovalDetail = (id: string) => {
-    const URL = `${BASE_URL}/manual-approvals/${filterBy}/${id}`;
+    const topUp = `${BASE_URL}/manual-approvals/top-up/view-awaiting-admin-approval-transaction/${id}`;
+    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/${id}`;
+    const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     setLoadingDetail(true);
     axios
       .post(
@@ -65,9 +68,11 @@ export default function Search() {
       })
       .catch((e) => {
         setLoadingDetail(false);
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
+        } else {
+          toast.error("Something went wrong, please try again");
         }
       });
   };
@@ -107,23 +112,31 @@ export default function Search() {
         if (e.response.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
+        } else {
+          toast.error("Something went wrong, please try again");
         }
       });
   };
 
-  const markAsSuccess = (id: string) => {
-    const URL = `${BASE_URL}/manual-approvals/mark-pending-withdrawal-success/${id}`;
+  const markAsSuccess = (record: Record<string, string>) => {
+    let payload = {};
+    const topUp = `${BASE_URL}/manual-approvals/top-up/approve-manual-top-up`;
+    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/mark-pending-withdrawal-success/${record.trxId}`;
+    const URL = filterBy === "withdrawal" ? withdrawal : topUp;
+    if (filterBy === "top-up") {
+      payload = {
+        uniqueId: record.uniqId,
+        transactionId: record.txid,
+        mfaToken,
+      };
+    }
     setLoadingDetail(true);
     axios
-      .post(
-        URL,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
+      .post(URL, payload, {
+        headers: {
+          Authorization: auth.accessToken,
+        },
+      })
       .then((res: any) => {
         if (res.data.success) {
           setLoadingDetail(false);
@@ -136,29 +149,36 @@ export default function Search() {
       })
       .catch((e) => {
         setLoadingDetail(false);
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
+        } else {
+          toast.error("Something went wrong, please try again");
         }
       });
   };
 
-  const declineManualApproval = (id: string) => {
-    const URL = `${BASE_URL}/manual-approvals/decline-manual-top-up/${id}`;
+  const declineManualApproval = (record: Record<string, string>) => {
+    let payload = {};
+    const topUp = `${BASE_URL}/manual-approvals/top-up/decline-manual-top-up`;
+    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/decline-pending-withdrawal/${record.trxId}`;
+    const URL = filterBy === "withdrawal" ? withdrawal : topUp;
+    if (filterBy === "top-up") {
+      payload = {
+        uniqueId: record.uniqId,
+        transactionId: record.txid,
+      };
+    }
     setLoadingDetail(true);
     axios
-      .post(
-        URL,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
+      .post(URL, payload, {
+        headers: {
+          Authorization: auth.accessToken,
+        },
+      })
       .then((res: any) => {
+        setLoadingDetail(false);
         if (res.data.success) {
-          setLoadingDetail(false);
           setOpenModal(false);
           toast.success(res.data.message);
           fetchManualApproval();
@@ -168,9 +188,11 @@ export default function Search() {
       })
       .catch((e) => {
         setLoadingDetail(false);
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
+        } else {
+          toast.error("Something went wrong, please try again");
         }
       });
   };
@@ -207,7 +229,12 @@ export default function Search() {
   const onSearch = () => {
     fetchManualApproval();
   };
-
+  const resetFields = () => {
+    setOpenCodeModal(false);
+    setMfaToken("");
+    setLoading(false);
+    setLoadingDetail(false);
+  };
   return (
     <PageLayout title="Hone">
       <Modal
@@ -216,7 +243,7 @@ export default function Search() {
             <img src="/icons/lock.svg" />
           </div>
         }
-        onClose={() => setOpenCodeModal(false)}
+        onClose={resetFields}
         openModal={openCodeModal}
       >
         <div className={styles.modalContainer}>
@@ -311,7 +338,9 @@ export default function Search() {
             }}
           >
             <p style={{ marginRight: 15 }}>Transaction details</p>
-            <div className={styles.breadCrumb}>Withdrawal</div>
+            <div className={styles.breadCrumb}>
+              {filterBy === "withdrawal" ? "Withdrawal" : "Top Up"}
+            </div>
           </div>
         }
         headerLeft={
@@ -330,21 +359,50 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{detail.trxId}</p>
+            <p className={styles.value}>{detail.trxId || detail.txid}</p>
           </div>
           <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction type:</p>
-            <p className={styles.value}>Sell (Momo withdrawal)</p>
-          </div>
+          {filterBy === "withdrawal" ? (
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction type:</p>
+              <p className={styles.value}>
+                Sell (
+                <span style={{ textTransform: "capitalize" }}>
+                  {detail?.paymentAccount?.paymentMethod}
+                </span>{" "}
+                withdrawal)
+              </p>
+            </div>
+          ) : (
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction type:</p>
+              <p className={styles.value}>
+                <span style={{ textTransform: "capitalize" }}>
+                  {detail?.methodName}
+                </span>{" "}
+                top-up
+              </p>
+            </div>
+          )}
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Sell amount:</p>
-            <p className={styles.value}>
-              {detail.localCurrency} {detail.rawAmount} ({detail.cryptoAmount}{" "}
-              {detail.cryptoCurrency}) -{" "}
-              <span style={{ color: "#667085" }}>${detail.usdAmount}</span>
-            </p>
+            {filterBy === "withdrawal" ? (
+              <p className={styles.value}>
+                {detail.localCurrency} {detail.rawAmount} ({detail.cryptoAmount}{" "}
+                {detail.cryptoCurrency}) -{" "}
+                <span style={{ color: "#667085" }}>${detail.usdAmount}</span>
+              </p>
+            ) : (
+              <p className={styles.value}>
+                <span style={{ color: "#98A2B3" }}>{detail.currency}</span>{" "}
+                {detail.amount}
+                <span style={{ color: "#667085" }}>
+                  {" "}
+                  ({detail.crypto} {detail.cryptoSymbol})
+                </span>
+              </p>
+            )}
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -359,7 +417,7 @@ export default function Search() {
             <p className={styles.value}>
               $1.28{" "}
               <span style={{ color: "#667085" }}>
-                ({detail.localCurrency} {detail.netFee})
+                ({detail.localCurrency || detail.currency} {detail.netFee})
               </span>
             </p>
           </div>
@@ -367,7 +425,8 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>Net payout Amount:</p>
             <p className={styles.value}>
-              {detail.localCurrency} {detail.rawAmount}
+              {detail.localCurrency || detail.currency}{" "}
+              {detail.rawAmount || detail.amount}
             </p>
           </div>
           <div className={styles.divider} />
@@ -380,45 +439,56 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Amount:</p>
-            <p className={styles.value}>${detail.usdAmount}</p>
+            <p className={styles.value}>${detail.usdAmount || detail.usd}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Payment method:</p>
-            <div>
+            {filterBy === "withdrawal" ? (
+              <div>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Account:</span>{" "}
+                  {detail?.paymentAccount?.accountName}
+                </p>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Network:</span>{" "}
+                  {detail?.paymentAccount?.providerName}
+                </p>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  <span style={{ color: "#667085" }}>Type:</span>{" "}
+                  {detail?.paymentAccount?.paymentMethod}
+                </p>
+              </div>
+            ) : (
               <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Account:</span>{" "}
-                {detail.accountName}
+                Processor
               </p>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Network:</span>{" "}
-                {detail.providerName}
-              </p>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Phone number:</span>{" "}
-                {detail.accountName}
-              </p>
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                <span style={{ color: "#667085" }}>Amount:</span>{" "}
-                {detail.localCurrency} {detail.rawAmount}
-              </p>
-            </div>
+            )}
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction data:</p>
             <p className={styles.value}>{detail.date}</p>
           </div>
+          {filterBy === "top-up" && (
+            <div className={styles.inputContainer}>
+              <p>MFA Token (For Approval Only)</p>
+              <Input
+                value={mfaToken}
+                onChange={(e) => setMfaToken(e.target.value)}
+              />
+            </div>
+          )}
           <div style={{ marginBottom: 30 }} className={styles.modalFooter}>
             <Button
-              onClick={() => declineManualApproval(detail.trxId)}
+              onClick={() => declineManualApproval(detail)}
               className={styles.modalButton}
               color="white"
             >
               Close
             </Button>
             <Button
-              onClick={() => markAsSuccess(detail.trxId)}
+              onClick={() => markAsSuccess(detail)}
               loading={loadingDetail}
               disabled={loadingDetail}
               className={styles.modalButton}
@@ -458,6 +528,7 @@ export default function Search() {
                 onChange={(value) => {
                   setFilterBy(value as typeof filterBy);
                   setData([]);
+                  setDetail({});
                 }}
               />
             </div>
