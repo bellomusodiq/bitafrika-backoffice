@@ -13,6 +13,7 @@ import Dropdown from "@/components/Dropdown";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
+import Pagination from "@/components/Pagination";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -32,7 +33,8 @@ export default function Search() {
   const [statusType, setStatusType] = useState<string>("success");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
-  const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
+  const [pageInfo, setPageInfo] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const BUY_COLUMN = [
     {
@@ -793,7 +795,7 @@ export default function Search() {
     setLoadingDetail(true);
     axios
       .post(
-        `${BASE_URL}/transactions/momo-top-up/${id}`,
+        `${BASE_URL}/transactions/momo-top-up/${id}?page=${currentPage}`,
         {},
         {
           headers: {
@@ -820,7 +822,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/momo-top-up?status=${statusType}&from=${fromDate}&to=${toDate}&pageSize=30`,
+        `${BASE_URL}/transactions/momo-top-up?page=${currentPage}&status=${statusType}&from=${fromDate}&to=${toDate}&pageSize=30`,
         {},
         {
           headers: {
@@ -843,7 +845,7 @@ export default function Search() {
               action: () => getTopupTransactionsDetail(item.uniqId),
             }))
           );
-          setPagination(res.data.pageInfo);
+          setPageInfo(res.data.pageInfo);
         }
       })
       .catch((e) => {
@@ -858,7 +860,7 @@ export default function Search() {
     setLoadingDetail(true);
     axios
       .post(
-        `${BASE_URL}/transactions/momo-withdrawal/${id}`,
+        `${BASE_URL}/transactions/momo-withdrawal/${id}?page=${currentPage}`,
         {},
         {
           headers: {
@@ -885,7 +887,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/momo-withdrawal?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        `${BASE_URL}/transactions/momo-withdrawal?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
         {},
         {
           headers: {
@@ -950,7 +952,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/receive-crypto?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        `${BASE_URL}/transactions/receive-crypto?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
         {},
         {
           headers: {
@@ -1014,7 +1016,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/withdraw-crypto?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        `${BASE_URL}/transactions/withdraw-crypto?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
         {},
         {
           headers: {
@@ -1080,7 +1082,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/swap?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        `${BASE_URL}/transactions/swap?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
         {},
         {
           headers: {
@@ -1151,7 +1153,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/transactions/gift-card?status=${statusType}&from=${fromDate}&to=${toDate}&pageNumber=${pagination.pageNumber}&pageSize=30`,
+        `${BASE_URL}/transactions/gift-card?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
         {},
         {
           headers: {
@@ -1244,6 +1246,12 @@ export default function Search() {
         return GIFTCARDS_COLUMN;
     }
   };
+
+  useEffect(() => {
+    if (pageInfo) {
+      onSearch();
+    }
+  }, [currentPage]);
 
   return (
     <PageLayout title="Hone">
@@ -1931,6 +1939,8 @@ export default function Search() {
                 onChange={(value) => {
                   setSearchType(String(value));
                   setData([]);
+                  setCurrentPage(1);
+                  setPageInfo(null);
                 }}
               />
             </div>
@@ -1947,6 +1957,8 @@ export default function Search() {
                 onChange={(value) => {
                   setStatusType(String(value));
                   setData([]);
+                  setPageInfo(null);
+                  setCurrentPage(1);
                 }}
               />
             </div>
@@ -1997,19 +2009,9 @@ export default function Search() {
               dataSource={data}
               columns={getColumns()}
               loading={loading}
-              pagination={{
-                defaultCurrent: pagination.currentPage,
-                pageSize: pagination.pageSize,
-                // total: pagination.totalCount,
-                showSizeChanger: false,
-                onChange(page, pageSize) {
-                  setPagination({
-                    pageNumber: page,
-                  });
-                  onSearch();
-                },
-              }}
+              pagination={false}
             />
+            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
         )}
       </div>

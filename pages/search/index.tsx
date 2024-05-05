@@ -320,7 +320,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/search/momo-top-up`,
+        `${BASE_URL}/search/momo-top-up/${search}`,
         {},
         {
           headers: {

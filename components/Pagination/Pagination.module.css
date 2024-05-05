@@ -1,0 +1,15 @@
+.paginationContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
+}
+.paginationBtn {
+  padding: 10px 15px;
+  cursor: pointer;
+}
+.paginationIndicator {
+  padding: 10px 15px;
+  border: 1px solid #1677ff;
+  border-radius: 6px;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/users/user-home.module.css";
@@ -12,6 +12,7 @@ import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
+import Pagination from "@/components/Pagination";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -71,7 +72,8 @@ export default function Search() {
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("all");
-  const [pagination, setPagination] = useState<any>({ current: 1 });
+  const [pageInfo, setPageInfo] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -82,7 +84,9 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/users?page=${pagination.current}`,
+        `${BASE_URL}/users?page=${
+          currentPage ? currentPage : pageInfo.currentPage
+        }`,
         { filter: searchType },
         {
           headers: {
@@ -100,11 +104,7 @@ export default function Search() {
             action: () => router.push(`/users/details/${item.username}`),
           }));
           setData(response);
-          setPagination({
-            current: res.data.pageInfo?.currentPage,
-            pageSize: res.data.pageInfo?.perPage,
-            total: res.data.totalCount,
-          });
+          setPageInfo(res.data.pageInfo);
         }
       })
       .catch((e) => {
@@ -128,6 +128,12 @@ export default function Search() {
     return USER_COLUMNS;
   };
 
+  useEffect(() => {
+    if (pageInfo) {
+      getUsers();
+    }
+  }, [currentPage]);
+
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
@@ -139,7 +145,7 @@ export default function Search() {
               <Dropdown
                 value={searchType}
                 options={[
-                  { title: "All", value: "all" },
+                  { title: "All", value: "ALL" },
                   { title: "Verified users", value: "VERIFIED" },
                   { title: "Unverified users", value: "UNVERIFIED" },
                   { title: "Active users", value: "ACTIVE" },
@@ -148,6 +154,8 @@ export default function Search() {
                 onChange={(value) => {
                   setSearchType(String(value));
                   setData([]);
+                  setPageInfo(null);
+                  setCurrentPage(1);
                 }}
               />
             </div>
@@ -188,13 +196,9 @@ export default function Search() {
               dataSource={data}
               columns={getColumns()}
               loading={loading}
-              pagination={{
-                ...pagination,
-                onChange(page, pageSize) {
-                  getUsers();
-                },
-              }}
+              pagination={false}
             />
+            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
         )}
       </div>

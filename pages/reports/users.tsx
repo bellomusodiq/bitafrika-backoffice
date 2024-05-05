@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/users.module.css";
@@ -14,6 +14,7 @@ import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import Pagination from "@/components/Pagination";
 
 const BALANCE_COLUMNS = [
   {
@@ -122,12 +123,12 @@ export default function Search() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Balance");
   const [sort, setSort] = useState<string>("highest");
-  const [page, setPage] = useState<number | null>(1);
+  const [currentPage, setCurrentPage] = useState<number | null>(1);
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const [coin, setCoin] = useState<string>("BTC");
-  const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
+  const [pageInfo, setPageInfo] = useState<any>(null);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -140,7 +141,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/balance/${user.username}`,
+        `${BASE_URL}/reports/user/balance/${user.username}?page=${currentPage}`,
         {},
         {
           headers: {
@@ -170,7 +171,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}&page=${currentPage}`,
         {},
         {
           headers: {
@@ -200,7 +201,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/sell/${user.username}?from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/sell/${user.username}?from=${fromDate}&to=${toDate}&page=${currentPage}`,
         {},
         {
           headers: {
@@ -228,7 +229,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/balance?page=${pagination.pageNumber}&sortBy=${sort}&from=${fromDate}&to=${toDate}&coin=${coin}`,
+        `${BASE_URL}/reports/user/balance?sortBy=${sort}&from=${fromDate}&to=${toDate}&coin=${coin}&page=${currentPage}`,
         {},
         {
           headers: {
@@ -247,7 +248,7 @@ export default function Search() {
         }));
 
         setData(newData);
-        setPagination(res.data.pageInfo);
+        setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
         if (e.response.status === 401) {
@@ -264,7 +265,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/buy?page=${pagination.pageNumber}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/buy?sortBy=${sort}&from=${fromDate}&to=${toDate}&page=${currentPage}`,
         {},
         {
           headers: {
@@ -283,7 +284,7 @@ export default function Search() {
         }));
 
         setData(newData);
-        setPagination(res.data.pageInfo);
+        setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
         if (e.response.status === 401) {
@@ -300,7 +301,7 @@ export default function Search() {
     setLoading(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/sell?page=${pagination.pageNumber}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/sell?page=${currentPage}&sortBy=${sort}&from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -319,7 +320,7 @@ export default function Search() {
         }));
 
         setData(newData);
-        setPagination(res.data.pageInfo);
+        setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
         if (e.response.status === 401) {
@@ -361,6 +362,14 @@ export default function Search() {
     }
   };
 
+  useEffect(() => {
+    if (pageInfo) {
+      onSearch();
+    }
+  }, [currentPage]);
+
+  console.log("currentPage", currentPage);
+
   return (
     <PageLayout title="Hone">
       <Modal
@@ -399,7 +408,7 @@ export default function Search() {
             <p>Assets</p>
             <div style={{ width: 160, height: 160 }}>
               <CustomPieChart
-                data={openModal?.data.map((item: any) => ({
+                data={openModal?.data?.map((item: any) => ({
                   name: item.name,
                   value: item.percentage,
                 }))}
@@ -628,7 +637,8 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setPage(1);
+                  setCurrentPage(1);
+                  setPageInfo(null);
                   setData([]);
                 }}
               />
@@ -639,12 +649,14 @@ export default function Search() {
               <Dropdown
                 value={sort}
                 options={[
-                  { title: "Highest", value: "higest" },
+                  { title: "Highest", value: "highest" },
                   { title: "Lowest", value: "lowest" },
                 ]}
                 onChange={(value) => {
                   setSort(String(value));
                   setData([]);
+                  setCurrentPage(1);
+                  setPageInfo(null);
                 }}
               />
             </div>
@@ -714,18 +726,9 @@ export default function Search() {
               dataSource={data}
               columns={getColumns()}
               loading={loading}
-              pagination={{
-                defaultCurrent: pagination.currentPage,
-                pageSize: pagination.pageSize,
-                showSizeChanger: false,
-                onChange(page, pageSize) {
-                  setPagination({
-                    pageNumber: page,
-                  });
-                  onSearch();
-                },
-              }}
+              pagination={false}
             />
+            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
         )}
       </div>
