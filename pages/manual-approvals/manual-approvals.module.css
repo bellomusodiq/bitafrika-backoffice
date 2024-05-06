@@ -109,7 +109,7 @@
 .modalContainer {
   width: 100%;
   overflow-y: auto;
-  max-height: 75vh;
+  /* max-height: 75vh; */
 }
 .modalHeader {
   font-style: normal;
@@ -373,4 +373,46 @@
   font-weight: 500;
   line-height: 18px; /* 150% */
   margin-right: 15px;
+}
+.filterTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px; /* 190% */
+}
+.filterContainer {
+  /* margin-top: 4px; */
+  border-radius: 12px;
+  border: 1px solid var(--Gray-200, #eaecf0);
+  background: var(--Gray-25, #fcfcfd);
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.searchCard {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+.dropdownContainer2 {
+  min-width: 200px;
+  margin-right: 16px;
+}
+.dropdownTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px; /* 175% */
+  margin-bottom: 8px;
+}
+.searchButtonContainer {
+  width: fit-content;
+}
+.searchButton {
+  height: 48px;
 }
