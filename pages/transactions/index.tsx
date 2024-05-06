@@ -145,8 +145,8 @@ export default function Search() {
     },
     {
       title: "Fee",
-      dataIndex: "fee",
-      key: "fee",
+      dataIndex: "netFee",
+      key: "netFee",
     },
     {
       title: "Status/Date",

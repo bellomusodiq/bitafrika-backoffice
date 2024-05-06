@@ -50,6 +50,9 @@ const USER_COLUMNS: any = [
     title: "KYC Status",
     dataIndex: "kycStatus",
     key: "kycStatus",
+    render: (_: any, { kycStatus }: any) => (
+      <>{kycStatus ? "Verfied" : "Not Verified"}</>
+    ),
   },
   {
     title: "Actions",
@@ -71,7 +74,7 @@ export default function Search() {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("all");
+  const [searchType, setSearchType] = useState<string>("ALL");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
