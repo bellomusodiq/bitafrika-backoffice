@@ -13,8 +13,9 @@ import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
-import { TManualApprovalFilter } from "@/types";
+import { IAdmin, TManualApprovalFilter } from "@/types";
 import { getTableColumn } from "@/components/ManualApprovals";
+import ManualTopupModal from "@/components/ManualApprovals/ManualTopupModal";
 
 export default function Search() {
   const router = useRouter();
@@ -237,6 +238,11 @@ export default function Search() {
   };
   return (
     <PageLayout title="Hone">
+      <ManualTopupModal
+        open={openAddModal}
+        setOpen={setOpenAddModal}
+        admin={auth as IAdmin}
+      />
       <Modal
         headerLeft={
           <div className={styles.lockContainer}>
@@ -281,46 +287,6 @@ export default function Search() {
               className={styles.footerButton}
             >
               Confirm
-            </Button>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        customStyles={{ width: 400 }}
-        openModal={openAddModal}
-        onClose={() => setOpenAddModal(false)}
-      >
-        <div className={styles.modalContainer}>
-          <p className={styles.modalHeader}>Manual account Top-Up</p>
-          <div className={styles.inputContainer}>
-            <p>Transaction ID</p>
-            <Input />
-          </div>
-          <div className={styles.inputContainer}>
-            <p>Reference</p>
-            <Input />
-          </div>
-          <div className={styles.inputContainer}>
-            <p>Name on account</p>
-            <Input />
-          </div>
-          <div className={styles.inputContainer}>
-            <p>Amount</p>
-            <Input />
-          </div>
-          <div className={styles.modalFooter}>
-            <Button
-              onClick={() => setOpenAddModal(false)}
-              className={styles.modalButton}
-              color="white"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => setOpenAddModal(false)}
-              className={styles.modalButton}
-            >
-              Add to queue
             </Button>
           </div>
         </div>
