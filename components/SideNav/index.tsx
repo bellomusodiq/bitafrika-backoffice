@@ -105,6 +105,12 @@ const SideNav: React.FC = () => {
         url="/cards"
       />
       <SideNavItem
+        title="Giftcards"
+        icon="/icons/cards.svg"
+        isActive={router.route.split("/")[1] === "giftcards"}
+        url="/giftcards"
+      />
+      <SideNavItem
         title="Approvals"
         icon="/icons/approvals.svg"
         isActive={router.route.split("/")[1] === "approvals"}
