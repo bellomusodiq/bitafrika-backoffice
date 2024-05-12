@@ -509,7 +509,6 @@ export default function Search() {
 
   const showModal = (user: any) => {
     setCurrentUser(user);
-    setOpenModal(true);
   };
 
   const getColumns = () => {
