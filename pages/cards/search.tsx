@@ -430,6 +430,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -437,6 +438,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -444,6 +446,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -451,6 +454,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -458,6 +462,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -465,6 +470,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
 ];
 

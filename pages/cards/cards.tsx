@@ -42,9 +42,26 @@ const CARDS_COLUMNS = [
     key: "accountBalance",
   },
   {
-    title: "Limits",
-    dataIndex: "limits",
-    key: "limits",
+    title: "Date created",
+    dataIndex: "date",
+    key: "date",
+  },
+  {
+    title: "Status",
+    dataIndex: "sstatus",
+    key: "status",
+    render: (_: any, { status }: any) => (
+      <span
+        style={{
+          borderRadius: 16,
+          padding: "12px 16px",
+          backgroundColor: status === "Active" ? "#EDFCF2" : "#FAFAFA",
+          color: status === "Active" ? "#087443" : "#424242",
+        }}
+      >
+        {status}
+      </span>
+    ),
   },
   {
     title: "Actions",
@@ -66,7 +83,8 @@ const CARDS_DATA = [
     expDate: "12/25",
     type: "Mastercard",
     accountBalance: "$10.20",
-    limits: "$1000/Mo",
+    date: "12 may, 2024",
+    status: "Active",
   },
   {
     username: "@samuel12345",
@@ -74,7 +92,8 @@ const CARDS_DATA = [
     expDate: "12/25",
     type: "Mastercard",
     accountBalance: "$10.20",
-    limits: "$1000/Mo",
+    date: "12 may, 2024",
+    status: "Active",
   },
   {
     username: "@samuel12345",
@@ -82,7 +101,8 @@ const CARDS_DATA = [
     expDate: "12/25",
     type: "Mastercard",
     accountBalance: "$10.20",
-    limits: "$1000/Mo",
+    date: "12 may, 2024",
+    status: "Active",
   },
   {
     username: "@samuel12345",
@@ -90,7 +110,8 @@ const CARDS_DATA = [
     expDate: "12/25",
     type: "Mastercard",
     accountBalance: "$10.20",
-    limits: "$1000/Mo",
+    date: "12 may, 2024",
+    status: "Frozen",
   },
   {
     username: "@samuel12345",
@@ -98,7 +119,8 @@ const CARDS_DATA = [
     expDate: "12/25",
     type: "Mastercard",
     accountBalance: "$10.20",
-    limits: "$1000/Mo",
+    date: "12 may, 2024",
+    status: "Active",
   },
 ];
 
@@ -288,7 +310,7 @@ export default function Search() {
               }}
               dataSource={data.map((user: any) => ({
                 ...user,
-                action: () => showModal(user),
+                action: () => router.push("/cards/details/1"),
               }))}
               columns={getColumns()}
               loading={loading}

@@ -185,6 +185,10 @@
 .modalButton {
   margin-top: 56px;
 }
+.modalButtonFull {
+  margin-top: 36px;
+  width: 100% !important;
+}
 .username {
   color: var(--Blue-500, #2e90fa);
 
@@ -252,4 +256,91 @@
 }
 .redButton {
   background-color: #d92d20;
+}
+.cardDetailContainer {
+  display: flex;
+  flex-direction: row;
+  margin-top: 22px;
+  align-items: flex-start;
+}
+.cardLeft,
+.cardRight {
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #dcdfea;
+}
+.cardLeft {
+  width: 40%;
+  margin-right: 24px;
+}
+.cardRight {
+  flex: 1;
+}
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #f0f2f5;
+  margin: 16px 0;
+}
+.cardDetailContainer {
+  color: #667185;
+}
+.itemText {
+  color: #111322;
+}
+.btnContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 20px;
+}
+.btnContainer > button {
+  background-color: white;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: white;
+  border: 1px solid #091e4224;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.tableHeader {
+  margin: 22px 0;
+  color: #101828;
+  font-size: 20px;
+  font-weight: 600;
+}
+.modalFooter2 {
+  display: flex;
+  justify-content: space-between;
+}
+.modalFooter2 > * {
+  width: 47.5%;
+}
+.description {
+  color: #667185;
+  margin-bottom: 20px;
+}
+.labelContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.info {
+  color: #cb1a14;
+  background-color: #fbeae9;
+  padding: 5px;
 }
