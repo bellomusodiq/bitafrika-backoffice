@@ -51,78 +51,111 @@ const withdrawal = [
     title: "Username",
     dataIndex: "username",
     key: "username",
+    render: (_: any, { username }: any) => (
+      <p className={styles.username}>{username}</p>
+    ),
   },
   {
     title: "Transaction ID",
     dataIndex: "transactionId",
     key: "transactionId",
-    render: (_: any, { transactionId, onCopy }: any) => (
-      <div onClick={onCopy} className={styles.transactionId}>
-        <p>
-          {transactionId?.slice(0, 5)} . . .
-          {transactionId?.slice(transactionId?.length - 5)}
-        </p>
-        <img src="/icons/copy.svg" />
-      </div>
+    render: (_: any, { transactionId }: any) => (
+      <p className={styles.username}>{`${transactionId.slice(
+        0,
+        6
+      )}...${transactionId.slice(transactionId.length - 6)}`}</p>
     ),
   },
   {
-    title: "Amount",
+    title: "Asset",
+    dataIndex: "asset",
+    key: "asset",
+  },
+  {
+    title: "Amount (USD)",
     dataIndex: "amount",
     key: "amount",
-    render: (
-      _: any,
-      { rawAmount, cryptoAmount, localCurrency, cryptoCurrency }: any
-    ) => (
-      <div className={styles.amountContainer}>
-        <p className={styles.currency}>
-          <span style={{ color: "#98A2B3" }}>{localCurrency}</span> {rawAmount}
-        </p>
-        <p className={styles.crypto}>
-          ({cryptoAmount} {cryptoCurrency})
-        </p>
-      </div>
-    ),
   },
   {
-    title: "Date",
-    dataIndex: "createdOn",
-    key: "createdOn",
-    width: "20%",
+    title: "Amount (GHS)",
+    dataIndex: "total",
+    key: "total",
+  },
+  {
+    title: "Fee",
+    dataIndex: "netFee",
+    key: "netFee",
+  },
+  {
+    title: "Status/Date",
+    dataIndex: "status",
+    key: "status",
+    width: "25%",
+    render: (_: any, { status, createdOn }: any) => (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div>
+        <p style={{ marginLeft: 5 }}>{createdOn}</p>
+      </div>
+    ),
   },
 ];
 
-const topUp: any = [
+const topUp = [
   {
     title: "Username",
     dataIndex: "username",
     key: "username",
-  },
-  {
-    title: "Transaction ID",
-    dataIndex: "txid",
-    key: "txid",
-    render: (_: any, { txid, onCopy }: any) => (
-      <div onClick={onCopy} className={styles.transactionId}>
-        <p>
-          {txid?.slice(0, 5)} . . .{txid?.slice(txid?.length - 5)}
-        </p>
-        <img src="/icons/copy.svg" />
-      </div>
+    render: (_: any, { username }: any) => (
+      <p className={styles.username}>{username}</p>
     ),
   },
   {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-    render: (_: any, { amount, crypto, currency, cryptoSymbol }: any) => (
-      <div className={styles.amountContainer}>
-        <p className={styles.currency}>
-          <span style={{ color: "#98A2B3" }}>{currency}</span> {amount}
-        </p>
-        <p className={styles.crypto}>
-          ({crypto} {cryptoSymbol})
-        </p>
+    title: "Transaction ID",
+    dataIndex: "transactionId",
+    key: "transactionId",
+    render: (_: any, { transactionId }: any) => (
+      <p className={styles.username}>{`${transactionId.slice(
+        0,
+        6
+      )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+    ),
+  },
+  {
+    title: "Asset",
+    dataIndex: "asset",
+    key: "asset",
+  },
+  {
+    title: "Amount (GHS)",
+    dataIndex: "total",
+    key: "total",
+  },
+  {
+    title: "Amount (USD)",
+    dataIndex: "usd",
+    key: "usd",
+    render: (_: any, { usd }: any) => <>${usd}</>,
+  },
+  {
+    title: "Amount (CRYPTO)",
+    dataIndex: "crypto",
+    key: "crypto",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (_: any, { status }: any) => (
+      <div className={styles.statusContainer}>
+        <div className={styles.statusIndicator} /> {status}
       </div>
     ),
   },
