@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Checkbox, DatePicker, Divider, Space, Table } from "antd";
+import { Table } from "antd";
 import Modal from "@/components/Modal";
-import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import { toast } from "react-toastify";
@@ -78,6 +77,34 @@ export default function Search() {
       });
   };
 
+  const formatManualWithdrawalData = (args: Record<string, string>[]) => {
+    return args.map((item: any) => ({
+      ...item,
+      transactionId: item.uniq,
+      email: item.email,
+      phoneNumber: item.phone,
+      amount: `$${item.usdAmount}`,
+      asset: item.cryptoCurrency,
+      total: `${item.rawAmount} ${item.localCurrency}`,
+      date: item.newDate,
+      action: () => {
+        fetchManualApprovalDetail(item.uniq);
+      },
+    }));
+  };
+  const formatManualTopupData = (args: Record<string, string>[]) => {
+    return args.map((item: any) => ({
+      ...item,
+      transactionId: item.txid,
+      email: item.email,
+      phoneNumber: item.phone,
+      country: item.countryCode,
+      total: `${item.currency} ${item.amount}`,
+      asset: item.cryptoSymbol,
+      action: () => fetchManualApprovalDetail(item.txid),
+    }));
+  };
+
   const fetchManualApproval = () => {
     const topUp = `${BASE_URL}/manual-approvals/top-up/list-awaiting-admin-approval-transactions?page=${pagination.pageNumber}`;
     const withdrawal = `${BASE_URL}/manual-approvals/${filterBy}?page=${pagination.pageNumber}`;
@@ -93,19 +120,13 @@ export default function Search() {
       )
       .then((res: any) => {
         setLoading(false);
-        setData(
-          res.data.data.map((item: any) => {
-            const id = filterBy === "withdrawal" ? item.uniq : item.txid;
-            return {
-              ...item,
-              transactionId: id,
-              onCopy: () => {
-                toast.success("Copied to clipboard");
-              },
-              action: () => fetchManualApprovalDetail(id),
-            };
-          })
-        );
+        const response = res.data.data;
+        const formatData =
+          filterBy === "withdrawal"
+            ? formatManualWithdrawalData(response)
+            : formatManualTopupData(response);
+        setData(formatData);
+
         // setPagination(res.data.pageInfo);
       })
       .catch((e) => {
@@ -122,12 +143,17 @@ export default function Search() {
   const markAsSuccess = (record: Record<string, string>) => {
     let payload = {};
     const topUp = `${BASE_URL}/manual-approvals/top-up/approve-manual-top-up`;
-    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/mark-pending-withdrawal-success/${record.trxId}`;
+    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/mark-pending-withdrawal-success`;
     const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     if (filterBy === "top-up") {
       payload = {
         uniqueId: record.uniqId,
         transactionId: record.txid,
+        mfaToken,
+      };
+    } else {
+      payload = {
+        uniqueId: record.trxId,
         mfaToken,
       };
     }
@@ -139,8 +165,8 @@ export default function Search() {
         },
       })
       .then((res: any) => {
+        setLoadingDetail(false);
         if (res.data.success) {
-          setLoadingDetail(false);
           setOpenModal(false);
           toast.success(res.data.message);
           fetchManualApproval();
@@ -197,10 +223,6 @@ export default function Search() {
         }
       });
   };
-
-  useEffect(() => {
-    fetchManualApproval();
-  }, []);
 
   const updatePin = (digit: string) => {
     if (pin.length < 4) {
@@ -426,9 +448,11 @@ export default function Search() {
                 </p>
               </div>
             ) : (
-              <p className={styles.value} style={{ textAlign: "right" }}>
-                Processor
-              </p>
+              <div style={{ maxWidth: "200px" }}>
+                <p className={styles.value} style={{ textAlign: "right" }}>
+                  {detail?.methodId}
+                </p>
+              </div>
             )}
           </div>
           <div className={styles.divider} />
@@ -436,22 +460,20 @@ export default function Search() {
             <p className={styles.key}>Transaction data:</p>
             <p className={styles.value}>{detail.date}</p>
           </div>
-          {filterBy === "top-up" && (
-            <div className={styles.inputContainer}>
-              <p>MFA Token (For Approval Only)</p>
-              <Input
-                value={mfaToken}
-                onChange={(e) => setMfaToken(e.target.value)}
-              />
-            </div>
-          )}
+          <div className={styles.inputContainer}>
+            <p>MFA Token (For Approvals Only)</p>
+            <Input
+              value={mfaToken}
+              onChange={(e) => setMfaToken(e.target.value)}
+            />
+          </div>
           <div style={{ marginBottom: 30 }} className={styles.modalFooter}>
             <Button
               onClick={() => declineManualApproval(detail)}
               className={styles.modalButton}
               color="white"
             >
-              Close
+              Decline
             </Button>
             <Button
               onClick={() => markAsSuccess(detail)}
@@ -466,7 +488,7 @@ export default function Search() {
       </Modal>
       <NavigationStep hideButton />
       <div className={styles.container}>
-        <div
+        {/* <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -479,7 +501,7 @@ export default function Search() {
               <img src="/icons/plus.svg" /> Add a manual transaction
             </Button>
           </div>
-        </div>
+        </div> */}
         <p className={styles.filterTitle}>Filter results by</p>
         <div className={styles.filterContainer}>
           <div className={styles.searchCard}>
