@@ -201,7 +201,7 @@ export default function Search() {
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>Filter transaction reports by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -274,11 +274,35 @@ export default function Search() {
                   <p className={styles.date}>
                     Date: {fromDate} — {toDate}
                   </p>
-                  <p className={styles.date}>Status: {status}</p>
+                  <p className={styles.date}>
+                    Status:{" "}
+                    <span
+                      style={{
+                        padding: "2px 12px 4px 12px",
+                        borderRadius: 16,
+                        backgroundColor:
+                          status === "success"
+                            ? "#EDFCF2"
+                            : status === "pending"
+                            ? "#f7900953"
+                            : "#FBEAE9",
+                        color:
+                          status === "success"
+                            ? "#087443"
+                            : status === "pending"
+                            ? "#F79009"
+                            : "#F04438",
+                        textAlign: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: 12 }}>{status}</span>
+                    </span>
+                  </p>
 
                   <h3 style={{ marginTop: 14 }} className={styles.header}>
                     Buy orders
                   </h3>
+                  {data?.orders?.length === 0 && <p>No Report found</p>}
                   <div className={styles.ordersContainer}>
                     <div style={{ flex: 1 }}>
                       {data?.orders?.map((order: any) => (
@@ -349,9 +373,11 @@ export default function Search() {
                   </div>
                   <div className={styles.divider} style={{ marginTop: 5 }} />
                   <div className={styles.totalContainer}>
-                    <p>GHS {data?.totalAmount}</p>
-                    <p>GHS {data?.totalFees}</p>
-                    <p style={{ color: "#1570EF" }}>GHS {data?.grandTotal}</p>
+                    <p>GHS {data?.totalAmount} ($100000.00)</p>
+                    <p>GHS {data?.totalFees} ($1000.00)</p>
+                    <p style={{ color: "#1570EF" }}>
+                      GHS {data?.grandTotal} ($101000.00)
+                    </p>
                   </div>
                 </div>
               )}
@@ -361,9 +387,33 @@ export default function Search() {
                   <p className={styles.date}>
                     Date: {fromDate} — {toDate}
                   </p>
-                  <p className={styles.date}>Status: {status}</p>
+                  <p className={styles.date}>
+                    Status:{" "}
+                    <span
+                      style={{
+                        padding: "2px 12px 4px 12px",
+                        borderRadius: 16,
+                        backgroundColor:
+                          status === "success"
+                            ? "#EDFCF2"
+                            : status === "pending"
+                            ? "#f7900953"
+                            : "#FBEAE9",
+                        color:
+                          status === "success"
+                            ? "#087443"
+                            : status === "pending"
+                            ? "#F79009"
+                            : "#F04438",
+                        textAlign: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: 12 }}>{status}</span>
+                    </span>
+                  </p>
 
                   <p className={styles.header}>Sell orders</p>
+                  {data?.orders?.length === 0 && <p>No report found</p>}
                   <div className={styles.ordersContainer}>
                     <div style={{ flex: 1 }}>
                       {data?.orders?.map((order: any) => (
@@ -434,9 +484,11 @@ export default function Search() {
                   </div>
                   <div className={styles.divider} style={{ marginTop: 5 }} />
                   <div className={styles.totalContainer}>
-                    <p>GHS {data.totalAmount}</p>
-                    <p>GHS {data.totalFees}</p>
-                    <p style={{ color: "#1570EF" }}>GHS {data.grandTotal}</p>
+                    <p>GHS {data.totalAmount} ($10,000.00)</p>
+                    <p>GHS {data.totalFees} ($1,000.00)</p>
+                    <p style={{ color: "#1570EF" }}>
+                      GHS {data.grandTotal} ($11,000.00)
+                    </p>
                   </div>
                 </div>
               )}
@@ -449,7 +501,30 @@ export default function Search() {
                     <p className={styles.date}>
                       Date: {fromDate} — {toDate}
                     </p>
-                    <p className={styles.date}>Status: {status}</p>
+                    <p className={styles.date}>
+                      Status:{" "}
+                      <span
+                        style={{
+                          padding: "2px 12px 4px 12px",
+                          borderRadius: 16,
+                          backgroundColor:
+                            status === "success"
+                              ? "#EDFCF2"
+                              : status === "pending"
+                              ? "#f7900953"
+                              : "#FBEAE9",
+                          color:
+                            status === "success"
+                              ? "#087443"
+                              : status === "pending"
+                              ? "#F79009"
+                              : "#F04438",
+                          textAlign: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: 12 }}>{status}</span>
+                      </span>
+                    </p>
 
                     <div className={styles.buySellOrders}>
                       <div
@@ -457,6 +532,9 @@ export default function Search() {
                         style={{ paddingRight: 48 }}
                       >
                         <p className={styles.header}>Buy orders</p>
+                        {data?.buy?.orders?.length === 0 && (
+                          <p>No report found</p>
+                        )}
                         <div style={{ flex: 1 }}>
                           {data?.buy?.orders?.map((order: any) => (
                             <div
@@ -537,10 +615,14 @@ export default function Search() {
                           style={{ marginTop: 5 }}
                         />
                         <div className={styles.totalContainer}>
-                          <p>GHS {data?.buy?.totalAmount}</p>
-                          <p>GHS {data?.buy?.totalFees}</p>
-                          <p style={{ color: "#1570EF" }}>
-                            GHS {data?.buy?.grandTotal}
+                          <p style={{ fontSize: 14 }}>
+                            GHS {data?.buy?.totalAmount} ($10,000)
+                          </p>
+                          <p style={{ fontSize: 14 }}>
+                            GHS {data?.buy?.totalFees} ($100)
+                          </p>
+                          <p style={{ color: "#1570EF", fontSize: 14 }}>
+                            GHS {data?.buy?.grandTotal} ($10,100)
                           </p>
                         </div>
                       </div>
@@ -550,6 +632,9 @@ export default function Search() {
                         style={{ paddingLeft: 48 }}
                       >
                         <p className={styles.header}>Sell orders</p>
+                        {data?.sell?.orders?.length === 0 && (
+                          <p>No report found</p>
+                        )}
                         <div style={{ flex: 1 }}>
                           <div className={styles.buySellOrdersChild}>
                             {data?.sell?.orders?.map((order: any) => (
@@ -620,7 +705,7 @@ export default function Search() {
                           style={{ margin: "24px 0" }}
                         />
                         <div className={styles.totalHeader2}>
-                          <p>Total buy orders: 7000</p>
+                          <p>Total sell orders: 7000</p>
                           <a href="#">View orders</a>
                         </div>
                         <div className={styles.footerHeaderContainer2}>
@@ -633,10 +718,14 @@ export default function Search() {
                           style={{ marginTop: 5 }}
                         />
                         <div className={styles.totalContainer}>
-                          <p>GHS {data?.sell?.totalAmount}</p>
-                          <p>GHS {data?.sell?.totalFees}</p>
-                          <p style={{ color: "#1570EF" }}>
-                            GHS {data?.sell?.grandTotal}
+                          <p style={{ fontSize: 14 }}>
+                            GHS {data?.sell?.totalAmount} ($10,000)
+                          </p>
+                          <p style={{ fontSize: 14 }}>
+                            GHS {data?.sell?.totalFees} ($100)
+                          </p>
+                          <p style={{ fontSize: 14, color: "#1570EF" }}>
+                            GHS {data?.sell?.grandTotal} ($10,100)
                           </p>
                         </div>
                       </div>
@@ -675,7 +764,30 @@ export default function Search() {
                   <p className={styles.date}>
                     Date: {fromDate} — {toDate}
                   </p>
-                  <p className={styles.date}>Status: {status}</p>
+                  <p className={styles.date}>
+                    Status:{" "}
+                    <span
+                      style={{
+                        padding: "2px 12px 4px 12px",
+                        borderRadius: 16,
+                        backgroundColor:
+                          status === "success"
+                            ? "#EDFCF2"
+                            : status === "pending"
+                            ? "#f7900953"
+                            : "#FBEAE9",
+                        color:
+                          status === "success"
+                            ? "#087443"
+                            : status === "pending"
+                            ? "#F79009"
+                            : "#F04438",
+                        textAlign: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: 12 }}>{status}</span>
+                    </span>
+                  </p>
 
                   <p className={styles.header}>Send transactions</p>
                   <div className={styles.ordersContainer}>
@@ -753,7 +865,30 @@ export default function Search() {
                   <p className={styles.date}>
                     Date: {fromDate} — {toDate}
                   </p>
-                  <p className={styles.date}>Status: {status}</p>
+                  <p className={styles.date}>
+                    Status:{" "}
+                    <span
+                      style={{
+                        padding: "2px 12px 4px 12px",
+                        borderRadius: 16,
+                        backgroundColor:
+                          status === "success"
+                            ? "#EDFCF2"
+                            : status === "pending"
+                            ? "#f7900953"
+                            : "#FBEAE9",
+                        color:
+                          status === "success"
+                            ? "#087443"
+                            : status === "pending"
+                            ? "#F79009"
+                            : "#F04438",
+                        textAlign: "center",
+                      }}
+                    >
+                      <span style={{ fontSize: 12 }}>{status}</span>
+                    </span>
+                  </p>
 
                   <p className={styles.header}>Received transactions</p>
                   <div className={styles.ordersContainer}>

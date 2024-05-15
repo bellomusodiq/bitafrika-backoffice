@@ -5,4 +5,5 @@ export interface CardProps {
 export interface StatsCardProps {
   children: JSX.Element;
   headerTitle?: string;
+  showRefresh?: boolean;
 }

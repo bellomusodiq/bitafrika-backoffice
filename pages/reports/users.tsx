@@ -65,6 +65,7 @@ const BUY_COLUMNS = [
     title: "USD value",
     dataIndex: "total",
     key: "total",
+    render: (_: any, { total }: any) => <>${total}</>,
   },
   {
     title: "Actions",
@@ -97,6 +98,7 @@ const SELL_COLUMN = [
     title: "USD value",
     dataIndex: "total",
     key: "total",
+    render: (_: any, { total }: any) => <>${total}</>,
   },
   {
     title: "Actions",
@@ -119,7 +121,7 @@ export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Balance");
   const [sort, setSort] = useState<string>("highest");
@@ -623,7 +625,7 @@ export default function Search() {
         </div>
       </Modal>
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>Filter user reports by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -639,7 +641,7 @@ export default function Search() {
                   setSearchType(String(value));
                   setCurrentPage(1);
                   setPageInfo(null);
-                  setData([]);
+                  setData(null);
                 }}
               />
             </div>
@@ -654,23 +656,25 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSort(String(value));
-                  setData([]);
+                  setData(null);
                   setCurrentPage(1);
                   setPageInfo(null);
                 }}
               />
             </div>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker
-                style={{ height: 48 }}
-                onChange={(values: any) => {
-                  setFromDate(formatDate(values[0].$d));
-                  setToDate(formatDate(values[1].$d));
-                }}
-              />
-            </div>
-            <div className={styles.dropdownContainer}>
+            {searchType !== "Balance" && (
+              <div className={styles.dropdownContainer}>
+                <p className={styles.dropdownTitle}>Date range</p>
+                <DatePicker.RangePicker
+                  style={{ height: 48 }}
+                  onChange={(values: any) => {
+                    setFromDate(formatDate(values[0].$d));
+                    setToDate(formatDate(values[1].$d));
+                  }}
+                />
+              </div>
+            )}
+            {/* <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Coin</p>
               <Dropdown
                 value={coin}
@@ -686,7 +690,7 @@ export default function Search() {
                   setData(false);
                 }}
               />
-            </div>
+            </div> */}
             <div
               style={{
                 flex: 1,
@@ -710,19 +714,22 @@ export default function Search() {
         </div>
         {loading ? (
           <Loader />
-        ) : (
+        ) : data ? (
           <div
             className={styles.table}
             style={{
-              fontFamily: "PP Telegraf",
-              border: "1px solid var(--Gray-200, #EAECF0)",
-              borderRadius: 12,
-              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
               overflow: "hidden",
+              marginTop: 22,
             }}
           >
             <Table
-              style={{ fontFamily: "PP Telegraf", marginTop: 24 }}
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
               dataSource={data}
               columns={getColumns()}
               loading={loading}
@@ -730,7 +737,7 @@ export default function Search() {
             />
             <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );

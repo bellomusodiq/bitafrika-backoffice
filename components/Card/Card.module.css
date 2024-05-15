@@ -13,6 +13,10 @@
   padding: 16px 24px;
   background: #fcfcfd;
   border-bottom: 1px solid #eaecf0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 .title {
   font-style: normal;

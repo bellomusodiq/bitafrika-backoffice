@@ -49,7 +49,19 @@ const USER_COLUMNS = [
     dataIndex: "kycVerified",
     key: "kycVerified",
     render: (_: any, { kycVerified }: any) => (
-      <p>{kycVerified ? "Verfied" : "Not Verfied"}</p>
+      <div
+        style={{
+          padding: 4,
+          borderRadius: 16,
+          backgroundColor: kycVerified ? "#EDFCF2" : "#FBEAE9",
+          color: kycVerified ? "#087443" : "#F04438",
+          textAlign: "center",
+        }}
+      >
+        <span style={{ fontSize: 12 }}>
+          {kycVerified ? "Verified" : "Not Verified"}
+        </span>
+      </div>
     ),
   },
   {
@@ -76,7 +88,10 @@ const MOMO_TOPUP_COLUMNS = [
     dataIndex: "transactionId",
     key: "transactionId",
     render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
+      <>
+        {transactionId.slice(0, 6)}...
+        {transactionId.slice(transactionId.length - 6)}
+      </>
     ),
   },
   {
@@ -88,16 +103,28 @@ const MOMO_TOPUP_COLUMNS = [
     title: "Amount (GHS)",
     dataIndex: "amount",
     key: "amount",
+    render: (_: any, { amount }: any) => <>GHS {amount}</>,
+  },
+  {
+    title: "Rate",
+    dataIndex: "rate",
+    key: "rate",
   },
   {
     title: "Amount (USD)",
     dataIndex: "amountUsd",
     key: "amountUsd",
+    render: (_: any, { amountUsd }: any) => <>${amountUsd}</>,
   },
   {
     title: "Amount (CRYPTO)",
     dataIndex: "crypto",
     key: "crypto",
+    render: (_: any, { crypto, cryptoSymbol }: any) => (
+      <>
+        {crypto} {cryptoSymbol}
+      </>
+    ),
   },
   {
     title: "Status",
@@ -141,7 +168,10 @@ const MOMO_WITHDRWAL_COLUMNS = [
     dataIndex: "transactionId",
     key: "transactionId",
     render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
+      <>
+        {transactionId.slice(0, 6)}...
+        {transactionId.slice(transactionId.length - 6)}
+      </>
     ),
   },
   {
@@ -153,11 +183,13 @@ const MOMO_WITHDRWAL_COLUMNS = [
     title: "Amount (GHS)",
     dataIndex: "amount",
     key: "amount",
+    render: (_: any, { amount }: any) => <>{amount} GHS</>,
   },
   {
     title: "Amount (USD)",
     dataIndex: "amountUSD",
     key: "amountUSD",
+    render: (_: any, { amountUSD }: any) => <>${amountUSD}</>,
   },
   {
     title: "Amount (CRYPTO)",
@@ -206,18 +238,16 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
     dataIndex: "transactionId",
     key: "transactionId",
     render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{transactionId}</p>
+      <>
+        {transactionId.slice(0, 6)}...
+        {transactionId.slice(transactionId.length - 6)}
+      </>
     ),
   },
   {
     title: "Asset",
     dataIndex: "currency",
     key: "currency",
-  },
-  {
-    title: "Amount (GHS)",
-    dataIndex: "amount",
-    key: "amount",
   },
   {
     title: "Amount (CRYPTO)",
@@ -228,6 +258,11 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
     title: "Amount (USD)",
     dataIndex: "amountUSD",
     key: "amountUSD",
+  },
+  {
+    title: "Type",
+    dataIndex: "type",
+    key: "type",
   },
   {
     title: "Status",
@@ -270,7 +305,7 @@ export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("User");
 
@@ -442,7 +477,7 @@ export default function Search() {
         searchTransactions();
         break;
       default:
-        setData([]);
+        setData(null);
     }
   };
 
@@ -776,7 +811,7 @@ export default function Search() {
         </div>
       </Modal>
       <div className={styles.container}>
-        <h3 className={styles.header}>Search</h3>
+        <p className={styles.filterTitle}>Filter search results by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -793,7 +828,7 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData([]);
+                  setData(null);
                 }}
               />
             </div>
@@ -815,7 +850,7 @@ export default function Search() {
         </div>
         {loading ? (
           <Loader />
-        ) : (
+        ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
@@ -831,7 +866,7 @@ export default function Search() {
               loading={loading}
             />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );

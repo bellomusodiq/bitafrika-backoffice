@@ -430,6 +430,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -437,6 +438,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -444,6 +446,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -451,6 +454,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -458,6 +462,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
   {
     transactionId: "#12345566...9934",
@@ -465,6 +470,7 @@ const TRANSACTIONS_DATA = [
     merchant: "AppleMusic.com",
     amount: "$9.99",
     status: "Successful",
+    date: "Thur 18 Jan, 2023",
   },
 ];
 
@@ -499,8 +505,7 @@ export default function Search() {
   };
 
   const showModal = (user: any) => {
-    setCurrentUser(user);
-    setOpenModal(true);
+    router.push("/cards/details/1");
   };
 
   const getColumns = () => {
@@ -897,7 +902,7 @@ export default function Search() {
             justifyContent: "space-between",
           }}
         >
-          <h3 className={styles.header}>Search</h3>
+          <p className={styles.filterTitle}>Filter card search result by</p>
           <div>
             <Button color="white" onClick={() => router.back()}>
               <img src="/icons/arrow-left.svg" /> Back

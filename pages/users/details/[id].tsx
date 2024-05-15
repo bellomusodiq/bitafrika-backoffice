@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import PageLayout from "@/components/PageLayout";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Divider, Table } from "antd";
+import { Avatar, Divider, Table } from "antd";
 import KeyValue from "@/components/KeyValue/KeyValue";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input/Input";
@@ -13,6 +13,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
+import { UserOutlined } from "@ant-design/icons";
 
 const PaymentAccountsTable: React.FC<any> = ({ data }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -102,12 +103,7 @@ const KYCVerificationTable: React.FC<any> = ({ data }) => {
           </div>
           <div style={{ marginRight: 10 }}>
             <Button color="white" onClick={onViewDocuments}>
-              View documents
-            </Button>
-          </div>
-          <div>
-            <Button color="white" onClick={onReject}>
-              <span style={{ color: "#F04438" }}>Reject</span>
+              View KYC
             </Button>
           </div>
         </div>
@@ -390,6 +386,7 @@ const AccountBalanceTable: React.FC<any> = ({ data }) => {
 };
 
 const CardsTable: React.FC = () => {
+  const router = useRouter();
   const [modalType, setModalType] = useState<
     "cardDetails" | "add" | "deduct" | null
   >(null);
@@ -437,7 +434,7 @@ const CardsTable: React.FC = () => {
             <Button
               className={styles.cardBtns}
               color="white"
-              onClick={() => action("cardDetails")}
+              onClick={() => router.push("/cards/details/1")}
             >
               View card details
             </Button>
@@ -741,7 +738,7 @@ const UserDetails: NextPage = () => {
             </div>
           </div>
           <div className={styles.profileHeader}>
-            <img src="/images/avatar-big.png" />
+            <Avatar shape="square" size={64} icon={<UserOutlined />} />
             <div className={styles.profileNameContainer}>
               <h3>
                 {user?.user?.firstName} {user?.user?.lastName}
@@ -749,15 +746,24 @@ const UserDetails: NextPage = () => {
               <p>@{user?.user?.username}</p>
             </div>
             <div className={styles.profileActions}>
-              <Button className={styles.profileActionBtnsDanger} color="white">
-                Disable Account
-              </Button>
-              <Button className={styles.profileActionBtns} color="white">
-                Send SMS
-              </Button>
-              <Button className={styles.profileActionBtns}>
-                Update Buy Limits
-              </Button>
+              <div style={{ marginLeft: 10 }}>
+                <Button
+                  className={styles.profileActionBtnsDanger}
+                  color="white"
+                >
+                  Disable Account
+                </Button>
+              </div>
+              <div style={{ marginLeft: 10 }}>
+                <Button className={styles.profileActionBtns} color="white">
+                  Send SMS
+                </Button>
+              </div>
+              <div style={{ marginLeft: 10 }}>
+                <Button className={styles.profileActionBtns}>
+                  Update Buy Limits
+                </Button>
+              </div>
             </div>
           </div>
           <div className={styles.container}>
@@ -810,7 +816,7 @@ const UserDetails: NextPage = () => {
                       valueComponent: (
                         <div className={styles.kycStatus}>
                           <div className={styles.indicator} />
-                          <span>{user?.user?.kycInfo?.status}</span>
+                          <span>{user?.kycInfo?.status}</span>
                         </div>
                       ),
                     },
@@ -841,28 +847,22 @@ const UserDetails: NextPage = () => {
                 <div className={styles.footer}>
                   <div>
                     <Button className={styles.footerBtns} color="white">
-                      View Buy/sell Transactions
+                      View Buy Transactions
                     </Button>
                   </div>
                   <div>
                     <Button className={styles.footerBtns} color="white">
-                      View card transactions
+                      View Sell Transactions
                     </Button>
                   </div>
                   <div>
                     <Button className={styles.footerBtns} color="white">
-                      View Deposit/withdrawal Transactions
+                      View Crypto Transactions
                     </Button>
                   </div>
                   <div>
                     <Button className={styles.footerBtns} color="white">
                       View swap transactions
-                    </Button>
-                  </div>
-                  <div>
-                    {" "}
-                    <Button className={styles.footerBtns} color="white">
-                      View Utility transactions
                     </Button>
                   </div>
                 </div>

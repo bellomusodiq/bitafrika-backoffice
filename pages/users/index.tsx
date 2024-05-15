@@ -51,7 +51,19 @@ const USER_COLUMNS: any = [
     dataIndex: "kycStatus",
     key: "kycStatus",
     render: (_: any, { kycStatus }: any) => (
-      <>{kycStatus ? "Verfied" : "Not Verified"}</>
+      <div
+        style={{
+          padding: 4,
+          borderRadius: 16,
+          backgroundColor: kycStatus ? "#EDFCF2" : "#FBEAE9",
+          color: kycStatus ? "#087443" : "#F04438",
+          textAlign: "center",
+        }}
+      >
+        <span style={{ fontSize: 12 }}>
+          {kycStatus ? "Verified" : "Not Verified"}
+        </span>
+      </div>
     ),
   },
   {
@@ -72,7 +84,7 @@ export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("ALL");
   const [pageInfo, setPageInfo] = useState<any>(null);
@@ -140,7 +152,7 @@ export default function Search() {
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>Filter user results by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -156,7 +168,7 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData([]);
+                  setData(null);
                   setPageInfo(null);
                   setCurrentPage(1);
                 }}
@@ -185,7 +197,7 @@ export default function Search() {
         </div>
         {loading ? (
           <Loader />
-        ) : (
+        ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
@@ -203,7 +215,7 @@ export default function Search() {
             />
             <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );
