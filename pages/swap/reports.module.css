@@ -221,6 +221,7 @@
   line-height: 24px;
   text-align: center;
   color: #a3a3a3;
+  text-transform: capitalize;
 }
 .modalButton {
   margin-top: 56px;
@@ -311,6 +312,7 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 8px;
+  margin-top: 10px;
 }
 .orderIcon {
   width: 16px;
