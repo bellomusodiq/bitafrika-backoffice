@@ -105,7 +105,9 @@
 }
 .modalContainer {
   width: 100%;
+  overflow-y: auto;
 }
+
 .modalHeader {
   display: flex;
   flex-direction: row;
@@ -233,10 +235,7 @@
   background-color: #16b364;
   margin-right: 2px;
 }
-.modalContainer {
-  max-height: 70vh;
-  overflow-y: auto;
-}
+
 .value > a {
   color: #456dfb;
 }
@@ -252,4 +251,32 @@
 }
 .redButton {
   background-color: #d92d20;
+}
+
+.statusContainer {
+  display: flex;
+  flex-direction: row;
+  padding: 2px 8px 2px 6px;
+  align-items: center;
+  gap: 4px;
+  border-radius: 16px;
+  background: var(--Green-50, #edfcf2);
+  mix-blend-mode: multiply;
+
+  color: var(--Green-700, #087443);
+  text-align: center;
+
+  /* Text xs/Medium */
+  font-family: "PP Telegraf";
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 18px; /* 150% */
+}
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #16b364;
+  margin-right: 2px;
 }
