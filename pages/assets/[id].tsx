@@ -101,10 +101,17 @@ const AssetsDetail: NextPage = () => {
               <h1>{assetCode} balance </h1>
               <span>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</span>
             </div>
-            <div>
-              <Button color="white" onClick={getAsset}>
-                Refresh
-              </Button>
+            <div style={{ display: "flex" }}>
+              <div style={{ marginRight: 16 }}>
+                <Button color="white" onClick={getAsset}>
+                  Refresh
+                </Button>
+              </div>
+              <div>
+                <Button color="white" onClick={() => router.back()}>
+                  Back
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -131,7 +138,7 @@ const AssetsDetail: NextPage = () => {
                     {assetCode}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.usersBalance?.crypto}</p>
+                    <p>${asset.overview?.usersBalance?.usd?.toFixed(2)}</p>
                   </div>
                 </div>
               </div>

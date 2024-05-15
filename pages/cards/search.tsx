@@ -505,8 +505,7 @@ export default function Search() {
   };
 
   const showModal = (user: any) => {
-    setCurrentUser(user);
-    setOpenModal(true);
+    router.push("/cards/details/1");
   };
 
   const getColumns = () => {
@@ -903,7 +902,7 @@ export default function Search() {
             justifyContent: "space-between",
           }}
         >
-          <h3 className={styles.header}>Search</h3>
+          <p className={styles.filterTitle}>Filter card search result by</p>
           <div>
             <Button color="white" onClick={() => router.back()}>
               <img src="/icons/arrow-left.svg" /> Back

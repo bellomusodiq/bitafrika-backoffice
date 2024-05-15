@@ -256,16 +256,6 @@ export default function Search() {
             Basic Information
           </div>
           <div
-            onClick={() => setCurrentTab("Payment methods")}
-            className={
-              currentTab === "Payment methods"
-                ? styles.tabItemActive
-                : styles.tabItem
-            }
-          >
-            Payment methods
-          </div>
-          <div
             onClick={() => setCurrentTab("Rates")}
             className={
               currentTab === "Rates" ? styles.tabItemActive : styles.tabItem

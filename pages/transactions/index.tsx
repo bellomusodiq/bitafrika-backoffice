@@ -27,10 +27,10 @@ export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
-  const [statusType, setStatusType] = useState<string>("success");
+  const [statusType, setStatusType] = useState<string>("all");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [pageInfo, setPageInfo] = useState<any>(null);
@@ -47,13 +47,12 @@ export default function Search() {
     },
     {
       title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      dataIndex: "uniqId",
+      key: "uniqId",
+      render: (_: any, { uniqId }: any) => (
+        <p className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+          uniqId.length - 6
+        )}`}</p>
       ),
     },
     {
@@ -76,6 +75,11 @@ export default function Search() {
       title: "Amount (CRYPTO)",
       dataIndex: "crypto",
       key: "crypto",
+      render: (_: any, { crypto, asset }: any) => (
+        <>
+          {crypto} {asset}
+        </>
+      ),
     },
     {
       title: "Status",
@@ -92,6 +96,9 @@ export default function Search() {
       dataIndex: "date",
       key: "date",
       width: "20%",
+      render: (_: any, { date }: any) => (
+        <span style={{ fontSize: 12 }}>{date}</span>
+      ),
     },
     {
       title: "Actions",
@@ -187,13 +194,12 @@ export default function Search() {
   const RECEIVE_COLUMN = [
     {
       title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      dataIndex: "txid",
+      key: "txid",
+      render: (_: any, { txid }: any) => (
+        <p className={styles.username}>{`${txid?.slice(0, 6)}...${txid?.slice(
+          txid?.length - 6
+        )}`}</p>
       ),
     },
     {
@@ -312,480 +318,6 @@ export default function Search() {
     },
   ];
 
-  const SWAP_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
-      title: "Swap pair",
-      dataIndex: "swapPair",
-      key: "swapPair",
-      render: (_: any, { swapPair }: any) => (
-        <p
-          className={styles.username}
-          style={{
-            color: "black",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          {swapPair.from}{" "}
-          <span style={{ marginBottom: -4.5 }}>
-            <img src="/icons/swap-arrow.svg" />
-          </span>{" "}
-          {swapPair.to}
-        </p>
-      ),
-    },
-    {
-      title: "From",
-      dataIndex: "from",
-      key: "from",
-    },
-    {
-      title: "To",
-      dataIndex: "to",
-      key: "to",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button disabled={loadingDetail} onClick={action}>
-              View
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-  const UTILITY_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
-      title: "Product",
-      dataIndex: "product",
-      key: "product",
-    },
-    {
-      title: "Phone number",
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
-    },
-    {
-      title: "Paid with",
-      dataIndex: "paidWith",
-      key: "paidWith",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button disabled={loadingDetail} onClick={action}>
-              View
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-  const UTILITY_DATA = [
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      product: "Airtime topup",
-      phoneNumber: "0708 000 0000",
-      amount: "200 GHC",
-      paidWith: "10 USDT",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      product: "Airtime topup",
-      phoneNumber: "0708 000 0000",
-      amount: "200 GHC",
-      paidWith: "10 USDT",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      product: "Airtime topup",
-      phoneNumber: "0708 000 0000",
-      amount: "200 GHC",
-      paidWith: "10 USDT",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      product: "Airtime topup",
-      phoneNumber: "0708 000 0000",
-      amount: "200 GHC",
-      paidWith: "10 USDT",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      product: "Airtime topup",
-      phoneNumber: "0708 000 0000",
-      amount: "200 GHC",
-      paidWith: "10 USDT",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-  ];
-
-  const CARDS_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
-      title: "Biller",
-      dataIndex: "biller",
-      key: "biller",
-      render: (_: any, { biller }: any) => (
-        <p className={styles.username}>{biller}</p>
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button disabled={loadingDetail} onClick={action}>
-              View
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-  const CARDS_DATA = [
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      biller: "AppleMusic.com",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      biller: "AppleMusic.com",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      biller: "AppleMusic.com",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      biller: "AppleMusic.com",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      biller: "AppleMusic.com",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-  ];
-
-  const CARDS_TOPUP_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Paid with",
-      dataIndex: "paidWith",
-      key: "paidWith",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button disabled={loadingDetail} onClick={action}>
-              View
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-  const CARDS_TOPUP_DATA = [
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      paidWith: "USDT",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      paidWith: "USDT",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      paidWith: "USDT",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      paidWith: "USDT",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-    {
-      transactionId: "#1234554533453",
-      username: "@samual12345",
-      paidWith: "USDT",
-      amount: "$9.99",
-      status: "Successful",
-      date: "Thur 18 Jan, 2023",
-    },
-  ];
-
-  const GIFTCARDS_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
-      ),
-    },
-    {
-      title: "Card type",
-      dataIndex: "cardType",
-      key: "cardType",
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button disabled={loadingDetail} onClick={action}>
-              View
-            </Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
@@ -836,7 +368,7 @@ export default function Search() {
           setData(
             res.data.data.map((item: any) => ({
               ...item,
-              transactionId: item.txid,
+              transactionId: item.uniqId,
               email: item.email,
               phoneNumber: item.phone,
               country: item.countryCode,
@@ -965,7 +497,7 @@ export default function Search() {
         setData(
           res.data.data.map((item: any) => ({
             ...item,
-            transactionId: item.txid,
+            transactionId: item.uniqId,
             email: item.email,
             phoneNumber: item.phone,
             amount: `$${item.cryptoValue}`,
@@ -1051,140 +583,6 @@ export default function Search() {
       });
   };
 
-  const getSwapTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/swap/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        if (e.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
-  const getSwapTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/swap?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        setData(
-          res.data.data.map((item: any) => ({
-            ...item,
-            transactionId: item.uniqId,
-            email: item.email,
-            phoneNumber: item.phone,
-            amount: `$${item.usdAmount}`,
-            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
-            asset: item.currency,
-            swapPair: {
-              from: `${item.sourceAmount} ${item.sourceCrypto}`,
-              to: `${item.destinationAmount} ${item.destinationCrypto}`,
-            },
-            from: item.sourceCrypto,
-            to: item.destinationCrypto,
-            date: item.createdOn,
-            action: () => {
-              getSwapTransactionsDetail(item.uniqId);
-            },
-          }))
-        );
-      })
-      .catch((e) => {
-        if (e.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
-  const getGiftCardsTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/gift-card/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        if (e.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
-  const getGiftcardsTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/gift-card?status=${statusType}&from=${fromDate}&to=${toDate}&page=${currentPage}&pageSize=30`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        setData(
-          res.data.data.map((item: any) => ({
-            ...item,
-            transactionId: item.uniqId,
-            email: item.email,
-            amount: `$${item.amount}`,
-            date: item.date,
-            cardType: item.dataSix,
-            action: () => {
-              getGiftCardsTransactionsDetail(item.uniqId);
-            },
-          }))
-        );
-      })
-      .catch((e) => {
-        if (e.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
   const onSearch = () => {
     switch (searchType) {
       case "Buy":
@@ -1202,20 +600,11 @@ export default function Search() {
       case "Swap":
         getSwapTransactions();
         break;
-      case "Utility":
-        setData(UTILITY_DATA);
-        break;
-      case "Cards":
-        setData(CARDS_DATA);
-        break;
-      case "Cards top up":
-        setData(CARDS_TOPUP_DATA);
-        break;
       case "Giftcards":
         getGiftcardsTransactions();
         break;
       default:
-        setData([]);
+        setData(null);
     }
   };
 
@@ -1234,16 +623,6 @@ export default function Search() {
         return RECEIVE_COLUMN;
       case "Withdrawal":
         return WITHDRAWAL_COLUMN;
-      case "Swap":
-        return SWAP_COLUMN;
-      case "Utility":
-        return UTILITY_COLUMN;
-      case "Cards":
-        return CARDS_COLUMN;
-      case "Cards top up":
-        return CARDS_TOPUP_COLUMN;
-      case "Giftcards":
-        return GIFTCARDS_COLUMN;
     }
   };
 
@@ -1282,7 +661,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.txid}</p>
+            <p className={styles.value}>{currentUser.uniqId}</p>
           </div>
 
           <div className={styles.divider} />
@@ -1590,7 +969,7 @@ export default function Search() {
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.txid}</p>
+            <p className={styles.value}>{currentUser.uniqId}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -1918,7 +1297,9 @@ export default function Search() {
       </Modal>
 
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>
+          Filter {router.pathname.split("/")[1]} results by
+        </p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -1926,19 +1307,14 @@ export default function Search() {
               <Dropdown
                 value={searchType}
                 options={[
-                  { title: "Buy (Momo topup)", value: "Buy" },
-                  { title: "Sell (Momo withdrawal)", value: "Sell" },
+                  { title: "Buy orders", value: "Buy" },
+                  { title: "Sell orders", value: "Sell" },
                   { title: "Receive (Crypto)", value: "Receive" },
-                  { title: "Withdrawal (Crypto)", value: "Withdrawal" },
-                  { title: "Swap", value: "Swap" },
-                  { title: "Utility", value: "Utility" },
-                  { title: "Cards", value: "Cards" },
-                  { title: "Cards top up", value: "Cards top up" },
-                  { title: "Giftcards", value: "Giftcards" },
+                  { title: "Sent (Crypto)", value: "Withdrawal" },
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData([]);
+                  setData(null);
                   setCurrentPage(1);
                   setPageInfo(null);
                 }}
@@ -1956,7 +1332,7 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setStatusType(String(value));
-                  setData([]);
+                  setData(null);
                   setPageInfo(null);
                   setCurrentPage(1);
                 }}
@@ -1995,7 +1371,7 @@ export default function Search() {
         </div>
         {loading ? (
           <Loader />
-        ) : (
+        ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
@@ -2013,7 +1389,7 @@ export default function Search() {
             />
             <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );

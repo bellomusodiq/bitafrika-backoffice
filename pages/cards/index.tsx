@@ -16,20 +16,20 @@ const Cards: NextPage = () => {
         <div className={styles.divider} />
         <div className={styles.cardsContainer}>
           <div className={styles.card}>
-            <p className={styles.cardHeader}>Total transactions vol</p>
-            <p className={styles.cardText}>$100,470.90</p>
+            <p className={styles.cardHeader}>No. of Cards</p>
+            <p className={styles.cardText}>200</p>
           </div>
           <div className={styles.card}>
-            <p className={styles.cardHeader}>Total card balances</p>
-            <p className={styles.cardText}>$100,470.90</p>
+            <p className={styles.cardHeader}>Total active cards</p>
+            <p className={styles.cardText}>189</p>
           </div>
           <div className={styles.card}>
-            <p className={styles.cardHeader}>Total top up</p>
-            <p className={styles.cardText}>$100,470.90</p>
+            <p className={styles.cardHeader}>Total terminated Cards</p>
+            <p className={styles.cardText}>25</p>
           </div>
           <div className={styles.card}>
-            <p className={styles.cardHeader}>Total chargebacks</p>
-            <p className={styles.cardText}>$100,470.90</p>
+            <p className={styles.cardHeader}>Total frozen Cards</p>
+            <p className={styles.cardText}>15</p>
           </div>
         </div>
         <div className={styles.bodyContainer}>
@@ -50,28 +50,6 @@ const Cards: NextPage = () => {
               </div>
               <div
                 onClick={() =>
-                  router.push("/cards/requests", "/cards/requests")
-                }
-              >
-                <span>View total requests </span>
-                <img src="/icons/arrow-right-card.svg" />
-              </div>
-              <div
-                onClick={() =>
-                  router.push("/cards/disputes", "/cards/disputes")
-                }
-              >
-                <span>View total dispute/chargebacks </span>
-                <img src="/icons/arrow-right-card.svg" />
-              </div>
-              <div
-                onClick={() => router.push("/cards/top-up", "/cards/top-up")}
-              >
-                <span>View total top up</span>
-                <img src="/icons/arrow-right-card.svg" />
-              </div>
-              <div
-                onClick={() =>
                   router.push("/cards/transactions", "/cards/transactions")
                 }
                 style={{ borderBottom: "none" }}
@@ -86,24 +64,17 @@ const Cards: NextPage = () => {
               style={{ width: "100%", marginBottom: 24 }}
               className={styles.card}
             >
-              <p className={styles.cardHeader}>Total cards requested</p>
-              <p className={styles.cardText}>10047</p>
+              <p className={styles.cardHeader}>
+                Platform Balance (Balance with provider)
+              </p>
+              <p className={styles.cardText}>$500,723.40</p>
             </div>
-            <div className={styles.cardsContainer}>
-              <div
-                style={{ width: "calc(50% - 12px)" }}
-                className={styles.card}
-              >
-                <p className={styles.cardHeader}>Cards approved</p>
-                <p className={styles.cardText}>10047</p>
-              </div>
-              <div
-                style={{ width: "calc(50% - 12px)" }}
-                className={styles.card}
-              >
-                <p className={styles.cardHeader}>Cards denied</p>
-                <p className={styles.cardText}>10047</p>
-              </div>
+            <div
+              style={{ width: "100%", marginBottom: 24 }}
+              className={styles.card}
+            >
+              <p className={styles.cardHeader}>Total card Balances</p>
+              <p className={styles.cardText}>$400,550.95</p>
             </div>
           </div>
         </div>

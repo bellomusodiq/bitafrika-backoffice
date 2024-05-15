@@ -25,7 +25,7 @@
   margin-bottom: -18px;
 }
 .searchContainer {
-  margin-top: 20px;
+  margin-top: 8px;
   border-radius: 12px;
   border: 1px solid var(--Gray-200, #eaecf0);
   background: var(--Gray-25, #fcfcfd);
@@ -173,6 +173,14 @@
   padding: 2px 8px;
   background-color: #f6fef9;
   border-radius: 16px;
+}
+.filterTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px; /* 190% */
 }
 .date {
   font-style: normal;

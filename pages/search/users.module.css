@@ -25,8 +25,16 @@
   padding-bottom: 16px;
   margin-bottom: -18px;
 }
+.filterTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px; /* 190% */
+}
 .searchContainer {
-  margin-top: 24px;
+  margin-top: 0px;
   border-radius: 12px;
   border: 1px solid var(--Gray-200, #eaecf0);
   background: var(--Gray-25, #fcfcfd);
@@ -232,6 +240,6 @@
   width: 8px;
   height: 8px;
   border-radius: 4px;
-  background-color: #16B364;
+  background-color: #16b364;
   margin-right: 2px;
 }

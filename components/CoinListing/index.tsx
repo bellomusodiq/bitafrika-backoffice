@@ -10,7 +10,7 @@ const CoinListing: React.FC<CoinListingProps> = ({ title, coins }) => {
   const router = useRouter();
 
   return (
-    <StatsCard headerTitle={title}>
+    <StatsCard headerTitle={title} showRefresh>
       <div style={{ padding: "0 24px" }}>
         {coins.map((coin, i) => (
           <React.Fragment key={coin.coin}>
@@ -26,7 +26,8 @@ const CoinListing: React.FC<CoinListingProps> = ({ title, coins }) => {
               />
               <p className={styles.coinName}>{coin.coin}</p>
               <p className={styles.coinBalance}>
-                {coin.amount.toFixed(8)} {coin.coin_code}
+                {coin.amount.toFixed(8)} {coin.coin_code} ($
+                {coin.usdAmount || 200000.0})
               </p>
             </Link>
             {i !== coins.length - 1 && <div className={styles.divider} />}

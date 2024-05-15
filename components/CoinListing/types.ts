@@ -5,5 +5,6 @@ export interface CoinListingProps {
     coin_code: string;
     amount: number;
     count: number;
+    usdAmount: number;
   }[];
 }
