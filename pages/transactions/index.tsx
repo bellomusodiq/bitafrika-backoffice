@@ -597,12 +597,6 @@ export default function Search() {
       case "Withdrawal":
         getSentTransactions();
         break;
-      case "Swap":
-        getSwapTransactions();
-        break;
-      case "Giftcards":
-        getGiftcardsTransactions();
-        break;
       default:
         setData(null);
     }
