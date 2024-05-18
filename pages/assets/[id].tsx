@@ -169,7 +169,7 @@ const AssetsDetail: NextPage = () => {
             <div className={styles.container}>
               <div className={styles.tradesTitle}>
                 <div className={styles.tradesTextContainer}>
-                  <h3>Bitcoin Trades</h3>
+                  <h3>{assetCode} Trades</h3>
                 </div>
                 <div className={styles.filterDays}>
                   <a
@@ -205,7 +205,7 @@ const AssetsDetail: NextPage = () => {
               <div className={styles.blankDivider} />
 
               <div className={styles.tradesCharts}>
-                <div style={{ width: "60%" }}>
+                <div style={{ width: "100%" }}>
                   <div
                     className={styles.balanceItems}
                     style={{ backgroundColor: "#FCFCFD" }}
@@ -254,33 +254,6 @@ const AssetsDetail: NextPage = () => {
                   </div>
                   <div style={{ height: 300 }}>
                     <CustomAreaChart data={graphsItem} />
-                  </div>
-                </div>
-                <div
-                  style={{
-                    width: "calc(40% - 24px)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <div style={{ width: "100%", height: 200 }}>
-                    <CustomPieChart data={pieChartData} />
-                  </div>
-                  <h4 className={styles.pieTitle}>1021</h4>
-                  <div className={styles.legend}>
-                    <p>
-                      <div style={{ backgroundColor: "red" }} /> Buy Orders
-                    </p>
-                    <p>
-                      <div style={{ backgroundColor: "green" }} /> Sell Orders
-                    </p>
-                    <p>
-                      <div style={{ backgroundColor: "blue" }} /> Deposits
-                    </p>
-                    <p>
-                      <div style={{ backgroundColor: "yellow" }} /> Withdrawals
-                    </p>
                   </div>
                 </div>
               </div>

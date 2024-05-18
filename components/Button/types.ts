@@ -5,4 +5,5 @@ export interface ButtonProps {
   className?: string;
   color?: string;
   loading?: boolean;
+  isText?: boolean;
 }

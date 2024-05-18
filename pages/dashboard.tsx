@@ -70,7 +70,7 @@ export default function Home() {
     : [];
 
   return (
-    <PageLayout showHeader title="Hone">
+    <PageLayout title="Hone">
       {loading ? (
         <div style={{ marginTop: 60 }}>
           <Loader />

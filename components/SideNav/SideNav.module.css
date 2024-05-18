@@ -107,3 +107,7 @@
   cursor: pointer;
   margin-left: -0.5px;
 }
+.logoutContainer {
+  display: flex;
+  justify-content: center;
+}

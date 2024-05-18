@@ -298,11 +298,14 @@ const Signin: React.FC<NextPage> = () => {
               />
             </div>
             {!disabled && (
-              <div className={styles.buttonContainer}>
-                <Button disabled={disabled} loading={loading} onClick={signIn}>
-                  Sign in
-                </Button>
-              </div>
+              <Button
+                className={styles.buttonContainer}
+                disabled={disabled}
+                loading={loading}
+                onClick={signIn}
+              >
+                Sign in
+              </Button>
             )}
             <div className={styles.divider} />
             <div className={styles.dropdownContainer}>

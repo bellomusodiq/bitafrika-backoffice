@@ -728,13 +728,10 @@ const UserDetails: NextPage = () => {
           <div className={styles.header}>
             <NavigationStep color="white" hideButton />
             <div className={styles.headerContainer}>
+              <Button color="white" isText>
+                <img src="/icons/arrow-left.svg" />
+              </Button>
               <h1 className={styles.headerText}>User details</h1>
-              <div className={styles.goBackBtn}>
-                <Button color="white">
-                  <img src="/icons/arrow-left.svg" />
-                  Go back
-                </Button>
-              </div>
             </div>
           </div>
           <div className={styles.profileHeader}>
