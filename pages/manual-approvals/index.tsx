@@ -502,7 +502,7 @@ export default function Search() {
             </Button>
           </div>
         </div> */}
-        <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>Filter manual approval results by</p>
         <div className={styles.filterContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer2}>
