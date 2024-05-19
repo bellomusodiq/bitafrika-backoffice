@@ -846,23 +846,55 @@ const UserDetails: NextPage = () => {
                 />
                 <div className={styles.footer}>
                   <div>
-                    <Button className={styles.footerBtns} color="white">
+                    <Button
+                      className={styles.footerBtns}
+                      color="white"
+                      onClick={() =>
+                        router.push(
+                          `/users/transactions/${user?.kycInfo?.username}?type=buy`
+                        )
+                      }
+                    >
                       View Buy Transactions
                     </Button>
                   </div>
                   <div>
-                    <Button className={styles.footerBtns} color="white">
+                    <Button
+                      className={styles.footerBtns}
+                      color="white"
+                      onClick={() =>
+                        router.push(
+                          `/users/transactions/${user?.kycInfo?.username}?type=sell`
+                        )
+                      }
+                    >
                       View Sell Transactions
                     </Button>
                   </div>
                   <div>
-                    <Button className={styles.footerBtns} color="white">
+                    <Button
+                      className={styles.footerBtns}
+                      color="white"
+                      onClick={() =>
+                        router.push(
+                          `/users/transactions/${user?.kycInfo?.username}?type=crypto`
+                        )
+                      }
+                    >
                       View Crypto Transactions
                     </Button>
                   </div>
                   <div>
-                    <Button className={styles.footerBtns} color="white">
-                      View swap transactions
+                    <Button
+                      className={styles.footerBtns}
+                      color="white"
+                      onClick={() =>
+                        router.push(
+                          `/users/transactions/${user?.kycInfo?.username}?type=swap`
+                        )
+                      }
+                    >
+                      View Swap Transactions
                     </Button>
                   </div>
                 </div>

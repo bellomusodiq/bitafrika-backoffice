@@ -340,20 +340,27 @@ export default function Transactions() {
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
-            <Table
-              style={{
-                fontFamily: "PP Telegraf",
-                border: "1px solid var(--Gray-200, #EAECF0)",
-                borderRadius: 12,
-                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                overflow: "hidden",
-              }}
-              dataSource={data}
-              columns={REQUESTS_COLUMNS}
-              loading={loading}
-              pagination={false}
-            />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            {data.length > 0 && (
+              <>
+                <Table
+                  style={{
+                    fontFamily: "PP Telegraf",
+                    border: "1px solid var(--Gray-200, #EAECF0)",
+                    borderRadius: 12,
+                    boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                    overflow: "hidden",
+                  }}
+                  dataSource={data}
+                  columns={REQUESTS_COLUMNS}
+                  loading={loading}
+                  pagination={false}
+                />
+                <Pagination
+                  pageInfo={pageInfo}
+                  setCurrentPage={setCurrentPage}
+                />
+              </>
+            )}
           </div>
         )}
       </div>
