@@ -12,8 +12,9 @@ const Button: React.FC<ButtonProps> = ({
   color,
   loading,
   isText,
+  size = "large",
 }) => {
-  let type = "primary";
+  let type: any = "primary";
   if (color === "white") {
     type = "default";
   }
@@ -31,7 +32,14 @@ const Button: React.FC<ButtonProps> = ({
     // >
     //   {loading ? <Spinner /> : children}
     // </button>
-    <AntButton onClick={onClick} disabled={disabled} type={type}>
+    <AntButton
+      size={size}
+      className={className}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+      loading={loading}
+    >
       {children}
     </AntButton>
   );

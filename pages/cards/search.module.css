@@ -181,6 +181,7 @@
   font-style: normal;
   font-weight: 600;
   line-height: 38px; /* 190% */
+  margin-left: 5px;
 }
 .date {
   font-style: normal;

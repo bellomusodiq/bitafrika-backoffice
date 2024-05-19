@@ -14,6 +14,7 @@ import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import Pagination from "@/components/Pagination";
+import Link from "next/link";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -35,6 +36,7 @@ export default function Search() {
   const [toDate, setToDate] = useState<string>("");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
   const BUY_COLUMN = [
     {
@@ -42,7 +44,9 @@ export default function Search() {
       dataIndex: "username",
       key: "username",
       render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
+        <Link href={`/users/details/${username}`} className={styles.username}>
+          {username}
+        </Link>
       ),
     },
     {
@@ -103,10 +107,10 @@ export default function Search() {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -121,7 +125,9 @@ export default function Search() {
       dataIndex: "username",
       key: "username",
       render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
+        <Link href={`/users/details/${username}`} className={styles.username}>
+          {username}
+        </Link>
       ),
     },
     {
@@ -179,10 +185,10 @@ export default function Search() {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -207,7 +213,9 @@ export default function Search() {
       dataIndex: "username",
       key: "username",
       render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
+        <Link href={`/users/details/${username}`} className={styles.username}>
+          {username}
+        </Link>
       ),
     },
     {
@@ -239,10 +247,10 @@ export default function Search() {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -268,7 +276,9 @@ export default function Search() {
       dataIndex: "username",
       key: "username",
       render: (_: any, { username }: any) => (
-        <p className={styles.username}>{username}</p>
+        <Link href={`/users/details/${username}`} className={styles.username}>
+          {username}
+        </Link>
       ),
     },
     {
@@ -306,10 +316,10 @@ export default function Search() {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -337,6 +347,7 @@ export default function Search() {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -366,7 +377,7 @@ export default function Search() {
         setLoading(false);
         if (res.data.success) {
           setData(
-            res.data.data.map((item: any) => ({
+            res.data.data.map((item: any, i: number) => ({
               ...item,
               transactionId: item.uniqId,
               email: item.email,
@@ -374,7 +385,10 @@ export default function Search() {
               country: item.countryCode,
               total: `${item.currency} ${item.amount}`,
               asset: item.cryptoSymbol,
-              action: () => getTopupTransactionsDetail(item.uniqId),
+              action: () => {
+                getTopupTransactionsDetail(item.uniqId);
+                setLoadingIndex(i);
+              },
             }))
           );
           setPageInfo(res.data.pageInfo);
@@ -402,6 +416,7 @@ export default function Search() {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -430,7 +445,7 @@ export default function Search() {
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
+          res.data.data.map((item: any, i: number) => ({
             ...item,
             transactionId: item.uniq,
             email: item.email,
@@ -441,6 +456,7 @@ export default function Search() {
             date: item.newDate,
             action: () => {
               getWithdrawalTransactionsDetail(item.uniq);
+              setLoadingIndex(i);
             },
           }))
         );
@@ -467,6 +483,7 @@ export default function Search() {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -495,7 +512,7 @@ export default function Search() {
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
+          res.data.data.map((item: any, i: number) => ({
             ...item,
             transactionId: item.uniqId,
             email: item.email,
@@ -505,6 +522,7 @@ export default function Search() {
             asset: item.currency,
             action: () => {
               getReceivedTransactionsDetail(item.txid);
+              setLoadingIndex(i);
             },
           }))
         );
@@ -531,6 +549,7 @@ export default function Search() {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -559,7 +578,7 @@ export default function Search() {
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
+          res.data.data.map((item: any, i: number) => ({
             ...item,
             transactionId: item.txid,
             email: item.email,
@@ -571,6 +590,7 @@ export default function Search() {
             asset: item.currency,
             action: () => {
               getSentTransactionsDetail(item.txid);
+              setLoadingIndex(i);
             },
           }))
         );

@@ -13,6 +13,7 @@ import Dropdown from "@/components/Dropdown";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -26,7 +27,9 @@ const USER_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
+      <Link className={styles.username} href={`/users/details/${username}`}>
+        {username}
+      </Link>
     ),
   },
   {
@@ -82,6 +85,11 @@ const MOMO_TOPUP_COLUMNS = [
     title: "Username",
     dataIndex: "username",
     key: "username",
+    render: (_: any, { username }: any) => (
+      <Link className={styles.username} href={`/users/details/${username}`}>
+        {username}
+      </Link>
+    ),
   },
   {
     title: "Transaction ID",
@@ -162,6 +170,11 @@ const MOMO_WITHDRWAL_COLUMNS = [
     title: "Username",
     dataIndex: "username",
     key: "username",
+    render: (_: any, { username }: any) => (
+      <Link className={styles.username} href={`/users/details/${username}`}>
+        {username}
+      </Link>
+    ),
   },
   {
     title: "Transaction ID",
@@ -232,6 +245,11 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
     title: "Username",
     dataIndex: "username",
     key: "username",
+    render: (_: any, { username }: any) => (
+      <Link className={styles.username} href={`/users/details/${username}`}>
+        {username}
+      </Link>
+    ),
   },
   {
     title: "Transaction ID",

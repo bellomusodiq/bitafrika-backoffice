@@ -728,7 +728,7 @@ const UserDetails: NextPage = () => {
           <div className={styles.header}>
             <NavigationStep color="white" hideButton />
             <div className={styles.headerContainer}>
-              <Button color="white" isText>
+              <Button color="white" isText onClick={() => router.back()}>
                 <img src="/icons/arrow-left.svg" />
               </Button>
               <h1 className={styles.headerText}>User details</h1>

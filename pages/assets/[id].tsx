@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Loader from "@/components/Loader";
+import { Radio } from "antd";
 
 const AssetsDetail: NextPage = () => {
   const router = useRouter();
@@ -98,18 +99,16 @@ const AssetsDetail: NextPage = () => {
         <>
           <div className={styles.headerContainer}>
             <div className={styles.assetTitleContainer}>
+              <Button color="white" isText onClick={() => router.back()}>
+                <img src="/icons/arrow-left.svg" />
+              </Button>
               <h1>{assetCode} balance </h1>
-              <span>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</span>
+              {/* <span>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</span> */}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginRight: 16 }}>
                 <Button color="white" onClick={getAsset}>
                   Refresh
-                </Button>
-              </div>
-              <div>
-                <Button color="white" onClick={() => router.back()}>
-                  Back
                 </Button>
               </div>
             </div>
@@ -171,7 +170,17 @@ const AssetsDetail: NextPage = () => {
                 <div className={styles.tradesTextContainer}>
                   <h3>{assetCode} Trades</h3>
                 </div>
-                <div className={styles.filterDays}>
+                <Radio.Group
+                  onChange={(e: any) => setFilter(e.target.value)}
+                  value={filter}
+                  buttonStyle="solid"
+                  size="large"
+                >
+                  <Radio.Button value="month">30d</Radio.Button>
+                  <Radio.Button value="week">7d</Radio.Button>
+                  <Radio.Button value="day">24h</Radio.Button>
+                </Radio.Group>
+                {/* <div className={styles.filterDays}>
                   <a
                     className={
                       filter === "month" ? styles.filterActiveLeft : ""
@@ -198,7 +207,7 @@ const AssetsDetail: NextPage = () => {
                   >
                     24h
                   </a>
-                </div>
+                </div> */}
               </div>
               <div className={styles.border} />
 

@@ -7,12 +7,7 @@
   font-size: 30px;
   line-height: 38px;
   color: #101828;
-  margin-left: 5px;
-}
-.subHeader {
-  color: #475467;
-  font-size: 16px;
-  line-height: 24px;
+  margin-bottom: 20px;
 }
 .tabContainer {
   display: flex;
@@ -31,7 +26,7 @@
   margin-bottom: -18px;
 }
 .searchContainer {
-  margin-top: 20px;
+  margin-top: 4px;
   border-radius: 12px;
   border: 1px solid var(--Gray-200, #eaecf0);
   background: var(--Gray-25, #fcfcfd);
@@ -40,9 +35,10 @@
   align-items: flex-start;
 }
 .searchCard {
+  flex: 1;
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: flex-end;
 }
 .searchHeader {
   display: flex;
@@ -91,8 +87,27 @@
   color: #475467;
 }
 .dropdownContainer {
-  width: 175px;
+  min-width: 200px;
+  margin-right: 16px;
 }
+.filterTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 38px; /* 190% */
+}
+.dropdownTitle {
+  color: var(--Gray-900, #101828);
+  font-family: "PP Telegraf";
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px; /* 175% */
+  margin-bottom: 8px;
+}
+
 .searchButton {
   height: 48px;
 }
@@ -168,6 +183,8 @@
   font-size: 16px;
   line-height: 24px;
   color: #101828;
+  flex: 1;
+  margin-left: 4px;
 }
 .valueStatus {
   font-style: normal;
@@ -238,24 +255,4 @@
   border-radius: 4px;
   background-color: #16b364;
   margin-right: 2px;
-}
-.modalContainer {
-  max-height: 70vh;
-  overflow-y: auto;
-}
-.value > a {
-  color: #456dfb;
-}
-.modalFooter {
-  border-top: 1px solid #eaecf0;
-  display: flex;
-  padding-top: 16px;
-  justify-content: flex-end;
-  margin-top: 24px;
-}
-.modalFooter > div {
-  margin-left: 12px;
-}
-.redButton {
-  background-color: #d92d20;
 }

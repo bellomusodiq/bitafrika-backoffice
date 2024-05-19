@@ -297,16 +297,18 @@ export default function Search() {
             justifyContent: "space-between",
           }}
         >
-          <h3 className={styles.header}>Giftcards</h3>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Button color="white" isText onClick={() => router.back()}>
+              <img src="/icons/arrow-left.svg" />
+            </Button>
+            <h3 className={styles.header} style={{ marginLeft: 5 }}>
+              Giftcards
+            </h3>
+          </div>
           <div style={{ display: "flex" }}>
             <div style={{ marginRight: 18 }}>
               <Button onClick={() => setOpenAddModal(true)}>
                 <img src="/icons/plus-white.svg" /> Add Giftcard
-              </Button>
-            </div>
-            <div>
-              <Button color="white" onClick={() => router.back()}>
-                <img src="/icons/arrow-left.svg" /> Back
               </Button>
             </div>
           </div>

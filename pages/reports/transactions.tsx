@@ -14,6 +14,7 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import formatDate from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
+import Link from "next/link";
 
 const TOKEN_TO_COLOR: { [k: string]: string } = {
   USDT: "#008F39",
@@ -364,7 +365,11 @@ export default function Search() {
                   />
                   <div className={styles.totalHeader}>
                     <p>Total buy orders: {data?.totalCount}</p>
-                    <a href="#">View orders</a>
+                    <Link
+                      href={`/orders?type=buy&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                    >
+                      View orders
+                    </Link>
                   </div>
                   <div className={styles.footerHeaderContainer}>
                     <p>TOTAL AMOUNT</p>
@@ -475,7 +480,11 @@ export default function Search() {
                   />
                   <div className={styles.totalHeader}>
                     <p>Total sell orders: {data.totalCount}</p>
-                    <a href="#">View orders</a>
+                    <Link
+                      href={`/orders?type=sell&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                    >
+                      View orders
+                    </Link>
                   </div>
                   <div className={styles.footerHeaderContainer}>
                     <p>TOTAL AMOUNT</p>
@@ -603,7 +612,11 @@ export default function Search() {
                         />
                         <div className={styles.totalHeader}>
                           <p>Total buy orders: {data?.buy?.totalCount}</p>
-                          <a href="#">View orders</a>
+                          <Link
+                            href={`/orders?type=buy&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                          >
+                            View orders
+                          </Link>
                         </div>
                         <div className={styles.footerHeaderContainer}>
                           <p>TOTAL AMOUNT</p>
@@ -705,8 +718,12 @@ export default function Search() {
                           style={{ margin: "24px 0" }}
                         />
                         <div className={styles.totalHeader2}>
-                          <p>Total sell orders: 7000</p>
-                          <a href="#">View orders</a>
+                          <p>Total sell orders: {data?.sell?.totalCount}</p>
+                          <Link
+                            href={`/orders?type=sell&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                          >
+                            View orders
+                          </Link>
                         </div>
                         <div className={styles.footerHeaderContainer2}>
                           <p>TOTAL AMOUNT</p>
@@ -742,18 +759,28 @@ export default function Search() {
                       </div>
                     </div>
                     <p className={styles.profitText}>
-                      110,000 120,000 ={" "}
-                      <span style={{ color: "#1570EF" }}>440</span>
+                      {data?.buy?.grandTotal} - {data?.sell?.grandTotal} ={" "}
+                      <span style={{ color: "#1570EF" }}>
+                        {data?.buy?.grandTotal - data?.sell?.grandTotal}
+                      </span>
                     </p>
                     <div className={styles.divider} />
                     <p className={styles.profitBreakdown}>
                       Total profit breakdown
                     </p>
                     <p className={styles.fees}>
-                      Fees: <span>60</span>
+                      Fees:{" "}
+                      <span>{data?.buy?.totalFees - data?.buy?.totalFees}</span>
                     </p>
                     <p className={styles.fees}>
-                      Rate difference: <span>440-60 = 380 </span>
+                      Rate difference:{" "}
+                      <span>
+                        {data?.buy?.grandTotal - data?.sell?.grandTotal} -{" "}
+                        {data?.buy?.totalFees - data?.buy?.totalFees} ={" "}
+                        {data?.buy?.grandTotal -
+                          data?.sell?.grandTotal -
+                          (data?.buy?.totalFees - data?.buy?.totalFees)}{" "}
+                      </span>
                     </p>
                   </div>
                 </>

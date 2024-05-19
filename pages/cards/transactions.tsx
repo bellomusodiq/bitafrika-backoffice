@@ -229,15 +229,12 @@ export default function Search() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
+          <Button color="white" isText onClick={router.back}>
+            <img src="/icons/arrow-left.svg" />
+          </Button>
           <h3 className={styles.header}>Transactions</h3>
-          <div>
-            <Button color="white" onClick={router.back}>
-              <img src="/icons/arrow-left.svg" /> Back
-            </Button>
-          </div>
         </div>
 
         <div className={styles.table} style={{ overflow: "hidden" }}>

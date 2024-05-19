@@ -6,4 +6,5 @@ export interface ButtonProps {
   color?: string;
   loading?: boolean;
   isText?: boolean;
+  size?: any;
 }

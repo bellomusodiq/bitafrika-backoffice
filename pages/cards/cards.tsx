@@ -252,15 +252,12 @@ export default function Search() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
+          <Button color="white" isText onClick={() => router.back()}>
+            <img src="/icons/arrow-left.svg" />
+          </Button>
           <h3 className={styles.header}>Cards</h3>
-          <div>
-            <Button color="white" onClick={() => router.back()}>
-              <img src="/icons/arrow-left.svg" /> Back
-            </Button>
-          </div>
         </div>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
