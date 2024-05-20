@@ -3,7 +3,8 @@ import React, { useCallback, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/swap/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
-import Button from "@/components/Button";
+// import Button from "@/components/Button";
+import { Button } from "antd";
 import { Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
@@ -219,45 +220,21 @@ export default function Search() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
-          <h3 className={styles.header}>Search</h3>
           <div>
-            <Button color="white" onClick={() => router.back()}>
-              <img src="/icons/arrow-left.svg" /> Back
+            <Button type="text" onClick={router.back}>
+              <img src="/icons/arrow-left.svg" />
             </Button>
           </div>
+          <p className={styles.filterTitle}>Filter swap search results by</p>
         </div>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
-            {/* <div className={styles.dropdownContainer}>
-              <Dropdown
-                value={searchType}
-                options={[
-                  { title: "Cards", value: "Cards" },
-                  { title: "Requests", value: "Requests" },
-                  { title: "Disputes", value: "Disputes" },
-                  {
-                    title: "Top up",
-                    value: "Top up",
-                  },
-                  {
-                    title: "Transactions",
-                    value: "Transactions",
-                  },
-                ]}
-                onChange={(value) => {
-                  setSearchType(String(value));
-                  setData([]);
-                }}
-              />
-            </div> */}
             <div className={styles.searchHeader}>
               <img src="/icons/search.svg" />
               <input
                 className={styles.input}
-                // placeholder={renderPlaceHolder()}
                 placeholder="Transaction ID"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

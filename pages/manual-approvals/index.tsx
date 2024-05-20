@@ -35,7 +35,7 @@ export default function Search() {
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [pin, setPin] = useState<string>("");
-  const [data, setData] = useState<Record<string, string>[]>([]);
+  const [data, setData] = useState<Record<string, string>[] | null>(null);
   const [detail, setDetail] = useState<Record<string, any>>({});
   const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
   const [filterBy, setFilterBy] = useState<TManualApprovalFilter>("withdrawal");
@@ -529,28 +529,28 @@ export default function Search() {
         </div>
         {loading ? (
           <Loader />
-        ) : (
+        ) : data ? (
           <>
-            <p className={styles.subHeader}>{data.length} pending</p>
+            <p style={{ color: "#98a2b3" }} className={styles.subHeader}>
+              {data?.length} result found!
+            </p>
             <div className={styles.searchContainer}>
               <div className={styles.table} style={{ overflow: "hidden" }}>
-                {data.length > 0 && (
-                  <Table
-                    style={{
-                      fontFamily: "PP Telegraf",
-                      border: "1px solid var(--Gray-200, #EAECF0)",
-                      borderRadius: 12,
-                      boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                      overflow: "hidden",
-                    }}
-                    dataSource={data}
-                    columns={getTableColumn(filterBy, loadingDetail)}
-                  />
-                )}
+                <Table
+                  style={{
+                    fontFamily: "PP Telegraf",
+                    border: "1px solid var(--Gray-200, #EAECF0)",
+                    borderRadius: 12,
+                    boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                    overflow: "hidden",
+                  }}
+                  dataSource={data}
+                  columns={getTableColumn(filterBy, loadingDetail)}
+                />
               </div>
             </div>
           </>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );
