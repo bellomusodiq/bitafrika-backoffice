@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/transactions/transactions.module.css";
-import Button from "@/components/Button";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -27,6 +26,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
   const BUY_COLUMN = [
     {
@@ -95,10 +95,19 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      // render: (_: any, { action }: any) => (
+      //   <div className={styles.actionButton}>
+      //     <div>
+      //       <Button disabled={loadingDetail} onClick={action}>
+      //         View
+      //       </Button>
+      //     </div>
+      //   </div>
+      // ),
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -171,10 +180,19 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      // render: (_: any, { action }: any) => (
+      //   <div className={styles.actionButton}>
+      //     <div>
+      //       <Button disabled={loadingDetail} onClick={action}>
+      //         View
+      //       </Button>
+      //     </div>
+      //   </div>
+      // ),
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -231,10 +249,19 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      // render: (_: any, { action }: any) => (
+      //   <div className={styles.actionButton}>
+      //     <div>
+      //       <Button disabled={loadingDetail} onClick={action}>
+      //         View
+      //       </Button>
+      //     </div>
+      //   </div>
+      // ),
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -316,10 +343,19 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      // render: (_: any, { action }: any) => (
+      //   <div className={styles.actionButton}>
+      //     <div>
+      //       <Button disabled={loadingDetail} onClick={action}>
+      //         View
+      //       </Button>
+      //     </div>
+      //   </div>
+      // ),
+      render: (_: any, { action }: any, index: number) => (
         <div className={styles.actionButton}>
           <div>
-            <Button disabled={loadingDetail} onClick={action}>
+            <Button loading={loadingIndex === index} onClick={action}>
               View
             </Button>
           </div>
@@ -347,6 +383,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -379,7 +416,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
         setLoading(false);
         if (res.data.success) {
           setData(
-            res.data.data.map((item: any) => ({
+            res.data.data.map((item: any, i: number) => ({
               ...item,
               transactionId: item.uniqId,
               email: item.email,
@@ -387,7 +424,10 @@ export default function UserTransactions({ type, username, url }: IProps) {
               country: item.countryCode,
               total: `${item.currency} ${item.amount}`,
               asset: item.cryptoSymbol,
-              action: () => getTopupTransactionsDetail(item.uniqId),
+              action: () => {
+                getTopupTransactionsDetail(item.uniqId);
+                setLoadingIndex(i);
+              },
             }))
           );
           setPageInfo(res.data.pageInfo);
@@ -418,6 +458,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -449,7 +490,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
+          res.data.data.map((item: any, i: number) => ({
             ...item,
             transactionId: item.uniq,
             email: item.email,
@@ -460,6 +501,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
             date: item.newDate,
             action: () => {
               getWithdrawalTransactionsDetail(item.uniq);
+              setLoadingIndex(i);
             },
           }))
         );
@@ -490,6 +532,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -521,7 +564,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
+          res.data.data.map((item: any, i: number) => ({
             ...item,
             transactionId: item.uniqId,
             email: item.email,
@@ -531,6 +574,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
             asset: item.currency,
             action: () => {
               getReceivedTransactionsDetail(item.txid);
+              setLoadingIndex(i);
             },
           }))
         );
@@ -561,6 +605,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
       )
       .then((res: any) => {
         setLoadingDetail(false);
+        setLoadingIndex(null);
         if (res.data.success) {
           setCurrentUser(res.data.data);
           setOpenModal(true);
@@ -592,10 +637,11 @@ export default function UserTransactions({ type, username, url }: IProps) {
       .then((res) => {
         setLoading(false);
         setData(
-          res.data.data.map((item: any) => ({
+          res.data.data.map((item: any, i: number) => ({
             ...item,
             action: () => {
               getSwapTransactionsDetail(item.uniqId);
+              setLoadingIndex(i);
             },
           }))
         );
@@ -953,21 +999,21 @@ export default function UserTransactions({ type, username, url }: IProps) {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
+          <div>
+            <Button type="text" onClick={router.back}>
+              <img src="/icons/arrow-left.svg" />
+            </Button>
+          </div>
           <p
-            style={{ textTransform: "capitalize" }}
+            style={{
+              textTransform: "capitalize",
+            }}
             className={styles.filterTitle}
           >
             {type} transactions
           </p>
-          <div className={styles.goBackBtn}>
-            <Button color="white" onClick={router.back}>
-              <img src="/icons/arrow-left.svg" />
-              Go back
-            </Button>
-          </div>
         </div>
 
         {loading ? (

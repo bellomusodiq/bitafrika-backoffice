@@ -114,18 +114,6 @@ const Cards: NextPage = () => {
                 </div>
               </div>
             </div>
-            <div>
-              <div
-                style={{ width: "100%", marginBottom: 24 }}
-                className={styles.card}
-              >
-                <p className={styles.cardHeader}>Total USDT balance</p>
-                <p className={styles.cardText}>
-                  {" "}
-                  {overview?.availableUsdtBalance} {overview?.currency}
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       )}
