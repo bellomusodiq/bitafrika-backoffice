@@ -1,27 +1,46 @@
 import React from "react";
 import styles from "./VirtualCard.module.css";
 
-const VirtualCard: React.FC = () => (
+const VirtualCard: React.FC<any> = ({
+  name,
+  status,
+  expDate,
+  cvv,
+  cardNumber,
+}) => (
   <div className={styles.cardContainer}>
     <div className={styles.header}>
       <p>Virtual</p>{" "}
-      <p className={styles.active}>
-        <div /> Active
+      <p
+        className={styles.active}
+        style={{
+          color: status === "Card - Active" ? "#0aec8d" : "tomato",
+        }}
+      >
+        <div
+          style={{
+            backgroundColor: status === "Card - Active" ? "#0aec8d" : "tomato",
+          }}
+        />{" "}
+        {status?.split(" - ")[1]}
       </p>
     </div>
     <div className={styles.main}>
-      <p className={styles.name}>Emmanuel Nkrumah</p>
-      <p className={styles.cardNumber}>1234 5678 9123 4567 8901</p>
+      <p className={styles.name}>{name}</p>
+      <p className={styles.cardNumber}>
+        {cardNumber?.slice(0, 4)} {cardNumber?.slice(4, 8)}{" "}
+        {cardNumber?.slice(8, 12)} {cardNumber?.slice(12)}
+      </p>
     </div>
     <div className={styles.footer}>
       <div>
         <div className={styles.footerItem}>
           <p>Exp Date</p>
-          <p>05/28</p>
+          <p>{expDate}</p>
         </div>
         <div className={styles.footerItem}>
           <p>CVV</p>
-          <p>028</p>
+          <p>{cvv}</p>
         </div>
       </div>
       <img src="/icons/visa2.svg" className={styles.img} />

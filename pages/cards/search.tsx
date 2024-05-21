@@ -11,6 +11,8 @@ import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
+import Link from "next/link";
+import Pagination from "@/components/Pagination";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -131,7 +133,9 @@ const CARDS_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
+      <Link href={`/users/details/${username}`} className={styles.username}>
+        {username}
+      </Link>
     ),
   },
   {
@@ -141,13 +145,41 @@ const CARDS_COLUMNS = [
   },
   {
     title: "Exp. date",
-    dataIndex: "expDate",
-    key: "expDate",
+    dataIndex: "expiryDate",
+    key: "expiryDate",
   },
   {
     title: "Type",
     dataIndex: "type",
     key: "type",
+  },
+  {
+    title: "Balance",
+    dataIndex: "balance",
+    key: "balance",
+    render: (_: any, { balance }: any) => <>${balance}</>,
+  },
+  {
+    title: "Date",
+    dataIndex: "createdAt",
+    key: "createdAt",
+  },
+  {
+    title: "Status",
+    dataIndex: "sstatus",
+    key: "status",
+    render: (_: any, { status }: any) => (
+      <span
+        style={{
+          borderRadius: 16,
+          padding: "12px 16px",
+          backgroundColor: status === "Card - Active" ? "#EDFCF2" : "#FAFAFA",
+          color: status === "Card - Active" ? "#087443" : "#424242",
+        }}
+      >
+        {status}
+      </span>
+    ),
   },
   {
     title: "Actions",
@@ -366,8 +398,8 @@ const TOPUPS_DATA = [
 const TRANSACTIONS_COLUMNS = [
   {
     title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
+    dataIndex: "id",
+    key: "id",
   },
   {
     title: "Username",
@@ -376,39 +408,40 @@ const TRANSACTIONS_COLUMNS = [
   },
   {
     title: "Merchant",
-    dataIndex: "merchant",
-    key: "merchant",
-    render: (_: any, { merchant }: any) => (
-      <p className={styles.username}>{merchant}</p>
+    dataIndex: "merchantName",
+    key: "merchantName",
+    render: (_: any, { merchantName }: any) => (
+      <p className={styles.username}>{merchantName}</p>
     ),
   },
   {
     title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
+    dataIndex: "transactionAmount",
+    key: "transactionAmount",
+    render: (_: any, { transactionAmount }: any) => <>${transactionAmount}</>,
   },
   {
     title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div
+    dataIndex: "transactionStatus",
+    key: "transactionStatus",
+    render: (_: any, { transactionStatus }: any) => (
+      <span
         style={{
-          padding: 4,
           borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
+          padding: "12px 16px",
+          backgroundColor:
+            transactionStatus === "Approved" ? "#EDFCF2" : "#FAFAFA",
+          color: transactionStatus === "Approved" ? "#087443" : "#424242",
         }}
       >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+        {transactionStatus}
+      </span>
     ),
   },
   {
     title: "Date",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "transactionTime",
+    key: "transactionTime",
   },
   {
     title: "Actions",
@@ -481,44 +514,72 @@ export default function Search() {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("Cards");
+  const [searchType, setSearchType] = useState<string>("CARDS");
+  const [pageInfo, setPageInfo] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const onSearch = () => {
-    switch (searchType) {
-      case "Requests":
-        setData(REQUESTS_DATA);
-        break;
-      case "Cards":
-        setData(CARDS_DATA);
-        break;
-      case "Disputes":
-        setData(DISPUTES_DATA);
-        break;
-      case "Top up":
-        setData(TOPUPS_DATA);
-      case "Transactions":
-        setData(TRANSACTIONS_DATA);
-        break;
-      default:
-        setData([]);
-    }
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const searchCards = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/virtual-cards/search`,
+        {
+          page: currentPage,
+          filter: searchType,
+          query: search,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        if (res.data.success) {
+          setData(
+            res.data.data.map((item: any, i: number) => ({
+              ...item,
+              action: () => {
+                router.push(`/cards/details/${item.cardId}`);
+              },
+            }))
+          );
+          setPageInfo(res.data.pageInfo);
+        }
+      })
+      .catch((e) => {
+        if (e.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
   };
 
-  const showModal = (user: any) => {
-    router.push("/cards/details/1");
+  const onSearch = () => {
+    searchCards();
+  };
+
+  const showModal = (id: string) => {
+    router.push(`/cards/details/${id}`);
   };
 
   const getColumns = () => {
     switch (searchType) {
       case "Requests":
         return REQUESTS_COLUMNS;
-      case "Cards":
+      case "CARDS":
         return CARDS_COLUMNS;
       case "Disputes":
         return DISPUTES_COLUMNS;
       case "Top up":
         return TOPUPS_COLUMNS;
-      case "Transactions":
+      case "TRANSACTIONS":
         return TRANSACTIONS_COLUMNS;
     }
   };
@@ -912,16 +973,10 @@ export default function Search() {
               <Dropdown
                 value={searchType}
                 options={[
-                  { title: "Cards", value: "Cards" },
-                  { title: "Requests", value: "Requests" },
-                  { title: "Disputes", value: "Disputes" },
-                  {
-                    title: "Top up",
-                    value: "Top up",
-                  },
+                  { title: "Cards", value: "CARDS" },
                   {
                     title: "Transactions",
-                    value: "Transactions",
+                    value: "TRANSACTIONS",
                   },
                 ]}
                 onChange={(value) => {
@@ -959,13 +1014,15 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => showModal(user),
+              dataSource={data.map((item: any) => ({
+                ...item,
+                action: () => showModal(item.cardId),
               }))}
               columns={getColumns()}
               loading={loading}
+              pagination={false}
             />
+            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
         )}
       </div>
