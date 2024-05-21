@@ -286,17 +286,16 @@
 }
 .header {
   color: var(--Gray-900, #101828);
-  font-family: "PP Telegraf";
   font-size: 20px;
   font-style: normal;
   font-weight: 600;
-  line-height: 38px; /* 190% */
+  line-height: 38px;
   margin-bottom: 8px;
 }
 .date {
   color: var(--Gray-900, #101828);
   font-family: "PP Telegraf";
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 600;
   line-height: 28px;
@@ -305,7 +304,7 @@
 .ordersContainer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-between; */
 }
 .order {
   display: flex;
@@ -313,6 +312,7 @@
   align-items: center;
   margin-bottom: 8px;
   margin-top: 10px;
+  width: 100%;
 }
 .orderIcon {
   width: 16px;

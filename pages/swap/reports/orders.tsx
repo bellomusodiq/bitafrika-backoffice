@@ -1,26 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
-import { Button, DatePicker, Table } from "antd";
+import { Button, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import { toast } from "react-toastify";
-import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
-import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
+import { GetServerSideProps } from "next";
 
-export default function Transactions() {
+interface IProps {
+  status: string;
+  from: string;
+  to: string;
+}
+
+export default function SwapOrders({ status, from, to }: IProps) {
   const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<Record<string, string>[] | null>(null);
   const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [statusType, setStatusType] = useState<string>("success");
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentDetails, setCurrentDetails] = useState<any>({});
@@ -124,9 +126,9 @@ export default function Transactions() {
       .post(
         `${BASE_URL}/swap/filter`,
         {
-          status: statusType,
-          from: fromDate,
-          to: toDate,
+          status,
+          from,
+          to,
           page: currentPage,
         },
         {
@@ -200,9 +202,7 @@ export default function Transactions() {
   };
 
   useEffect(() => {
-    if (pageInfo) {
-      onSearch();
-    }
+    onSearch();
   }, [currentPage]);
 
   return (
@@ -269,20 +269,6 @@ export default function Transactions() {
         </div>
       </Modal>
       <div className={styles.container}>
-        {/* <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <h3 className={styles.header}>Transactions</h3>
-          <div>
-            <Button color="white" onClick={router.back}>
-              <img src="/icons/arrow-left.svg" /> Back
-            </Button>
-          </div>
-        </div> */}
         <div
           style={{
             display: "flex",
@@ -294,59 +280,7 @@ export default function Transactions() {
               <img src="/icons/arrow-left.svg" />
             </Button>
           </div>
-          <p className={styles.filterTitle}>
-            Filter swap transaction results by
-          </p>
-        </div>
-        <div className={styles.searchContainer}>
-          <div className={styles.searchCard}>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Status</p>
-              <Dropdown
-                value={statusType}
-                options={[
-                  { title: "Successful", value: "success" },
-                  { title: "Pending", value: "pending" },
-                  { title: "Failed", value: "failed" },
-                ]}
-                onChange={(value) => {
-                  setStatusType(String(value));
-                  setData([]);
-                  setPageInfo(null);
-                  setCurrentPage(1);
-                }}
-              />
-            </div>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Date range</p>
-              <DatePicker.RangePicker
-                onChange={(values: any) => {
-                  setFromDate(formatDate(values[0].$d));
-                  setToDate(formatDate(values[1].$d));
-                }}
-                style={{ height: 48 }}
-              />
-            </div>
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-end",
-                alignItems: "flex-end",
-              }}
-            >
-              <div>
-                <Button
-                  disabled={loading}
-                  onClick={onSearch}
-                  className={styles.searchButton}
-                >
-                  Apply filter
-                </Button>
-              </div>
-            </div>
-          </div>
+          <p className={styles.filterTitle}>Filter swap report order result</p>
         </div>
 
         {loading ? (
@@ -374,3 +308,14 @@ export default function Transactions() {
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { status, from, to } = context.query;
+  return {
+    props: {
+      status,
+      from,
+      to,
+    },
+  };
+};

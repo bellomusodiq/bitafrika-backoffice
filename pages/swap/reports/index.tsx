@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
-import styles from "@/pages/swap/reports.module.css";
-import Button from "@/components/Button";
-import { DatePicker } from "antd";
+import styles from "@/pages/swap/reports/reports.module.css";
+// import Button from "@/components/Button";
+import { Alert, Button, DatePicker, Table } from "antd";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
 import { BASE_URL } from "@/CONFIG";
@@ -16,7 +16,7 @@ import Link from "next/link";
 export default function Search() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
-  const [status, setStatus] = useState<string>("success");
+  const [status, setStatus] = useState<string>("all");
   const [data, setData] = useState<Record<string, any>>({});
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
@@ -25,6 +25,22 @@ export default function Search() {
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
+
+  const getStatusCode = () => {
+    switch (status) {
+      case "success":
+      case "confirmed":
+        return "success";
+      case "pending":
+        return "warning";
+      case "all":
+        return "info";
+      case "error":
+        return "error";
+      default:
+        return "error";
+    }
+  };
 
   const getSwapReports = () => {
     setLoading(true);
@@ -64,6 +80,49 @@ export default function Search() {
     getSwapReports();
   };
 
+  const getRandomHexColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const COLUMNS = useMemo(() => {
+    return [
+      {
+        title: "Pair",
+        dataIndex: "title",
+        key: "title",
+        render: (_: any, { title }: any) => {
+          const color = getRandomHexColor();
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                className={styles.orderIcon}
+                style={{ backgroundColor: color }}
+              />
+              <p>{title}</p>
+            </div>
+          );
+        },
+      },
+      {
+        title: "Count",
+        dataIndex: "count",
+        key: "count",
+        render: (_: any, { count }: any) => <p>{count} swaps</p>,
+      },
+      {
+        title: "Amount",
+        dataIndex: "amount",
+        key: "amount",
+        render: (_: any, { amount }: any) => <p>{amount} USD</p>,
+      },
+    ];
+  }, []);
+
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
@@ -71,17 +130,15 @@ export default function Search() {
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
           }}
         >
-          <h3 className={styles.header}>Swap report</h3>
           <div>
-            <Button color="white" onClick={router.back}>
-              <img src="/icons/arrow-left.svg" /> Back
+            <Button type="text" onClick={router.back}>
+              <img src="/icons/arrow-left.svg" />
             </Button>
           </div>
+          <p className={styles.filterTitle}>Filter swap reports by</p>
         </div>
-        <p className={styles.filterTitle}>Filter results by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -134,72 +191,63 @@ export default function Search() {
         </div>
         {loading ? (
           <Loader />
-        ) : (
+        ) : Object.keys(data).length > 0 ? (
           <div className={styles.bodyContainer}>
             <h3 className={styles.header}>Swap transactions report</h3>
             <p className={styles.date}>
               Date: {fromDate} — {toDate}
             </p>
-            <p className={styles.date}>Status: {status}</p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+                width: "50px",
+                marginTop: 4,
+              }}
+            >
+              <p style={{ width: "50px" }} className={styles.date}>
+                Status:
+              </p>
+              <Alert
+                message={status}
+                type={getStatusCode()}
+                style={{ textTransform: "capitalize" }}
+              />
+            </div>
 
             <h3 style={{ marginTop: 14 }} className={styles.header}>
               Most swapped pairs
             </h3>
-            <div className={styles.ordersContainer}>
-              <div style={{ flex: 1 }}>
-                {data?.swapPairs?.map((order: any) => (
-                  <div className={styles.order} key={order.key}>
-                    <div
-                      className={styles.orderIcon}
-                      style={{
-                        backgroundColor: "grey",
-                      }}
-                    />
-                    <p className={styles.orderText}>
-                      <span>{order.title}</span> -{" "}
-                      <span> {order.count} swaps</span> -{" "}
-                      <span className={styles.grey}>{order.amount} USD</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div
+            {data?.swapPairs?.length === 0 ? (
+              <p>No Report found</p>
+            ) : (
+              <Table
                 style={{
-                  width: "50%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  fontFamily: "PP Telegraf",
+                  border: "1px solid var(--Gray-200, #EAECF0)",
+                  borderRadius: 12,
+                  boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                  overflow: "hidden",
                 }}
-              >
-                <div style={{ width: 200, height: 200 }}>
-                  <CustomPieChart
-                    data={data?.percentages?.map((order: any) => ({
-                      value: order.percentage,
-                    }))}
-                  />
-                </div>
-                <div className={styles.pieIndicators}>
-                  {data?.percentages?.map((order: any) => (
-                    <div key={order.key} className={styles.pieIndicator}>
-                      <div
-                        style={{
-                          backgroundColor: "grey",
-                        }}
-                      />
-                      {order.percentage}%
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+                dataSource={data?.swapPairs}
+                columns={COLUMNS}
+                loading={loading}
+                pagination={false}
+              />
+            )}
+
             <div className={styles.divider} style={{ margin: "24px 0" }} />
             <div className={styles.totalHeader}>
               <p>Total Swap orders: {data?.count}</p>
-              <Link href="/swap/transactions">View orders</Link>
+              <Link
+                href={`/swap/reports/orders?status=${status}&from=${fromDate}&to=${toDate}`}
+              >
+                View orders
+              </Link>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );
