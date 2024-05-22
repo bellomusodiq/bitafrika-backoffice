@@ -154,7 +154,7 @@ export default function Transactions() {
       })
       .catch((e) => {
         setLoading(false);
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         } else {
@@ -186,7 +186,7 @@ export default function Transactions() {
       })
       .catch((e) => {
         setLoadingDetail(false);
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         } else {

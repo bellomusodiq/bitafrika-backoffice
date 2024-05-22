@@ -13,6 +13,7 @@ import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
+import Loader from "@/components/Loader";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -543,18 +544,25 @@ export default function Search() {
         setLoading(false);
         if (res.data.success) {
           setData(
-            res.data.data.map((item: any, i: number) => ({
-              ...item,
-              action: () => {
-                router.push(`/cards/details/${item.cardId}`);
-              },
-            }))
+            searchType === "CARDS"
+              ? res.data.data.data.map((item: any, i: number) => ({
+                  ...item,
+                  action: () => {
+                    router.push(`/cards/details/${item.cardId}`);
+                  },
+                }))
+              : res.data.data.transactions.map((item: any, i: number) => ({
+                  ...item,
+                  action: () => {
+                    router.push(`/cards/details/${item.cardId}`);
+                  },
+                }))
           );
           setPageInfo(res.data.pageInfo);
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -586,7 +594,7 @@ export default function Search() {
 
   const renderPlaceHolder = () => {
     switch (searchType) {
-      case "Cards":
+      case "CARDS":
         return "Last 4 digits of card";
       case "Requests":
         return "Username/ID";
@@ -594,7 +602,7 @@ export default function Search() {
         return "Reference ID/User";
       case "Top up":
         return "Reference ID/User";
-      case "Transactions":
+      case "TRANSACTIONS":
         return "Reference ID/User";
     }
   };
@@ -1001,8 +1009,8 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <p className={styles.searchHint}></p>
+        {loading ? (
+          <Loader />
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>

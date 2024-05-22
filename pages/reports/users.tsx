@@ -157,7 +157,7 @@ export default function Search() {
         setOpenModal(res.data);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -187,7 +187,7 @@ export default function Search() {
         setOpenModal(res.data);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -217,7 +217,7 @@ export default function Search() {
         setLoading(false);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -253,7 +253,7 @@ export default function Search() {
         setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -289,7 +289,7 @@ export default function Search() {
         setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -325,7 +325,7 @@ export default function Search() {
         setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }

@@ -706,7 +706,7 @@ const UserDetails: NextPage = () => {
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }

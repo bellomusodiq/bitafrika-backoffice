@@ -27,10 +27,7 @@ const VirtualCard: React.FC<any> = ({
     </div>
     <div className={styles.main}>
       <p className={styles.name}>{name}</p>
-      <p className={styles.cardNumber}>
-        {cardNumber?.slice(0, 4)} {cardNumber?.slice(4, 8)}{" "}
-        {cardNumber?.slice(8, 12)} {cardNumber?.slice(12)}
-      </p>
+      <p className={styles.cardNumber}>{cardNumber}</p>
     </div>
     <div className={styles.footer}>
       <div>

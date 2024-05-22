@@ -34,10 +34,25 @@ const TRANSACTIONS_COLUMNS = [
     ),
   },
   {
+    title: "Card",
+    dataIndex: "maskPan",
+    key: "maskPan",
+  },
+  {
     title: "Amount",
     dataIndex: "transactionAmount",
     key: "transactionAmount",
     render: (_: any, { transactionAmount }: any) => <>${transactionAmount}</>,
+  },
+  {
+    title: "Type",
+    dataIndex: "transactionType",
+    key: "transactionType",
+  },
+  {
+    title: "Description",
+    dataIndex: "description",
+    key: "description",
   },
   {
     title: "Status",
@@ -166,11 +181,11 @@ export default function Search() {
         setLoading(false);
         if (res.data.success) {
           setData(res.data.data.transactions);
-          setPageInfo(res.data.pageInfo);
+          setPageInfo(res.data.data.pageInfo);
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -236,8 +251,13 @@ export default function Search() {
                 </div>
                 <div className={styles.divider} />
                 <div className={styles.keyValue}>
-                  <p className={styles.key}>Conversion fees</p>
-                  <p className={styles.value}>11.2GHS / USD (missing)</p>
+                  <p className={styles.key}>Card</p>
+                  <p className={styles.value}>{currentUser?.maskPan}</p>
+                </div>
+                <div className={styles.divider} />
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>Transaction type</p>
+                  <p className={styles.value}>{currentUser?.transactionType}</p>
                 </div>
                 <div className={styles.divider} />
                 <div className={styles.keyValue}>
@@ -275,6 +295,13 @@ export default function Search() {
                 <div className={styles.keyValue}>
                   <p className={styles.key}>Transaction date</p>
                   <p className={styles.value}>{currentUser?.createdAt}</p>
+                </div>
+                <div className={styles.divider} />
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>Location</p>
+                  <p className={styles.value}>
+                    {currentUser?.merchantCity}, {currentUser?.merchantCountry}
+                  </p>
                 </div>
               </div>
               <div className={styles.modalFooter}>
@@ -315,6 +342,7 @@ export default function Search() {
                 }))}
                 columns={TRANSACTIONS_COLUMNS}
                 loading={loading}
+                pagination={false}
               />
               <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
             </div>

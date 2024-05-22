@@ -22,13 +22,12 @@ const TRANSACTIONS_COLUMNS = [
     dataIndex: "id",
     key: "id",
   },
-
   {
     title: "Merchant",
     dataIndex: "merchant",
     key: "merchant",
-    render: (_: any, { merchant }: any) => (
-      <p className={styles.username}>{merchant}</p>
+    render: (_: any, { merchantName }: any) => (
+      <p className={styles.username}>{merchantName}</p>
     ),
   },
   {
@@ -49,20 +48,20 @@ const TRANSACTIONS_COLUMNS = [
   },
   {
     title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <div
+    dataIndex: "transactionStatus",
+    key: "transactionStatus",
+    render: (_: any, { transactionStatus }: any) => (
+      <span
         style={{
-          padding: 4,
           borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
+          padding: "12px 16px",
+          backgroundColor:
+            transactionStatus === "Approved" ? "#EDFCF2" : "#FAFAFA",
+          color: transactionStatus === "Approved" ? "#087443" : "#424242",
         }}
       >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+        {transactionStatus}
+      </span>
     ),
   },
   {
@@ -108,7 +107,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -140,7 +139,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -173,7 +172,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -206,7 +205,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -237,7 +236,7 @@ export default function Search() {
         }
       })
       .catch((e) => {
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         }
@@ -378,7 +377,7 @@ export default function Search() {
             onChange={(e) => setAmount(e.target.value)}
           />
           <div className={styles.labelContainer}>
-            <p className={styles.label}>Enter otp cod (Telegram)</p>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
             <p className={styles.info}>Send OTP</p>
           </div>
           <Input placeholder="" />
@@ -461,13 +460,8 @@ export default function Search() {
               <div className={styles.divider} />
               <div className={styles.keyValue}>
                 <p className={styles.itemText}>Current balance</p>
-                <p className={styles.itemText}>${data?.cardDetails?.balance}</p>
-              </div>
-              <div className={styles.divider} />
-              <div className={styles.keyValue}>
-                <p className={styles.itemText}>Limit</p>
                 <p className={styles.itemText}>
-                  $2.00 / $2.00 (missing from backend)
+                  ${data?.cardDetails?.cardBalance}
                 </p>
               </div>
               <div className={styles.divider} />
