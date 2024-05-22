@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/search/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Table } from "antd";
+import { Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -867,7 +867,7 @@ export default function Search() {
           </div>
         </div>
         {loading ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>

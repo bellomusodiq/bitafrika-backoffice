@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/users/user-home.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+import { DatePicker, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -51,19 +51,9 @@ const USER_COLUMNS: any = [
     dataIndex: "kycStatus",
     key: "kycStatus",
     render: (_: any, { kycStatus }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: kycStatus ? "#EDFCF2" : "#FBEAE9",
-          color: kycStatus ? "#087443" : "#F04438",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>
-          {kycStatus ? "Verified" : "Not Verified"}
-        </span>
-      </div>
+      <Tag color={kycStatus ? "success" : "error"}>
+        {kycStatus ? "Verified" : "Not Verified"}
+      </Tag>
     ),
   },
   {

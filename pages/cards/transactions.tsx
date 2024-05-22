@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+import { DatePicker, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -59,17 +59,9 @@ const TRANSACTIONS_COLUMNS = [
     dataIndex: "transactionStatus",
     key: "transactionStatus",
     render: (_: any, { transactionStatus }: any) => (
-      <span
-        style={{
-          borderRadius: 16,
-          padding: "12px 16px",
-          backgroundColor:
-            transactionStatus === "Approved" ? "#EDFCF2" : "#FAFAFA",
-          color: transactionStatus === "Approved" ? "#087443" : "#424242",
-        }}
-      >
+      <Tag color={transactionStatus === "Approved" ? "#087443" : "#424242"}>
         {transactionStatus}
-      </span>
+      </Tag>
     ),
   },
   {

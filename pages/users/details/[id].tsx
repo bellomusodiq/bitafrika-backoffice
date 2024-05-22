@@ -4,7 +4,16 @@ import { NextPage } from "next";
 import PageLayout from "@/components/PageLayout";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Avatar, Divider, Table } from "antd";
+import {
+  Avatar,
+  Divider,
+  Table,
+  Tag,
+  Button as AntButton,
+  Modal as AntModal,
+  Input as AntInput,
+  message,
+} from "antd";
 import KeyValue from "@/components/KeyValue/KeyValue";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input/Input";
@@ -677,9 +686,12 @@ const CardsTable: React.FC = () => {
 
 const UserDetails: NextPage = () => {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [currentTab, setCurrentTab] = useState<string>("paymentAccounts");
   const [loading, setLoading] = useState<boolean>(false);
+  const [isSmsModalOpened, setIsSmsModalOpened] = useState<boolean>(false);
+  const [isBuyModalOpened, setIsBuyModalOpened] = useState<boolean>(false);
   const [user, setUser] = useState<any>({});
 
   let auth: any = {};
@@ -713,6 +725,30 @@ const UserDetails: NextPage = () => {
       });
   };
 
+  const sendSms = () => {
+    messageApi.success("SMS successfully sent");
+    setIsSmsModalOpened(false);
+  };
+
+  const cancelSendSms = () => {
+    messageApi.warning("SMS not sent because no message was provided");
+    setIsSmsModalOpened(false);
+  };
+
+  const disableAccount = () => {
+    messageApi.success("Account successfully disabled");
+  };
+
+  const updateBuyLimit = () => {
+    messageApi.success("Limit successfully updated");
+    setIsBuyModalOpened(false);
+  };
+
+  const cancelBuyLimit = () => {
+    messageApi.warning("Limit not updated because no amount was provided");
+    setIsBuyModalOpened(false);
+  };
+
   useEffect(() => {
     getUserDetail();
   }, [router.query]);
@@ -725,6 +761,29 @@ const UserDetails: NextPage = () => {
         </div>
       ) : (
         <>
+          {contextHolder}
+          <AntModal
+            title="Send SMS"
+            open={isSmsModalOpened}
+            onOk={sendSms}
+            onCancel={cancelSendSms}
+          >
+            <div style={{ paddingBottom: 20 }}>
+              <p>Enter the SMS content. Limit for 1 SMS is 160 characters.</p>
+              <AntInput.TextArea rows={4} maxLength={160} showCount />
+            </div>
+          </AntModal>
+          <AntModal
+            title="Update Buy Limits"
+            open={isBuyModalOpened}
+            onOk={updateBuyLimit}
+            onCancel={cancelBuyLimit}
+          >
+            <div style={{ paddingBottom: 20 }}>
+              <p>Enter USD amount to update Buy Limit.</p>
+              <AntInput type="number" />
+            </div>
+          </AntModal>
           <div className={styles.header}>
             <NavigationStep color="white" hideButton />
             <div className={styles.headerContainer}>
@@ -733,7 +792,9 @@ const UserDetails: NextPage = () => {
               </Button>
               <h1 className={styles.headerText}>User details</h1>
             </div>
+            <Divider style={{ marginTop: 16, marginBottom: 0 }} />
           </div>
+
           <div className={styles.profileHeader}>
             <Avatar shape="square" size={64} icon={<UserOutlined />} />
             <div className={styles.profileNameContainer}>
@@ -744,27 +805,35 @@ const UserDetails: NextPage = () => {
             </div>
             <div className={styles.profileActions}>
               <div style={{ marginLeft: 10 }}>
-                <Button
+                <AntButton
+                  size="large"
                   className={styles.profileActionBtnsDanger}
-                  color="white"
+                  danger
+                  onClick={disableAccount}
                 >
                   Disable Account
-                </Button>
+                </AntButton>
               </div>
               <div style={{ marginLeft: 10 }}>
-                <Button className={styles.profileActionBtns} color="white">
+                <Button
+                  className={styles.profileActionBtns}
+                  onClick={() => setIsSmsModalOpened(true)}
+                  color="white"
+                >
                   Send SMS
                 </Button>
               </div>
               <div style={{ marginLeft: 10 }}>
-                <Button className={styles.profileActionBtns}>
+                <Button
+                  onClick={() => setIsBuyModalOpened(true)}
+                  className={styles.profileActionBtns}
+                >
                   Update Buy Limits
                 </Button>
               </div>
             </div>
           </div>
           <div className={styles.container}>
-            <Divider />
             <div className={styles.profileDetailsContainer}>
               <div className={styles.profileDetails}>
                 <KeyValue
@@ -779,7 +848,7 @@ const UserDetails: NextPage = () => {
                     },
                     {
                       key: "Username:",
-                      value: `@${user?.user?.username}`,
+                      value: user?.user?.username,
                     },
                     {
                       key: "Email Address",
@@ -811,10 +880,15 @@ const UserDetails: NextPage = () => {
                     {
                       key: "KYC status:",
                       valueComponent: (
-                        <div className={styles.kycStatus}>
-                          <div className={styles.indicator} />
-                          <span>{user?.kycInfo?.status}</span>
-                        </div>
+                        <Tag
+                          color={
+                            user?.kycInfo?.status === "success"
+                              ? "success"
+                              : "error"
+                          }
+                        >
+                          {user?.kycInfo?.status}
+                        </Tag>
                       ),
                     },
                     {

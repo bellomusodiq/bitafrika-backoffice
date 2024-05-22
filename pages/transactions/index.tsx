@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/transactions/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+import { DatePicker, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -39,6 +39,84 @@ export default function Search() {
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
   const BUY_COLUMN = [
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <Link href={`/users/details/${username}`} className={styles.username}>
+          {username}
+        </Link>
+      ),
+    },
+    {
+      title: "Info",
+      dataIndex: "info",
+      key: "info",
+      render: (_: any, { uniqId }: any) => (
+        <p className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+          uniqId.length - 6
+        )}`}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Amount (GHS)",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "Amount (USD)",
+      dataIndex: "usd",
+      key: "usd",
+      render: (_: any, { usd }: any) => <>${usd}</>,
+    },
+    {
+      title: "Amount (CRYPTO)",
+      dataIndex: "crypto",
+      key: "crypto",
+      render: (_: any, { crypto, asset }: any) => (
+        <>
+          {crypto} {asset}
+        </>
+      ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+      render: (_: any, { date }: any) => (
+        <span style={{ fontSize: 12 }}>{date}</span>
+      ),
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any, index: number) => (
+        <div className={styles.actionButton}>
+          <div>
+            <Button loading={loadingIndex === index} onClick={action}>
+              View
+            </Button>
+          </div>
+        </div>
+      ),
+    },
+  ];
+  const BUY_COLUMN2 = [
     {
       title: "Username",
       dataIndex: "username",
@@ -90,9 +168,7 @@ export default function Search() {
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -233,9 +309,7 @@ export default function Search() {
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -302,9 +376,7 @@ export default function Search() {
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -667,54 +739,18 @@ export default function Search() {
         <div className={styles.modalContainer}>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>@{currentUser.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
             <p className={styles.value}>{currentUser.uniqId}</p>
-          </div>
-
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Asset:</p>
-            <p className={styles.value}>{currentUser.cryptoSymbol}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount (USD):</p>
-            <p className={styles.value}>${currentUser.usd}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount (GHS):</p>
-            <p className={styles.value}>
-              {currentUser.currency} {currentUser.amount}
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount ({currentUser.cryptoSymbol}):</p>
-            <p className={styles.value} style={{ color: "#16B364" }}>
-              {currentUser.amount} {currentUser.cryptoSymbol}
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Rate:</p>
-            <p className={styles.value}>
-              {currentUser.rate} {currentUser.currency} per Dollar
-            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
             <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> {currentUser.status}
-            </div>
+            <Tag
+              style={{ marginLeft: 4 }}
+              color={currentUser.status === "success" ? "success" : "error"}
+            >
+              {currentUser.status}
+            </Tag>
           </div>
 
           <div className={styles.divider} />
@@ -726,7 +762,7 @@ export default function Search() {
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction date:</p>
+            <p className={styles.key}>Completion time:</p>
             <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
@@ -750,13 +786,6 @@ export default function Search() {
         <div className={styles.modalContainer}>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>@{currentUser.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
             <p className={styles.key}>Transaction ID:</p>
             <p className={styles.value}>{currentUser.trxId}</p>
           </div>
@@ -766,16 +795,6 @@ export default function Search() {
             <div className={styles.statusContainer}>
               <div className={styles.statusIndicator} /> {currentUser.status}
             </div>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Asset amount:</p>
-            <p className={styles.value} style={{ color: "#F79009" }}>
-              -{currentUser.cryptoAmount} {currentUser.cryptoCurrency}{" "}
-              <span style={{ color: "#98A2B3" }}>
-                (${currentUser.usdAmount})
-              </span>
-            </p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
@@ -801,14 +820,10 @@ export default function Search() {
           <div className={styles.keyValue}>
             <p className={styles.key}>Payment account:</p>
             <p className={styles.value}>
-              {currentUser?.paymentAccount?.name} (
-              {currentUser?.paymentAccount?.phoneNumber})
+              <p>Account: {currentUser?.paymentAccount?.name}</p>
+              <p>Network: {currentUser?.paymentAccount?.networkName}</p>
+              <p>Phone number: {currentUser?.paymentAccount?.phoneNumber}</p>
             </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Order time:</p>
-            <p className={styles.value}>{currentUser.createdOn}</p>
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
