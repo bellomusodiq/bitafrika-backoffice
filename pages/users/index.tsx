@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/users/user-home.module.css";
-import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table, Tag } from "antd";
-import Modal from "@/components/Modal";
+import {  Table, Tag } from "antd";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
-
-const COUNTRY_MAP: { [k: string]: string } = {
-  GH: "Ghana",
-  CM: "Cameroon",
-  NG: "Nigeria",
-};
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { GetServerSideProps } from "next";
 
 const USER_COLUMNS: any = [
   {
@@ -69,75 +61,61 @@ const USER_COLUMNS: any = [
   },
 ];
 
-export default function Search() {
+export default function Search({ type }: { type: string }) {
   const router = useRouter();
-  const [search, setSearch] = useState<string>("");
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>(null);
-  const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("ALL");
+  const [searchType, setSearchType] = useState<string>(type || "ALL");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [payload, setPayload] = useState<string>(type || "");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getUsers = () => {
-    setLoading(true);
-    axios
-      .post(
+  const { isLoading, data: result } = useCustomQuery({
+    queryKey: ["userInfo", payload, currentPage],
+    enabled: payload.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
         `${BASE_URL}/users?page=${
           currentPage ? currentPage : pageInfo.currentPage
         }`,
-        { filter: searchType },
+        { filter: payload },
         {
           headers: {
             Authorization: auth.accessToken,
           },
         }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          const response = res.data.data.map((item: any) => ({
-            ...item,
-            name: `${item.firstName} ${item.lastName}`,
-            avatar: `${item.firstName?.[0]}${item.lastName?.[0]}`,
-            action: () => router.push(`/users/details/${item.username}`),
-          }));
-          setData(response);
-          setPageInfo(res.data.pageInfo);
-        }
-      })
-      .catch((e) => {
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+      );
+      return result;
+    },
+  });
+
+  const formatData = useMemo(() => {
+    const temp = result?.data?.data;
+    if (Array.isArray(temp)) {
+      const response = temp.map((item: any) => ({
+        ...item,
+        name: `${item.firstName} ${item.lastName}`,
+        avatar: `${item.firstName?.[0]}${item.lastName?.[0]}`,
+        action: () =>
+          router.push(`/users/details/${item.username}?type=${payload}`),
+      }));
+      return {
+        record: response,
+        pageInfo: result?.data?.pageInfo || {},
+      };
+    }
+  }, [result]);
 
   const onSearch = () => {
-    getUsers();
-  };
-
-  const showModal = (user: any) => {
-    setCurrentUser(user);
-    setOpenModal(true);
+    setPayload(searchType);
   };
 
   const getColumns = () => {
     return USER_COLUMNS;
   };
-
-  useEffect(() => {
-    if (pageInfo) {
-      getUsers();
-    }
-  }, [currentPage]);
 
   return (
     <PageLayout title="Hone">
@@ -158,7 +136,6 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData(null);
                   setPageInfo(null);
                   setCurrentPage(1);
                 }}
@@ -176,8 +153,8 @@ export default function Search() {
               <div>
                 <Button
                   onClick={onSearch}
-                  disabled={loading}
                   className={styles.searchButton}
+                  loading={isLoading}
                 >
                   Apply filter
                 </Button>
@@ -185,11 +162,13 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {loading ? (
+        {isLoading ? (
           <Loader />
-        ) : data ? (
+        ) : formatData ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {formatData.record.length} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -198,15 +177,27 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data}
+              dataSource={formatData.record}
               columns={getColumns()}
-              loading={loading}
+              loading={isLoading}
               pagination={false}
             />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            <Pagination
+              pageInfo={formatData.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
         ) : null}
       </div>
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const query = context.query;
+  return {
+    props: {
+      type: query?.type || null,
+    },
+  };
+};

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "@/pages/users/details/details.module.css";
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import PageLayout from "@/components/PageLayout";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
@@ -23,6 +23,7 @@ import { BASE_URL } from "@/CONFIG";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 import { UserOutlined } from "@ant-design/icons";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
 const PaymentAccountsTable: React.FC<any> = ({ data }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -684,7 +685,11 @@ const CardsTable: React.FC = () => {
   );
 };
 
-const UserDetails: NextPage = () => {
+interface IProps {
+  userId: string;
+  userType: string;
+}
+const UserDetails = ({ userId, userType }: IProps) => {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -698,6 +703,23 @@ const UserDetails: NextPage = () => {
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
+
+  const { isLoading, data: { data: result = {} } = {} } = useCustomQuery({
+    queryKey: ["userDetails", userId],
+    enabled: userId.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/users/${userId}`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
 
   const getUserDetail = () => {
     setLoading(true);
@@ -725,6 +747,9 @@ const UserDetails: NextPage = () => {
       });
   };
 
+  // useEffect(() => {
+  //   getUserDetail();
+  // }, [router.query]);
   const sendSms = () => {
     messageApi.success("SMS successfully sent");
     setIsSmsModalOpened(false);
@@ -755,7 +780,7 @@ const UserDetails: NextPage = () => {
 
   return (
     <PageLayout title="User Details">
-      {loading ? (
+      {isLoading ? (
         <div style={{ marginTop: 60 }}>
           <Loader />
         </div>
@@ -787,7 +812,11 @@ const UserDetails: NextPage = () => {
           <div className={styles.header}>
             <NavigationStep color="white" hideButton />
             <div className={styles.headerContainer}>
-              <Button color="white" isText onClick={() => router.back()}>
+              <Button
+                color="white"
+                isText
+                onClick={() => router.push(`/users?type=${userType}`)}
+              >
                 <img src="/icons/arrow-left.svg" />
               </Button>
               <h1 className={styles.headerText}>User details</h1>
@@ -799,9 +828,10 @@ const UserDetails: NextPage = () => {
             <Avatar shape="square" size={64} icon={<UserOutlined />} />
             <div className={styles.profileNameContainer}>
               <h3>
-                {user?.user?.firstName} {user?.user?.lastName}
+                {/* {user?.user?.firstName} {user?.user?.lastName} */}
+                {result?.data?.user.firstName} {result?.data.user.lastName}
               </h3>
-              <p>@{user?.user?.username}</p>
+              <p>@{result?.data.user.username}</p>
             </div>
             <div className={styles.profileActions}>
               <div style={{ marginLeft: 10 }}>
@@ -840,35 +870,35 @@ const UserDetails: NextPage = () => {
                   items={[
                     {
                       key: "First and Other Names:",
-                      value: user?.user?.firstName,
+                      value: result?.data.user?.firstName,
                     },
                     {
                       key: "Last Name:",
-                      value: user?.user?.lastName,
+                      value: result?.data.user?.lastName,
                     },
                     {
                       key: "Username:",
-                      value: user?.user?.username,
+                      value: result?.data.user?.username,
                     },
                     {
                       key: "Email Address",
-                      value: user?.user?.email,
+                      value: result?.data.user?.email,
                     },
                     {
                       key: "Phone Number:",
-                      value: `+${user?.user?.phone}`,
+                      value: `+${result?.data.user?.phone}`,
                     },
                     {
                       key: "State/Region:",
-                      value: user?.user?.stateRegion,
+                      value: result?.data.user?.stateRegion,
                     },
                     {
                       key: "Address:",
-                      value: user?.user?.homeAddress,
+                      value: result?.data.user?.homeAddress,
                     },
                     {
                       key: "Ghana Card No:",
-                      value: user?.user?.cardNo,
+                      value: result?.data.user?.cardNo,
                     },
                   ]}
                 />
@@ -882,22 +912,22 @@ const UserDetails: NextPage = () => {
                       valueComponent: (
                         <Tag
                           color={
-                            user?.kycInfo?.status === "success"
+                            result?.data?.kycInfo?.status === "success"
                               ? "success"
                               : "error"
                           }
                         >
-                          {user?.kycInfo?.status}
+                          {result?.data?.kycInfo?.status}
                         </Tag>
                       ),
                     },
                     {
                       key: "Sign Up Date:",
-                      value: user?.user?.signUpDate,
+                      value: result?.data.user?.signUpDate,
                     },
                     {
                       key: "Last Active:",
-                      value: user?.user?.lastActive,
+                      value: result?.data.user?.lastActive,
                     },
                     {
                       key: "Today's Limit",
@@ -922,7 +952,7 @@ const UserDetails: NextPage = () => {
                       color="white"
                       onClick={() =>
                         router.push(
-                          `/users/transactions/${user?.kycInfo?.username}?type=buy`
+                          `/users/transactions/${result?.data?.kycInfo?.username}?type=buy&userType=${userType}`
                         )
                       }
                     >
@@ -935,7 +965,7 @@ const UserDetails: NextPage = () => {
                       color="white"
                       onClick={() =>
                         router.push(
-                          `/users/transactions/${user?.kycInfo?.username}?type=sell`
+                          `/users/transactions/${result?.data?.kycInfo?.username}?type=sell&userType=${userType}`
                         )
                       }
                     >
@@ -948,7 +978,7 @@ const UserDetails: NextPage = () => {
                       color="white"
                       onClick={() =>
                         router.push(
-                          `/users/transactions/${user?.kycInfo?.username}?type=crypto`
+                          `/users/transactions/${result?.data?.kycInfo?.username}?type=crypto&userType=${userType}`
                         )
                       }
                     >
@@ -961,7 +991,7 @@ const UserDetails: NextPage = () => {
                       color="white"
                       onClick={() =>
                         router.push(
-                          `/users/transactions/${user?.kycInfo?.username}?type=swap`
+                          `/users/transactions/${result?.data?.kycInfo?.username}?type=swap&userType=${userType}`
                         )
                       }
                     >
@@ -1047,13 +1077,13 @@ const UserDetails: NextPage = () => {
               </button>
             </div>
             {currentTab === "accountBalance" && (
-              <AccountBalanceTable data={user?.cryptoAccountBalances} />
+              <AccountBalanceTable data={result?.data.cryptoAccountBalances} />
             )}
             {currentTab === "kycVerification" && (
-              <KYCVerificationTable data={[user.kycInfo]} />
+              <KYCVerificationTable data={[result?.data.kycInfo]} />
             )}
             {currentTab === "paymentAccounts" && (
-              <PaymentAccountsTable data={user?.paymentAccounts} />
+              <PaymentAccountsTable data={result?.data.paymentAccounts} />
             )}
             {currentTab === "cards" && <CardsTable />}
           </div>
@@ -1061,6 +1091,17 @@ const UserDetails: NextPage = () => {
       )}
     </PageLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id, type } = context.query;
+  // console.log({ others });
+  return {
+    props: {
+      userId: id,
+      userType: type,
+    },
+  };
 };
 
 export default UserDetails;
