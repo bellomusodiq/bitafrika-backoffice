@@ -11,6 +11,8 @@ import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
+import Loader from "@/components/Loader";
+import Pagination from "@/components/Pagination";
 
 const CARDS_COLUMNS = [
   {
@@ -28,8 +30,8 @@ const CARDS_COLUMNS = [
   },
   {
     title: "Exp. date",
-    dataIndex: "expDate",
-    key: "expDate",
+    dataIndex: "expiryDate",
+    key: "expiryDate",
   },
   {
     title: "Type",
@@ -38,13 +40,14 @@ const CARDS_COLUMNS = [
   },
   {
     title: "Account balance",
-    dataIndex: "accountBalance",
-    key: "accountBalance",
+    dataIndex: "balance",
+    key: "balance",
+    render: (_: any, { balance }: any) => <>${balance}</>,
   },
   {
     title: "Date created",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "createdAt",
+    key: "createdAt",
   },
   {
     title: "Status",
@@ -55,8 +58,8 @@ const CARDS_COLUMNS = [
         style={{
           borderRadius: 16,
           padding: "12px 16px",
-          backgroundColor: status === "Active" ? "#EDFCF2" : "#FAFAFA",
-          color: status === "Active" ? "#087443" : "#424242",
+          backgroundColor: status === "Card - Active" ? "#EDFCF2" : "#FAFAFA",
+          color: status === "Card - Active" ? "#087443" : "#424242",
         }}
       >
         {status}
@@ -76,66 +79,16 @@ const CARDS_COLUMNS = [
   },
 ];
 
-const CARDS_DATA = [
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-    accountBalance: "$10.20",
-    date: "12 may, 2024",
-    status: "Active",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-    accountBalance: "$10.20",
-    date: "12 may, 2024",
-    status: "Active",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-    accountBalance: "$10.20",
-    date: "12 may, 2024",
-    status: "Active",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-    accountBalance: "$10.20",
-    date: "12 may, 2024",
-    status: "Frozen",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-    accountBalance: "$10.20",
-    date: "12 may, 2024",
-    status: "Active",
-  },
-];
-
 export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("Buy");
-
-  const onSearch = () => {
-    setData(CARDS_DATA);
-  };
+  const [searchType, setSearchType] = useState<string>("Active");
+  const [pageInfo, setPageInfo] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const showModal = (user: any) => {
     setCurrentUser(user);
@@ -144,6 +97,53 @@ export default function Search() {
 
   const getColumns = () => {
     return CARDS_COLUMNS;
+  };
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const getCards = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/virtual-cards/cards`,
+        { page: currentPage },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        if (res.data.success) {
+          setData(
+            res.data.data.map((item: any, i: number) => ({
+              ...item,
+              action: () => router.push(`/cards/details/${item.cardId}`),
+            }))
+          );
+          setPageInfo(res.data.pageInfo);
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
+  };
+
+  const onSearch = () => {
+    switch (searchType) {
+      case "Active":
+        getCards();
+        break;
+      default:
+        setData(null);
+    }
   };
 
   return (
@@ -292,11 +292,13 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <></>
-        ) : (
+        {loading ? (
+          <Loader />
+        ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {pageInfo?.totalCount || 0} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -305,15 +307,14 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => router.push("/cards/details/1"),
-              }))}
+              dataSource={data}
               columns={getColumns()}
               loading={loading}
+              pagination={false}
             />
+            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );

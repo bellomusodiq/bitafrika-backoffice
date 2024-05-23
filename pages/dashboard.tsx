@@ -15,22 +15,29 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Loader from "@/components/Loader";
+import { Skeleton } from "antd";
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [dashboardStats, setDashboardStats] = useState<any>({});
+  const [coinStats, setCoinStats] = useState<any>({});
+  const [coinStatsLoading, setCoinStatsLoading] = useState<any>(false);
+  const [currencyStats, setCurrencyStats] = useState<any>({});
+  const [currencyStatsLoading, setCurrencyStatsLoading] = useState<any>(false);
+  const [userStats, setUserStats] = useState<any>({});
+  const [userstatsLoading, setUserStatsLoading] = useState<any>(false);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getDashboardStats = () => {
-    setLoading(true);
+  const getCoinStats = () => {
+    setCoinStatsLoading(true);
     axios
       .post(
-        `${BASE_URL}/overview/dashboard-stats`,
+        `${BASE_URL}/overview/crypto-stats`,
         {},
         {
           headers: {
@@ -39,9 +46,67 @@ export default function Home() {
         }
       )
       .then((res: any) => {
-        setLoading(false);
+        setCoinStatsLoading(false);
         if (res.data.success) {
-          setDashboardStats(res.data.data);
+          setCoinStats(res.data.data);
+        } else {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
+  };
+
+  const getCurrencyStats = () => {
+    setCurrencyStatsLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/overview/currency-stats`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setCurrencyStatsLoading(false);
+        if (res.data.success) {
+          setCurrencyStats(res.data.data);
+        } else {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      })
+      .catch((err) => {
+        if (err.response.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
+  };
+
+  const getUserStats = () => {
+    setUserStatsLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/overview/users-stats`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setUserStatsLoading(false);
+        if (res.data.success) {
+          setUserStats(res.data.data);
         } else {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -60,56 +125,63 @@ export default function Home() {
     if (!auth) {
       router.replace("/signin");
     }
-    getDashboardStats();
+    getCoinStats();
+    getUserStats();
+    getCurrencyStats();
   }, []);
 
-  const COIN_LISTING = dashboardStats.availableCryptoBalance
-    ? Object.keys(dashboardStats.availableCryptoBalance).map((key: string) => ({
-        ...dashboardStats.availableCryptoBalance[key],
+  const COIN_LISTING = coinStats
+    ? Object.keys(coinStats).map((key: string) => ({
+        ...coinStats[key],
       }))
     : [];
 
   return (
     <PageLayout title="Hone">
-      {loading ? (
-        <div style={{ marginTop: 60 }}>
-          <Loader />
-        </div>
-      ) : (
-        <>
-          <div className={styles.homeContainer}>
-            <h1 className={styles.header}>Dashboard Overview</h1>
-            <p className={styles.subHeader}>
-              Here&apos;s an overview of how BitAfrika is performing
-            </p>
-            <div className={styles.divider} />
-            <div className={styles.overviewContainer}>
-              <div className={styles.cardContainer}>
-                <p className={styles.cardTitle}>Total Users</p>
-                <p className={styles.cardValue}>
-                  {dashboardStats.userStats?.allUsers}
-                </p>
-              </div>
-              <div className={styles.cardContainer}>
-                <p className={styles.cardTitle}>Verified</p>
-                <p className={styles.cardValue}>
-                  {dashboardStats.userStats?.verifiedUsers}
-                </p>
-              </div>
-              <div className={styles.cardContainer}>
-                <p className={styles.cardTitle}>Unverified</p>
-                <p className={styles.cardValue}>
-                  {dashboardStats.userStats?.unverifiedUsers}
-                </p>
-              </div>
+      <>
+        <div className={styles.homeContainer}>
+          <h1 className={styles.header}>Dashboard Overview</h1>
+          <p className={styles.subHeader}>
+            Here&apos;s an overview of how BitAfrika is performing
+          </p>
+          <div className={styles.divider} />
+          <div className={styles.overviewContainer}>
+            <div className={styles.cardContainer}>
+              <p className={styles.cardTitle}>Total Users</p>
+              {userstatsLoading ? (
+                <Skeleton paragraph={{ rows: 0, width: "100%" }} active />
+              ) : (
+                <p className={styles.cardValue}>{userStats?.allUsers}</p>
+              )}
             </div>
-            <div className={styles.statsContainer}>
-              <CoinListing
-                title="Available Coin balances"
-                coins={COIN_LISTING}
-              />
-              <div className={styles.avaibleContainer}>
-                <StatsCard headerTitle="Transaction Stats">
+            <div className={styles.cardContainer}>
+              <p className={styles.cardTitle}>Verified</p>
+              {userstatsLoading ? (
+                <Skeleton paragraph={{ rows: 0, width: "100%" }} active />
+              ) : (
+                <p className={styles.cardValue}>{userStats?.verifiedUsers}</p>
+              )}
+            </div>
+            <div className={styles.cardContainer}>
+              <p className={styles.cardTitle}>Unverified</p>
+              {userstatsLoading ? (
+                <Skeleton paragraph={{ rows: 0, width: "100%" }} active />
+              ) : (
+                <p className={styles.cardValue}>{userStats?.unverifiedUsers}</p>
+              )}
+            </div>
+          </div>
+          <div className={styles.statsContainer}>
+            <CoinListing
+              title="Available Coin balances"
+              coins={COIN_LISTING}
+              loading={coinStatsLoading}
+            />
+            <div className={styles.avaibleContainer}>
+              <StatsCard headerTitle="Transaction Stats">
+                {currencyStatsLoading ? (
+                  <Skeleton active />
+                ) : (
                   <>
                     <div className={styles.statsCardContainer}>
                       <div style={{ width: 120, height: 120 }}>
@@ -117,13 +189,11 @@ export default function Home() {
                           data={[
                             {
                               value:
-                                dashboardStats?.currencyBuySell?.totalBuy
-                                  ?.todayTotal + 0.000001,
+                                currencyStats?.totalBuy?.todayTotal + 0.000001,
                             },
                             {
                               value:
-                                dashboardStats?.currencyBuySell?.totalBuy
-                                  ?.monthTotal + 0.000001,
+                                currencyStats?.totalBuy?.monthTotal + 0.000001,
                             },
                           ]}
                         />
@@ -133,10 +203,7 @@ export default function Home() {
                           Total Buy Today (GHS):
                         </p>
                         <p className={styles.statsTextBold}>
-                          {
-                            dashboardStats?.currencyBuySell?.totalBuy
-                              ?.todayTotal
-                          }
+                          {currencyStats?.totalBuy?.todayTotal}
                         </p>
                         <p
                           className={styles.statsTextGray}
@@ -145,10 +212,7 @@ export default function Home() {
                           Total Buy Month (GHS):
                         </p>
                         <p className={styles.statsTextNormal}>
-                          {
-                            dashboardStats?.currencyBuySell?.totalBuy
-                              ?.monthTotal
-                          }
+                          {currencyStats?.totalBuy?.monthTotal}
                         </p>
                       </div>
                     </div>
@@ -159,13 +223,11 @@ export default function Home() {
                           data={[
                             {
                               value:
-                                dashboardStats?.currencyBuySell?.totalBuy
-                                  ?.todayTotal + 0.000001,
+                                currencyStats?.totalBuy?.todayTotal + 0.000001,
                             },
                             {
                               value:
-                                dashboardStats?.currencyBuySell?.totalBuy
-                                  ?.monthTotal + 0.000001,
+                                currencyStats?.totalBuy?.monthTotal + 0.000001,
                             },
                           ]}
                         />
@@ -175,10 +237,7 @@ export default function Home() {
                           Total Sell Today (GHS):
                         </p>
                         <p className={styles.statsTextBold}>
-                          {
-                            dashboardStats?.currencyBuySell?.totalSell
-                              ?.todayTotal
-                          }
+                          {currencyStats?.totalSell?.todayTotal}
                         </p>
                         <p
                           className={styles.statsTextGray}
@@ -187,18 +246,16 @@ export default function Home() {
                           Total Sell Month (GHS):
                         </p>
                         <p className={styles.statsTextNormal}>
-                          {
-                            dashboardStats?.currencyBuySell?.totalSell
-                              ?.monthTotal
-                          }
+                          {currencyStats?.totalSell?.monthTotal}
                         </p>
                       </div>
                     </div>
                   </>
-                </StatsCard>
-              </div>
+                )}
+              </StatsCard>
             </div>
-            {/* 
+          </div>
+          {/* 
         <h3 className={styles.trendHeader}>Trends</h3>
         <div className={styles.infoContainer}>
         <img src="/icons/info-circle.svg" />
@@ -341,9 +398,8 @@ export default function Home() {
           <ServicesListing title="Service status" services={SERVICES_LISTING} />
         </div>
         */}
-          </div>
-        </>
-      )}
+        </div>
+      </>{" "}
     </PageLayout>
   );
 }

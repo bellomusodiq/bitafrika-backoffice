@@ -168,7 +168,6 @@
 }
 .keyValue {
   display: flex;
-  justify-content: space-between;
 }
 .key {
   font-style: normal;

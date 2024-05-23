@@ -131,7 +131,7 @@ export default function Search() {
       })
       .catch((e) => {
         setLoading(false);
-        if (e.response.status === 401) {
+        if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         } else {

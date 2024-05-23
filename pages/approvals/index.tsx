@@ -414,7 +414,7 @@ export default function Search() {
         </>
       </Modal>
       <div className={styles.container}>
-        <h3 className={styles.header}>Approvals</h3>
+        <h3 className={styles.header}>Authorizations</h3>
         <p className={styles.subHeader}></p>
         <Table
           style={{

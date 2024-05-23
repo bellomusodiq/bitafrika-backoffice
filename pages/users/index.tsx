@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/users/user-home.module.css";
 import Button from "@/components/Button";
-import { Table } from "antd";
+import {  Table, Tag } from "antd";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Dropdown from "@/components/Dropdown";
@@ -43,19 +43,9 @@ const USER_COLUMNS: any = [
     dataIndex: "kycStatus",
     key: "kycStatus",
     render: (_: any, { kycStatus }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: kycStatus ? "#EDFCF2" : "#FBEAE9",
-          color: kycStatus ? "#087443" : "#F04438",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>
-          {kycStatus ? "Verified" : "Not Verified"}
-        </span>
-      </div>
+      <Tag color={kycStatus ? "success" : "error"}>
+        {kycStatus ? "Verified" : "Not Verified"}
+      </Tag>
     ),
   },
   {

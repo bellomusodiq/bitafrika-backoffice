@@ -7,4 +7,5 @@ export interface CoinListingProps {
     count: number;
     usdAmount: number;
   }[];
+  loading: boolean;
 }
