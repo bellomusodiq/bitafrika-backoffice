@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/transactions/transactions.module.css";
 import { Button, Table } from "antd";
@@ -9,24 +9,27 @@ import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import Pagination from "@/components/Pagination";
 import { GetServerSideProps } from "next";
-import { toast } from "react-toastify";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
 interface IProps {
   type: string;
   username: string;
   url: string;
+  userType: string;
+  detailsUrl: string;
 }
 
-export default function UserTransactions({ type, username, url }: IProps) {
+export default function UserTransactions({
+  type,
+  username,
+  url,
+  userType,
+  detailsUrl,
+}: IProps) {
   const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [data, setData] = useState<any>(null);
-  const [currentUser, setCurrentUser] = useState<any>({});
-  const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
+  const [detailsId, setDetailsId] = useState<string | null>(null);
 
   const BUY_COLUMN = [
     {
@@ -95,21 +98,10 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      // render: (_: any, { action }: any) => (
-      //   <div className={styles.actionButton}>
-      //     <div>
-      //       <Button disabled={loadingDetail} onClick={action}>
-      //         View
-      //       </Button>
-      //     </div>
-      //   </div>
-      // ),
-      render: (_: any, { action }: any, index: number) => (
+      render: (_: any, { action }: any) => (
         <div className={styles.actionButton}>
           <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
+            <Button onClick={action}>View</Button>
           </div>
         </div>
       ),
@@ -180,21 +172,10 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      // render: (_: any, { action }: any) => (
-      //   <div className={styles.actionButton}>
-      //     <div>
-      //       <Button disabled={loadingDetail} onClick={action}>
-      //         View
-      //       </Button>
-      //     </div>
-      //   </div>
-      // ),
-      render: (_: any, { action }: any, index: number) => (
+      render: (_: any, { action }: any) => (
         <div className={styles.actionButton}>
           <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
+            <Button onClick={action}>View</Button>
           </div>
         </div>
       ),
@@ -249,21 +230,10 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      // render: (_: any, { action }: any) => (
-      //   <div className={styles.actionButton}>
-      //     <div>
-      //       <Button disabled={loadingDetail} onClick={action}>
-      //         View
-      //       </Button>
-      //     </div>
-      //   </div>
-      // ),
-      render: (_: any, { action }: any, index: number) => (
+      render: (_: any, { action }: any) => (
         <div className={styles.actionButton}>
           <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
+            <Button onClick={action}>View</Button>
           </div>
         </div>
       ),
@@ -343,21 +313,10 @@ export default function UserTransactions({ type, username, url }: IProps) {
     {
       title: "Actions",
       dataIndex: "action",
-      // render: (_: any, { action }: any) => (
-      //   <div className={styles.actionButton}>
-      //     <div>
-      //       <Button disabled={loadingDetail} onClick={action}>
-      //         View
-      //       </Button>
-      //     </div>
-      //   </div>
-      // ),
-      render: (_: any, { action }: any, index: number) => (
+      render: (_: any, { action }: any) => (
         <div className={styles.actionButton}>
           <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
+            <Button onClick={action}>View</Button>
           </div>
         </div>
       ),
@@ -369,313 +328,40 @@ export default function UserTransactions({ type, username, url }: IProps) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getTopupTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/momo-top-up/${id}?page=${currentPage}`,
-        {},
-        {
+  const { isLoading, data: { data: result = {} } = {} } = useCustomQuery({
+    queryKey: ["userTransactions", username, type, currentPage],
+    enabled: username.length > 0 && type.length > 0,
+    queryFn: async () => {
+      const payload = { username, page: currentPage };
+      return await axios.post(url, payload, {
+        headers: {
+          Authorization: auth.accessToken,
+        },
+      });
+    },
+  });
+
+  const { isLoading: isLoadingDetails, data: { data: details = {} } = {} } =
+    useCustomQuery({
+      queryKey: ["userTransactionsDetails", detailsId],
+      enabled: !!detailsId,
+      queryFn: async () => {
+        const temp = type.toUpperCase();
+        const id = detailsId || "";
+        let tempUrl = detailsUrl;
+        let payload = {};
+        if (temp === "SWAP") {
+          payload = { transactionId: id };
+        } else {
+          tempUrl = `${tempUrl}/${id}?page=${currentPage}`;
+        }
+        return await axios.post(tempUrl, payload, {
           headers: {
             Authorization: auth.accessToken,
           },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        setLoadingIndex(null);
-        if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        setLoadingDetail(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getTopupTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        url,
-        { username, page: currentPage },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(
-            res.data.data.map((item: any, i: number) => ({
-              ...item,
-              transactionId: item.uniqId,
-              email: item.email,
-              phoneNumber: item.phone,
-              country: item.countryCode,
-              total: `${item.currency} ${item.amount}`,
-              asset: item.cryptoSymbol,
-              action: () => {
-                getTopupTransactionsDetail(item.uniqId);
-                setLoadingIndex(i);
-              },
-            }))
-          );
-          setPageInfo(res.data.pageInfo);
-        }
-      })
-      .catch((e) => {
-        setLoading(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getWithdrawalTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/momo-withdrawal/${id}?page=${currentPage}`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        setLoadingIndex(null);
-        if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        setLoadingDetail(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getWithdrawalTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        url,
-        { username, page: currentPage },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        setData(
-          res.data.data.map((item: any, i: number) => ({
-            ...item,
-            transactionId: item.uniq,
-            email: item.email,
-            phoneNumber: item.phone,
-            amount: `$${item.usdAmount}`,
-            asset: item.cryptoCurrency,
-            total: `${item.rawAmount} ${item.localCurrency}`,
-            date: item.newDate,
-            action: () => {
-              getWithdrawalTransactionsDetail(item.uniq);
-              setLoadingIndex(i);
-            },
-          }))
-        );
-        setPageInfo(res.data.pageInfo);
-      })
-      .catch((e) => {
-        setLoading(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getReceivedTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/receive-crypto/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        setLoadingIndex(null);
-        if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        setLoadingDetail(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getReceivedTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        url,
-        { username, page: currentPage },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        setData(
-          res.data.data.map((item: any, i: number) => ({
-            ...item,
-            transactionId: item.uniqId,
-            email: item.email,
-            phoneNumber: item.phone,
-            amount: `$${item.cryptoValue}`,
-            total: `${item.cryptoPrice} ${item.cryptoPrice}`,
-            asset: item.currency,
-            action: () => {
-              getReceivedTransactionsDetail(item.txid);
-              setLoadingIndex(i);
-            },
-          }))
-        );
-        setPageInfo(res.data.pageInfo);
-      })
-      .catch((e) => {
-        setLoading(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getSwapTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/swap/view`,
-        { transactionId: id },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        setLoadingIndex(null);
-        if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        setLoadingDetail(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getSwapTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        url,
-        { username, page: currentPage },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        setData(
-          res.data.data.map((item: any, i: number) => ({
-            ...item,
-            action: () => {
-              getSwapTransactionsDetail(item.uniqId);
-              setLoadingIndex(i);
-            },
-          }))
-        );
-        setPageInfo(res.data.pageInfo);
-      })
-      .catch((e) => {
-        setLoading(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try againhvv gchh");
-        }
-      });
-  };
-
-  const onSearch = () => {
-    switch (type.toUpperCase()) {
-      case "BUY":
-        getTopupTransactions();
-        break;
-      case "SELL":
-        getWithdrawalTransactions();
-        break;
-      case "CRYPTO":
-        getReceivedTransactions();
-        break;
-      case "SWAP":
-        getSwapTransactions();
-        break;
-      default:
-        setData(null);
-    }
-  };
+        });
+      },
+    });
 
   const getColumns = () => {
     switch (type.toUpperCase()) {
@@ -690,9 +376,74 @@ export default function UserTransactions({ type, username, url }: IProps) {
     }
   };
 
-  useEffect(() => {
-    onSearch();
-  }, [currentPage]);
+  const formatResponse = (args: any) => {
+    switch (type.toUpperCase()) {
+      case "BUY":
+        return args.map((item: any, i: number) => ({
+          ...item,
+          transactionId: item.uniqId,
+          email: item.email,
+          phoneNumber: item.phone,
+          country: item.countryCode,
+          total: `${item.currency} ${item.amount}`,
+          asset: item.cryptoSymbol,
+          action: () => {
+            setDetailsId(item.uniqId);
+            setOpenModal(true);
+          },
+        }));
+      case "SELL":
+        return args.map((item: any, i: number) => ({
+          ...item,
+          transactionId: item.uniq,
+          email: item.email,
+          phoneNumber: item.phone,
+          amount: `$${item.usdAmount}`,
+          asset: item.cryptoCurrency,
+          total: `${item.rawAmount} ${item.localCurrency}`,
+          date: item.newDate,
+          action: () => {
+            setDetailsId(item.uniq);
+            setOpenModal(true);
+          },
+        }));
+      case "CRYPTO":
+        return args.map((item: any, i: number) => ({
+          ...item,
+          transactionId: item.uniqId,
+          email: item.email,
+          phoneNumber: item.phone,
+          amount: `$${item.cryptoValue}`,
+          total: `${item.cryptoPrice} ${item.cryptoPrice}`,
+          asset: item.currency,
+          action: () => {
+            setDetailsId(item.txid);
+            setOpenModal(true);
+          },
+        }));
+      case "SWAP":
+        return args.map((item: any, i: number) => ({
+          ...item,
+          action: () => {
+            setDetailsId(item.uniqId);
+            setOpenModal(true);
+          },
+        }));
+      default:
+        return null;
+    }
+  };
+
+  const formatData = useMemo(() => {
+    const temp = result?.data;
+    if (Array.isArray(temp)) {
+      const response = formatResponse(temp);
+      return {
+        record: response,
+        pageInfo: result?.pageInfo || {},
+      };
+    }
+  }, [result]);
 
   return (
     <PageLayout title="Home">
@@ -703,7 +454,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Buy (Momo Top-Up)</div>
-            <div className={styles.breadCrumb}>{currentUser.username}</div>
+            <div className={styles.breadCrumb}>{details?.data?.username}</div>
           </div>
         }
         headerLeft={
@@ -712,72 +463,81 @@ export default function UserTransactions({ type, username, url }: IProps) {
           </div>
         }
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>@{currentUser.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.uniqId}</p>
-          </div>
+        {isLoadingDetails ? (
+          <Loader />
+        ) : (
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User:{" "}
+                <span style={{ color: "black" }}>
+                  @{details?.data?.username}
+                </span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID:</p>
+              <p className={styles.value}>{details?.data?.uniqId}</p>
+            </div>
 
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Asset:</p>
-            <p className={styles.value}>{currentUser.cryptoSymbol}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount (USD):</p>
-            <p className={styles.value}>${currentUser.usd}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount (GHS):</p>
-            <p className={styles.value}>
-              {currentUser.currency} {currentUser.amount}
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount ({currentUser.cryptoSymbol}):</p>
-            <p className={styles.value} style={{ color: "#16B364" }}>
-              {currentUser.amount} {currentUser.cryptoSymbol}
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Rate:</p>
-            <p className={styles.value}>
-              {currentUser.rate} {currentUser.currency} per Dollar
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> {currentUser.status}
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Asset:</p>
+              <p className={styles.value}>{details?.data?.cryptoSymbol}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Amount (USD):</p>
+              <p className={styles.value}>${details?.data?.usd}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Amount (GHS):</p>
+              <p className={styles.value}>
+                {details?.data?.currency} {details?.data?.amount}
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                Amount ({details?.data?.cryptoSymbol}):
+              </p>
+              <p className={styles.value} style={{ color: "#16B364" }}>
+                {details?.data?.amount} {details?.data?.cryptoSymbol}
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Rate:</p>
+              <p className={styles.value}>
+                {details?.data?.rate} {details?.data?.currency} per Dollar
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Status:</p>
+              <div className={styles.statusContainer}>
+                <div className={styles.statusIndicator} />{" "}
+                {details?.data?.status}
+              </div>
+            </div>
+
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Payment account:</p>
+              <p className={styles.value}>
+                {details?.data?.name} ({details?.data?.phoneNumber})
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction date:</p>
+              <p className={styles.value}>{details?.data?.date}</p>
             </div>
           </div>
-
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Payment account:</p>
-            <p className={styles.value}>
-              {currentUser.name} ({currentUser.phoneNumber})
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction date:</p>
-            <p className={styles.value}>{currentUser.date}</p>
-          </div>
-        </div>
+        )}
       </Modal>
       <Modal
         openModal={openModal && type === "sell"}
@@ -786,7 +546,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
           <div className={styles.modalHeader}>
             <p>Transaction details</p>
             <div className={styles.breadCrumb}>Sell (Momo withdrawal)</div>
-            <div className={styles.breadCrumb}>{currentUser.username}</div>
+            <div className={styles.breadCrumb}>{details?.data?.username}</div>
           </div>
         }
         headerLeft={
@@ -795,75 +555,82 @@ export default function UserTransactions({ type, username, url }: IProps) {
           </div>
         }
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>@{currentUser.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.trxId}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> {currentUser.status}
+        {isLoadingDetails ? (
+          <Loader />
+        ) : (
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User:{" "}
+                <span style={{ color: "black" }}>
+                  @{details?.data?.username}
+                </span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID:</p>
+              <p className={styles.value}>{details?.data?.trxId}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Status:</p>
+              <div className={styles.statusContainer}>
+                <div className={styles.statusIndicator} />{" "}
+                {details?.data?.status}
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Asset amount:</p>
+              <p className={styles.value} style={{ color: "#F79009" }}>
+                -{details?.data?.cryptoAmount} {details?.data?.cryptoCurrency}{" "}
+                <span style={{ color: "#98A2B3" }}>
+                  (${details?.data?.usdAmount})
+                </span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Rate:</p>
+              <p className={styles.value}>
+                Sold @ {details?.data?.rate} (price at sell time: $
+                {details?.data?.cryptoPrice})
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Fee:</p>
+              <p className={styles.value}>{details?.data?.netFee}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Total paid:</p>
+              <p className={styles.value}>
+                {details?.data?.localCurrency} {details?.data?.rawAmount}
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Payment account:</p>
+              <p className={styles.value}>
+                {details?.data?.paymentAccount?.name} (
+                {details?.data?.paymentAccount?.phoneNumber})
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Order time:</p>
+              <p className={styles.value}>{details?.data?.createdOn}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Completion time:</p>
+              <p className={styles.value}>{details?.data?.dataSeven}</p>
             </div>
           </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Asset amount:</p>
-            <p className={styles.value} style={{ color: "#F79009" }}>
-              -{currentUser.cryptoAmount} {currentUser.cryptoCurrency}{" "}
-              <span style={{ color: "#98A2B3" }}>
-                (${currentUser.usdAmount})
-              </span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Rate:</p>
-            <p className={styles.value}>
-              Sold @ {currentUser.rate} (price at sell time: $
-              {currentUser.cryptoPrice})
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Fee:</p>
-            <p className={styles.value}>{currentUser.netFee}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Total paid:</p>
-            <p className={styles.value}>
-              {currentUser.localCurrency} {currentUser.rawAmount}
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Payment account:</p>
-            <p className={styles.value}>
-              {currentUser?.paymentAccount?.name} (
-              {currentUser?.paymentAccount?.phoneNumber})
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Order time:</p>
-            <p className={styles.value}>{currentUser.createdOn}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Completion time:</p>
-            <p className={styles.value}>{currentUser.dataSeven}</p>
-          </div>
-        </div>
+        )}
       </Modal>
       <Modal
         openModal={openModal && type === "crypto"}
@@ -881,59 +648,66 @@ export default function UserTransactions({ type, username, url }: IProps) {
           </div>
         }
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>@{currentUser.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser.txid}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> {currentUser.status}
+        {isLoadingDetails ? (
+          <Loader />
+        ) : (
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User:{" "}
+                <span style={{ color: "black" }}>
+                  @{details?.data?.username}
+                </span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID:</p>
+              <p className={styles.value}>{details?.data?.txid}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Status:</p>
+              <div className={styles.statusContainer}>
+                <div className={styles.statusIndicator} />{" "}
+                {details?.data?.status}
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Asset:</p>
+              <p className={styles.value}>{details?.data?.currency}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>receive from:</p>
+              <p className={styles.value}>{details?.data?.from}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Amount:</p>
+              <p className={styles.value} style={{ color: "#F79009" }}>
+                -{details?.data?.cryptoValue} {details?.data?.currency}
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>USD value:</p>
+              <p className={styles.value}>${details?.data?.usdAmount}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Confirmations:</p>
+              <p className={styles.value}>{details?.data?.confirmations}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction data:</p>
+              <p className={styles.value}>{details?.data?.date}</p>
             </div>
           </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Asset:</p>
-            <p className={styles.value}>{currentUser.currency}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>receive from:</p>
-            <p className={styles.value}>{currentUser.from}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Amount:</p>
-            <p className={styles.value} style={{ color: "#F79009" }}>
-              -{currentUser.cryptoValue} {currentUser.currency}
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>USD value:</p>
-            <p className={styles.value}>${currentUser.usdAmount}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Confirmations:</p>
-            <p className={styles.value}>{currentUser.confirmations}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction data:</p>
-            <p className={styles.value}>{currentUser.date}</p>
-          </div>
-        </div>
+        )}
       </Modal>
       <Modal
         openModal={openModal && type === "swap"}
@@ -950,49 +724,57 @@ export default function UserTransactions({ type, username, url }: IProps) {
           </div>
         }
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>{currentUser?.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentUser?.uniqId}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} /> {currentUser?.status}
+        {isLoadingDetails ? (
+          <Loader />
+        ) : (
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User:{" "}
+                <span style={{ color: "black" }}>
+                  {details?.data?.username}
+                </span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID:</p>
+              <p className={styles.value}>{details?.data?.uniqId}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Status:</p>
+              <div className={styles.statusContainer}>
+                <div className={styles.statusIndicator} />{" "}
+                {details?.data?.status}
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>From</p>
+              <p className={styles.value}>
+                {details?.data?.sourceAmount} {details?.data?.sourceCrypto} (
+                {details?.data?.sourceCryptoName})
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>To</p>
+              <p className={styles.value}>
+                {details?.data?.destinationAmount}{" "}
+                {details?.data?.destinationCrypto} (
+                {details?.data?.destinationCryptoName})
+              </p>
+            </div>
+
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Date</p>
+              <p className={styles.value}>{details?.data?.createdOn}</p>
             </div>
           </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>From</p>
-            <p className={styles.value}>
-              {currentUser?.sourceAmount} {currentUser?.sourceCrypto} (
-              {currentUser?.sourceCryptoName})
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>To</p>
-            <p className={styles.value}>
-              {currentUser?.destinationAmount} {currentUser?.destinationCrypto}{" "}
-              ({currentUser?.destinationCryptoName})
-            </p>
-          </div>
-
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Date</p>
-            <p className={styles.value}>{currentUser?.createdOn}</p>
-          </div>
-        </div>
+        )}
       </Modal>
       <div className={styles.container}>
         <div
@@ -1002,7 +784,12 @@ export default function UserTransactions({ type, username, url }: IProps) {
           }}
         >
           <div>
-            <Button type="text" onClick={router.back}>
+            <Button
+              type="text"
+              onClick={() =>
+                router.push(`/users/details/${username}?type=${userType}`)
+              }
+            >
               <img src="/icons/arrow-left.svg" />
             </Button>
           </div>
@@ -1016,11 +803,13 @@ export default function UserTransactions({ type, username, url }: IProps) {
           </p>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <Loader />
-        ) : data ? (
+        ) : formatData ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {formatData.record.length} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -1029,12 +818,15 @@ export default function UserTransactions({ type, username, url }: IProps) {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data}
+              dataSource={formatData?.record}
               columns={getColumns()}
-              loading={loading}
+              loading={isLoading}
               pagination={false}
             />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            <Pagination
+              pageInfo={formatData?.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
         ) : null}
       </div>
@@ -1043,7 +835,7 @@ export default function UserTransactions({ type, username, url }: IProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { type, username } = context.query;
+  const { type, username, userType } = context.query;
   const getUrl = () => {
     switch (type) {
       case "buy":
@@ -1058,12 +850,28 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         return "";
     }
   };
+  const getDetailsUrl = () => {
+    switch (type) {
+      case "buy":
+        return `${BASE_URL}/transactions/momo-top-up`;
+      case "sell":
+        return `${BASE_URL}/transactions/momo-withdrawal`;
+      case "crypto":
+        return `${BASE_URL}/transactions/receive-crypto`;
+      case "swap":
+        return `${BASE_URL}/swap/view`;
+      default:
+        return "";
+    }
+  };
 
   return {
     props: {
       type,
       username,
+      userType,
       url: getUrl(),
+      detailsUrl: getDetailsUrl(),
     },
   };
 };
