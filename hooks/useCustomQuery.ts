@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 
 interface IQuery {
   queryKey: QueryKey;
-  enabled: boolean;
+  enabled?: boolean;
   queryFn: QueryFunction;
 }
 
@@ -17,17 +17,19 @@ const useCustomQuery = (query: IQuery) => {
   } = useQuery({ refetchOnWindowFocus: false, retry: false, ...query });
 
   useEffect(() => {
-    if (error) {
+    const res = result as any;
+    if (res && !res?.data?.status) {
+      toast.error(res?.data.message);
+    } else if (error) {
       const msg = "Something went wrong, please try again";
       const err = error as any;
-
-      if (err?.status === 401) {
+      if (err?.response?.status === 401) {
         localStorage.removeItem("auth");
         router.replace("/", "/");
       } else if (!err?.response?.data?.success) {
         toast.error(err?.response?.data.message || msg);
       } else {
-        toast.error(err?.response.message || msg);
+        toast.error(err?.response?.message || msg);
       }
     }
   }, [result, error]);

@@ -1,31 +1,60 @@
 import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/swap/reports/reports.module.css";
-// import Button from "@/components/Button";
 import { Alert, Button, DatePicker, Table } from "antd";
 import Dropdown from "@/components/Dropdown";
-import CustomPieChart from "@/components/Charts/PieChart";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import Link from "next/link";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { GetServerSideProps } from "next";
+import dayjs from "dayjs";
 
-export default function Search() {
+interface IProps {
+  statusType: string;
+  from: string;
+  to: string;
+}
+
+export default function Search({ statusType, from, to }: IProps) {
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [status, setStatus] = useState<string>("all");
-  const [data, setData] = useState<Record<string, any>>({});
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
+  const [status, setStatus] = useState<string>(statusType || "all");
+  const [fromDate, setFromDate] = useState<string>(from || "");
+  const [toDate, setToDate] = useState<string>(to || "");
+  const [params, setParams] = useState<Record<string, string> | null>(
+    statusType && from && to
+      ? { status: statusType, fromDate: from, toDate: to }
+      : null
+  );
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+    queryKey: ["swapReport", params],
+    enabled: !!params,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/swap/report`,
+        {
+          status: params?.status,
+          from: params?.fromDate,
+          to: params?.toDate,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
   const getStatusCode = () => {
     switch (status) {
       case "success":
@@ -42,42 +71,12 @@ export default function Search() {
     }
   };
 
-  const getSwapReports = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/swap/report`,
-        {
-          status,
-          from: fromDate,
-          to: toDate,
-        },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(res.data.data);
-        } else {
-          toast.error(res.data.message);
-        }
-      })
-      .catch((e) => {
-        setLoading(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
   const onSearch = () => {
-    getSwapReports();
+    setParams({
+      status,
+      fromDate,
+      toDate,
+    });
   };
 
   const getRandomHexColor = () => {
@@ -123,6 +122,14 @@ export default function Search() {
     ];
   }, []);
 
+  const isActiveData = () => {
+    let isActive = true;
+    if (params?.status !== status) isActive = false;
+    if (params?.fromDate !== fromDate) isActive = false;
+    if (params?.toDate !== toDate) isActive = false;
+    return isActive;
+  };
+
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
@@ -133,7 +140,7 @@ export default function Search() {
           }}
         >
           <div>
-            <Button type="text" onClick={router.back}>
+            <Button type="text" onClick={() => router.push("/swap")}>
               <img src="/icons/arrow-left.svg" />
             </Button>
           </div>
@@ -154,17 +161,25 @@ export default function Search() {
                 ]}
                 onChange={(value) => {
                   setStatus(String(value));
-                  setData({});
                 }}
               />
             </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Date range</p>
               <DatePicker.RangePicker
+                format={"YYYY-MM-DD"}
                 onChange={(values: any) => {
                   setFromDate(formatDate(values[0].$d));
                   setToDate(formatDate(values[1].$d));
                 }}
+                defaultValue={
+                  fromDate && toDate
+                    ? [
+                        dayjs(fromDate, "YYYY-MM-DD"),
+                        dayjs(toDate, "YYYY-MM-DD"),
+                      ]
+                    : null
+                }
                 style={{ height: 48 }}
               />
             </div>
@@ -179,7 +194,7 @@ export default function Search() {
             >
               <div>
                 <Button
-                  disabled={loading}
+                  disabled={isLoading}
                   onClick={onSearch}
                   className={styles.searchButton}
                 >
@@ -189,9 +204,9 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {loading ? (
+        {isLoading ? (
           <Loader />
-        ) : Object.keys(data).length > 0 ? (
+        ) : result && Object.keys(result?.data).length > 0 && isActiveData() ? (
           <div className={styles.bodyContainer}>
             <h3 className={styles.header}>Swap transactions report</h3>
             <p className={styles.date}>
@@ -219,7 +234,7 @@ export default function Search() {
             <h3 style={{ marginTop: 14 }} className={styles.header}>
               Most swapped pairs
             </h3>
-            {data?.swapPairs?.length === 0 ? (
+            {result?.data?.swapPairs?.length === 0 ? (
               <p>No Report found</p>
             ) : (
               <Table
@@ -230,16 +245,16 @@ export default function Search() {
                   boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                   overflow: "hidden",
                 }}
-                dataSource={data?.swapPairs}
+                dataSource={result?.data?.swapPairs}
                 columns={COLUMNS}
-                loading={loading}
+                loading={isLoading}
                 pagination={false}
               />
             )}
 
             <div className={styles.divider} style={{ margin: "24px 0" }} />
             <div className={styles.totalHeader}>
-              <p>Total Swap orders: {data?.count}</p>
+              <p>Total Swap orders: {result?.data?.count}</p>
               <Link
                 href={`/swap/reports/orders?status=${status}&from=${fromDate}&to=${toDate}`}
               >
@@ -252,3 +267,14 @@ export default function Search() {
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { status, from, to } = context.query;
+  return {
+    props: {
+      statusType: status || null,
+      from: from || null,
+      to: to || null,
+    },
+  };
+};
