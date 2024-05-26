@@ -1,11 +1,42 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styles from "@/pages/giftcards/cards.module.css";
 import { NextPage } from "next";
 import PageLayout from "@/components/PageLayout";
 import { useRouter } from "next/router";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import axios from "axios";
+import { BASE_URL } from "@/CONFIG";
+import { Skeleton } from "antd";
 
 const Cards: NextPage = () => {
   const router = useRouter();
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const { isLoading, data: result } = useCustomQuery({
+    queryKey: [],
+    enabled: true,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/gift-cards/overview`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
+  const overview = useMemo(() => {
+    return result?.data?.data;
+  }, [result]);
+
   return (
     <PageLayout>
       <div className={styles.container}>
@@ -17,15 +48,19 @@ const Cards: NextPage = () => {
         <div className={styles.cardsContainer}>
           <div className={styles.card}>
             <p className={styles.cardHeader}>Total Orders (USD)</p>
-            <p className={styles.cardText}>$100,470.90</p>
+            {isLoading ? (
+              <Skeleton active paragraph={{ rows: 0 }} />
+            ) : (
+              <p className={styles.cardText}>${overview?.totalOrdersUsd}</p>
+            )}
           </div>
           <div className={styles.card}>
             <p className={styles.cardHeader}>Number of Orders</p>
-            <p className={styles.cardText}>18900</p>
+            <p className={styles.cardText}>{overview?.ordersCount}</p>
           </div>
           <div className={styles.card}>
             <p className={styles.cardHeader}>Total Giftcards</p>
-            <p className={styles.cardText}>901</p>
+            <p className={styles.cardText}>{overview?.totalGiftCards}</p>
           </div>
         </div>
         <div className={styles.bodyContainer}>
@@ -80,7 +115,7 @@ const Cards: NextPage = () => {
               <p className={styles.cardHeader}>
                 Platform Balance (Balance with provider)
               </p>
-              <p className={styles.cardText}>$20,000.00</p>
+              <p className={styles.cardText}>${overview?.totalOrdersUsd}</p>
             </div>
           </div>
         </div>

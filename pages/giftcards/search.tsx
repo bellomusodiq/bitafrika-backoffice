@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Table } from "antd";
+import { Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import Link from "next/link";
+import Pagination from "@/components/Pagination";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -20,13 +23,13 @@ const COUNTRY_MAP: { [k: string]: string } = {
 
 const GIFTCRARDS_COLUMNS = [
   {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
+    title: "TRANSACTIONS",
+    dataIndex: "transId",
+    key: "transId",
+    render: (_: any, { transId }: any) => (
       <>
-        {transactionId.slice(0, 6)}...
-        {transactionId.slice(transactionId.length - 6)}
+        {transId.slice(0, 6)}...
+        {transId.slice(transId.length - 6)}
       </>
     ),
   },
@@ -35,7 +38,9 @@ const GIFTCRARDS_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
+      <Link href={`users/detail/${username}`} className={styles.username}>
+        {username}
+      </Link>
     ),
   },
   {
@@ -54,22 +59,13 @@ const GIFTCRARDS_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div
-        style={{
-          borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+      <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
     ),
   },
   {
     title: "Date",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "createdAt",
+    key: "createdAt",
   },
   {
     title: "Actions",
@@ -84,81 +80,79 @@ const GIFTCRARDS_COLUMNS = [
   },
 ];
 
-const GIFTCRARDS_DATA = [
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
-
-export default function Search() {
+export default function Search({ type }: { type: string }) {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
-  const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("Transaction ID");
+  const [currentGiftcard, setCurrentGiftcard] = useState<any>({});
+  const [searchType, setSearchType] = useState<string>(type || "transactions");
+  const [pageInfo, setPageInfo] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [payload, setPayload] = useState<string>(type || "");
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const { isLoading, data: result } = useCustomQuery({
+    queryKey: ["userInfo", payload, currentPage],
+    enabled: payload.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/gift-cards/search`,
+        {
+          filter: payload,
+          query: search,
+          page: currentPage ? currentPage : pageInfo.currentPage,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
+  const formatData = useMemo(() => {
+    const temp = result?.data?.data?.transactions;
+    if (Array.isArray(temp)) {
+      const response = temp.map((item: any) => ({
+        ...item,
+        action: () => showModal(item),
+      }));
+      return {
+        record: response,
+        pageInfo: result?.data?.data?.pageInfo || {},
+      };
+    }
+  }, [result]);
+
+  console.log("formatData", formatData);
 
   const onSearch = () => {
-    switch (searchType) {
-      case "Transaction ID":
-        setData(GIFTCRARDS_DATA);
-        break;
-    }
+    setPayload(searchType);
   };
 
   const showModal = (user: any) => {
-    setCurrentUser(user);
+    setCurrentGiftcard(user);
     setOpenModal(true);
   };
 
   const getColumns = () => {
     switch (searchType) {
-      case "Transaction ID":
+      case "TRANSACTIONS":
         return GIFTCRARDS_COLUMNS;
     }
   };
 
   const renderPlaceHolder = () => {
     switch (searchType) {
-      case "Transaction ID":
+      case "TRANSACTIONS":
         return "Enter giftcard transaction ID";
     }
   };
@@ -166,7 +160,7 @@ export default function Search() {
   return (
     <PageLayout title="Hone">
       <Modal
-        openModal={openModal && searchType === "Transaction ID"}
+        openModal={openModal && searchType === "TRANSACTIONS"}
         onClose={() => setOpenModal(false)}
         headerCenter={
           <div className={styles.modalHeader}>
@@ -180,55 +174,56 @@ export default function Search() {
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                User: <span style={{ color: "black" }}>@Samuel12345</span>
+                User:{" "}
+                <span style={{ color: "black" }}>
+                  @{currentGiftcard?.username}
+                </span>
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction ID</p>
-              <p className={styles.value}>1234Y456342342342354</p>
+              <p className={styles.value}>{currentGiftcard?.transId}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction Status</p>
               <div className={styles.value}>
-                <div
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: 16,
-                    backgroundColor: "#EDFCF2",
-                    color: "#087443",
-                    textAlign: "center",
-                  }}
+                <Tag
+                  color={
+                    currentGiftcard?.status === "success" ? "success" : "error"
+                  }
                 >
-                  <span style={{ fontSize: 12 }}>Approved</span>
-                </div>
+                  {currentGiftcard?.status}
+                </Tag>
               </div>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Card type</p>
-              <p className={styles.value}>Googlepay ($100.00)</p>
+              <p className={styles.value}>
+                missing ({currentGiftcard?.amount})
+              </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Amount paid</p>
-              <p className={styles.value}>100 USDT</p>
+              <p className={styles.value}>missing</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Recipient email</p>
-              <p className={styles.value}>email@username.com</p>
+              <p className={styles.value}>{currentGiftcard?.recipient}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Note</p>
-              <p className={styles.value}>Note goes here</p>
+              <p className={styles.value}>{currentGiftcard?.note}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction date</p>
-              <p className={styles.value}>Monday 23 Jan, 2023 07:52 AM</p>
+              <p className={styles.value}>{currentGiftcard?.createdAt}</p>
             </div>
           </div>
         </>
@@ -253,7 +248,11 @@ export default function Search() {
             <div className={styles.dropdownContainer}>
               <Dropdown
                 value={searchType}
-                options={[{ title: "Transaction ID", value: "Transaction ID" }]}
+                options={[
+                  { title: "Transaction ID", value: "transactions" },
+                  { title: "Card type", value: "card_type" },
+                  { title: "Username", value: "username" },
+                ]}
                 onChange={(value) => {
                   setSearchType(String(value));
                   setData([]);
@@ -276,11 +275,13 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <p className={styles.searchHint}></p>
-        ) : (
+        {isLoading ? (
+          <Skeleton active />
+        ) : formatData ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {formatData.pageInfo?.totalCount} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -289,15 +290,17 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data.map((user: any) => ({
-                ...user,
-                action: () => showModal(user),
-              }))}
-              columns={getColumns()}
+              dataSource={formatData?.record}
+              columns={GIFTCRARDS_COLUMNS}
               loading={loading}
+              pagination={false}
+            />
+            <Pagination
+              pageInfo={formatData?.pageInfo}
+              setCurrentPage={setCurrentPage}
             />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );
