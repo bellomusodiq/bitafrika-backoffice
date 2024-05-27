@@ -62,8 +62,8 @@ export default function Search() {
     },
     {
       title: "Card type",
-      dataIndex: "type",
-      key: "type",
+      dataIndex: "cardType",
+      key: "cardType",
     },
     {
       title: "Amount",
@@ -244,13 +244,13 @@ export default function Search() {
             <div className={styles.keyValue}>
               <p className={styles.key}>Card type</p>
               <p className={styles.value}>
-                missing ({currentGiftcard?.amount})
+                {currentGiftcard?.cardType} (${currentGiftcard?.amount})
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Amount paid</p>
-              <p className={styles.value}>missing</p>
+              <p className={styles.value}>{currentGiftcard?.amount} USDT</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>

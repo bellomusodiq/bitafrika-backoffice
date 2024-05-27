@@ -27,7 +27,10 @@ const USER_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <Link className={styles.username} href={`/users/details/${username}`}>
+      <Link
+        className={styles.username}
+        href={`/users/details/${username}?type=`}
+      >
         {username}
       </Link>
     ),
@@ -351,7 +354,7 @@ export default function Search() {
             res.data?.data?.map((user: any) => ({
               ...user,
               action: () => {
-                router.push(`/users/details/${user.username}`);
+                router.push(`/users/details/${user.username}?type=`);
               },
             }))
           );

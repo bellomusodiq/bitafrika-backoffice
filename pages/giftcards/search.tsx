@@ -45,8 +45,8 @@ const GIFTCRARDS_COLUMNS = [
   },
   {
     title: "Card type",
-    dataIndex: "type",
-    key: "type",
+    dataIndex: "cardType",
+    key: "cardType",
   },
   {
     title: "Amount",
