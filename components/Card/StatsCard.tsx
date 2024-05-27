@@ -7,6 +7,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
   headerTitle,
   children,
   showRefresh,
+  refresh,
 }) => (
   <div className={styles.statsContainer}>
     {headerTitle && (
@@ -14,7 +15,9 @@ const StatsCard: React.FC<StatsCardProps> = ({
         <h3 className={styles.title}>{headerTitle}</h3>
         {showRefresh && (
           <div>
-            <Button color="white">Refresh</Button>
+            <Button color="white" onClick={refresh}>
+              Refresh
+            </Button>
           </div>
         )}
       </div>

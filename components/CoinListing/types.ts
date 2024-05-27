@@ -8,4 +8,5 @@ export interface CoinListingProps {
     usdAmount: number;
   }[];
   loading: boolean;
+  refresh?: () => void;
 }
