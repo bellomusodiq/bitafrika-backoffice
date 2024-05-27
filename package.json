@@ -20,6 +20,7 @@
     "@types/react-redux": "^7.1.33",
     "antd": "^5.5.2",
     "axios": "^1.4.0",
+    "dayjs": "^1.11.11",
     "eslint": "8.35.0",
     "eslint-config-next": "13.2.1",
     "next": "13.2.1",

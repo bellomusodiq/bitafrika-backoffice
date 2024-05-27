@@ -1,34 +1,70 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
 import { Button, DatePicker, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import { toast } from "react-toastify";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
 export default function Transactions() {
   const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<Record<string, string>[] | null>(null);
-  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
   const [statusType, setStatusType] = useState<string>("success");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
-  const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [currentDetails, setCurrentDetails] = useState<any>({});
+  const [detailsId, setDetailsId] = useState<string>("");
+  const [params, setParams] = useState<Record<string, string> | null>(null);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+    queryKey: ["swapReport", params, currentPage],
+    enabled: !!params,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/swap/filter`,
+        {
+          status: params?.status,
+          from: params?.fromDate,
+          to: params?.toDate,
+          page: currentPage,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
+  const { isLoading: isLoadingDetails, data: { data: details } = {} } =
+    useCustomQuery({
+      queryKey: ["swapTransactionsDetails", detailsId],
+      enabled: detailsId.length > 0,
+      queryFn: async () => {
+        const result = await axios.post(
+          `${BASE_URL}/swap/view`,
+          { transactionId: detailsId },
+          {
+            headers: {
+              Authorization: auth.accessToken,
+            },
+          }
+        );
+        return result;
+      },
+    });
 
   const REQUESTS_COLUMNS = useMemo(() => {
     return [
@@ -108,9 +144,7 @@ export default function Transactions() {
         render: (_: any, { action }: any) => (
           <div className={styles.actionButton}>
             <div>
-              <Button disabled={loadingDetail} onClick={action}>
-                View
-              </Button>
+              <Button onClick={action}>View</Button>
             </div>
           </div>
         ),
@@ -118,92 +152,21 @@ export default function Transactions() {
     ];
   }, []);
 
-  const getSwapTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/swap/filter`,
-        {
-          status: statusType,
-          from: fromDate,
-          to: toDate,
-          page: currentPage,
-        },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(
-            res.data.data.map((item: any) => ({
-              ...item,
-              action: () => {
-                getSwapTransactionsDetail(item.uniqId);
-              },
-            }))
-          );
-          setPageInfo(res.data.pageInfo);
-        } else {
-          const message = res.data.message;
-          toast.error(message);
-        }
-      })
-      .catch((e) => {
-        setLoading(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
-  const getSwapTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/swap/view`,
-        { transactionId: id },
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        if (res.data.success) {
-          setCurrentDetails(res.data.data);
-          setOpenModal(true);
-        } else {
-          toast.error(res.data.message);
-        }
-      })
-      .catch((e) => {
-        setLoadingDetail(false);
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error("Something went wrong, please try again");
-        }
-      });
-  };
-
   const onSearch = () => {
-    getSwapTransactions();
+    setParams({
+      status: statusType,
+      fromDate,
+      toDate,
+    });
   };
 
-  useEffect(() => {
-    if (pageInfo) {
-      onSearch();
-    }
-  }, [currentPage]);
+  const isActiveData = () => {
+    let isActive = true;
+    if (params?.status !== statusType) isActive = false;
+    if (params?.fromDate !== fromDate) isActive = false;
+    if (params?.toDate !== toDate) isActive = false;
+    return isActive;
+  };
 
   return (
     <PageLayout title="Hone">
@@ -222,51 +185,57 @@ export default function Transactions() {
           </div>
         }
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>
-              User:{" "}
-              <span style={{ color: "black" }}>{currentDetails?.username}</span>
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction ID:</p>
-            <p className={styles.value}>{currentDetails?.uniqId}</p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Status:</p>
-            <div className={styles.statusContainer}>
-              <div className={styles.statusIndicator} />{" "}
-              {currentDetails?.status}
+        {isLoadingDetails ? (
+          <Loader />
+        ) : (
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User:{" "}
+                <span style={{ color: "black" }}>
+                  {details?.data?.username}
+                </span>
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID:</p>
+              <p className={styles.value}>{details?.data?.uniqId}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Status:</p>
+              <div className={styles.statusContainer}>
+                <div className={styles.statusIndicator} />{" "}
+                {details?.data?.status}
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>From</p>
+              <p className={styles.value}>
+                {details?.data?.sourceAmount} {details?.data?.sourceCrypto} (
+                {details?.data?.sourceCryptoName})
+              </p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>To</p>
+              <p className={styles.value}>
+                {details?.data?.destinationAmount}{" "}
+                {details?.data?.destinationCrypto} (
+                {details?.data?.destinationCryptoName})
+              </p>
+            </div>
+
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction Date</p>
+              <p className={styles.value}>{details?.data?.createdOn}</p>
             </div>
           </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>From</p>
-            <p className={styles.value}>
-              {currentDetails?.sourceAmount} {currentDetails?.sourceCrypto} (
-              {currentDetails?.sourceCryptoName})
-            </p>
-          </div>
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>To</p>
-            <p className={styles.value}>
-              {currentDetails?.destinationAmount}{" "}
-              {currentDetails?.destinationCrypto} (
-              {currentDetails?.destinationCryptoName})
-            </p>
-          </div>
-
-          <div className={styles.divider} />
-          <div className={styles.keyValue}>
-            <p className={styles.key}>Transaction Date</p>
-            <p className={styles.value}>{currentDetails?.createdOn}</p>
-          </div>
-        </div>
+        )}
       </Modal>
       <div className={styles.container}>
         {/* <div
@@ -311,8 +280,6 @@ export default function Transactions() {
                 ]}
                 onChange={(value) => {
                   setStatusType(String(value));
-                  setData([]);
-                  setPageInfo(null);
                   setCurrentPage(1);
                 }}
               />
@@ -338,7 +305,7 @@ export default function Transactions() {
             >
               <div>
                 <Button
-                  disabled={loading}
+                  disabled={isLoading}
                   onClick={onSearch}
                   className={styles.searchButton}
                 >
@@ -349,11 +316,13 @@ export default function Transactions() {
           </div>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <Loader />
-        ) : data ? (
+        ) : result && isActiveData() ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {result?.data.length} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -362,12 +331,21 @@ export default function Transactions() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data}
+              dataSource={result?.data.map((item: any) => ({
+                ...item,
+                action: () => {
+                  setDetailsId(item.uniqId);
+                  setOpenModal(true);
+                },
+              }))}
               columns={REQUESTS_COLUMNS}
-              loading={loading}
+              loading={isLoading}
               pagination={false}
             />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            <Pagination
+              pageInfo={result?.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
         ) : null}
       </div>

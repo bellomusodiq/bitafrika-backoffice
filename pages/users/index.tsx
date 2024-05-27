@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/users/user-home.module.css";
 import Button from "@/components/Button";
-import {  Table, Tag } from "antd";
+import { Table, Tag } from "antd";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Dropdown from "@/components/Dropdown";
@@ -164,7 +164,7 @@ export default function Search({ type }: { type: string }) {
         </div>
         {isLoading ? (
           <Loader />
-        ) : formatData ? (
+        ) : formatData && payload === searchType ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
               {formatData.record.length} result found!
