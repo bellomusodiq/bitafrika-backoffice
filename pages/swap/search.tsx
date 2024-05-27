@@ -1,18 +1,13 @@
-import React, { useCallback, useState } from "react";
-
+import React, { useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/swap/search.module.css";
-import NavigationStep from "@/components/NavigationStep";
-// import Button from "@/components/Button";
 import { Button } from "antd";
 import { Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import getToken from "@/utils/getToken";
-import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
 const REQUESTS_COLUMNS = [
   {
@@ -101,52 +96,35 @@ export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
   const [currentDetails, setCurrentDetails] = useState<any>({});
+  const [params, setParams] = useState<string>("");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getSwapDetails = () => {
-    const msg = "Something went wrong, please try again";
-    setLoading(true);
-    axios
-      .post(
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+    queryKey: ["swapSearch", params],
+    enabled: params.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
         `${BASE_URL}/swap/search`,
         {
-          query: search,
+          query: params,
         },
         {
           headers: {
             Authorization: auth.accessToken,
           },
         }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(res.data.data);
-        } else {
-          const message = res.data.message || msg;
-          toast.error(message);
-        }
-      })
-      .catch((err) => {
-        setLoading(false);
-        if (err.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        } else {
-          toast.error(msg);
-        }
-      });
-  };
+      );
+      return result;
+    },
+  });
 
   const onSearch = () => {
-    getSwapDetails();
+    setParams(search);
   };
 
   const showModal = (temp: Record<string, string>) => {
@@ -242,7 +220,7 @@ export default function Search() {
             </div>
             <div>
               <Button
-                loading={loading}
+                loading={isLoading}
                 onClick={onSearch}
                 className={styles.searchButton}
               >
@@ -251,11 +229,11 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {data.length === 0 ? (
-          <p className={styles.searchHint}></p>
-        ) : (
+        {result && search === params ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {result?.data.length} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -264,14 +242,16 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data.map((record: any) => ({
+              dataSource={result?.data.map((record: any) => ({
                 ...record,
                 action: () => showModal(record),
               }))}
               columns={REQUESTS_COLUMNS}
-              loading={loading}
+              loading={isLoading}
             />
           </div>
+        ) : (
+          <p className={styles.searchHint}></p>
         )}
       </div>
     </PageLayout>
