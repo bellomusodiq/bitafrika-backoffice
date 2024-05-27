@@ -687,7 +687,7 @@ const CardsTable: React.FC = () => {
 
 interface IProps {
   userId: string;
-  userType: string;
+  userType?: string;
 }
 const UserDetails = ({ userId, userType }: IProps) => {
   const router = useRouter();

@@ -162,6 +162,7 @@ export default function Search() {
               },
             }))
           );
+          setPageInfo(res.data.data.pageInfo);
         } else {
           messageApi.error(res.data.message);
         }
@@ -340,7 +341,9 @@ export default function Search() {
           <Skeleton active />
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {pageInfo?.totalCount} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",

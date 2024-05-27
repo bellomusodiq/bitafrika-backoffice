@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+import { DatePicker, Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -13,6 +13,8 @@ import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { GetServerSideProps } from "next";
 
 const CARDS_COLUMNS = [
   {
@@ -79,16 +81,19 @@ const CARDS_COLUMNS = [
   },
 ];
 
-export default function Search() {
+export default function Search({ type }: { type: string }) {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("Active");
+  const [searchType, setSearchType] = useState<string>(type || "Active");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [payload, setPayload] = useState<string>(type || "");
+
+  console.log("type", type, "payload", payload);
 
   const showModal = (user: any) => {
     setCurrentUser(user);
@@ -104,46 +109,40 @@ export default function Search() {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getCards = () => {
-    setLoading(true);
-    axios
-      .post(
+  const { isLoading, data: result } = useCustomQuery({
+    queryKey: ["userInfo", payload, currentPage],
+    enabled: payload.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
         `${BASE_URL}/virtual-cards/cards`,
-        { page: currentPage },
+        { page: currentPage, filter: payload },
         {
           headers: {
             Authorization: auth.accessToken,
           },
         }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(
-            res.data.data.map((item: any, i: number) => ({
-              ...item,
-              action: () => router.push(`/cards/details/${item.cardId}`),
-            }))
-          );
-          setPageInfo(res.data.pageInfo);
-        }
-      })
-      .catch((e) => {
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+      );
+      return result;
+    },
+  });
+
+  const formatData = useMemo(() => {
+    const temp = result?.data?.data;
+    if (Array.isArray(temp)) {
+      const response = temp.map((item: any) => ({
+        ...item,
+        action: () =>
+          router.push(`/cards/details/${item.cardId}?type=${payload}`),
+      }));
+      return {
+        record: response,
+        pageInfo: result?.data?.pageInfo || {},
+      };
+    }
+  }, [result]);
 
   const onSearch = () => {
-    switch (searchType) {
-      case "Active":
-        getCards();
-        break;
-      default:
-        setData(null);
-    }
+    setPayload(searchType);
   };
 
   return (
@@ -267,7 +266,7 @@ export default function Search() {
                 value={searchType}
                 options={[
                   { title: "Active", value: "Active" },
-                  { title: "In-active", value: "In-active" },
+                  { title: "In-active", value: "inActive" },
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
@@ -292,12 +291,12 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {loading ? (
-          <Loader />
-        ) : data ? (
+        {isLoading ? (
+          <Skeleton active />
+        ) : formatData && searchType === payload ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
-              {pageInfo?.totalCount || 0} result found!
+              {formatData?.pageInfo?.totalCount || 0} result found!
             </p>
             <Table
               style={{
@@ -307,15 +306,27 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data}
+              dataSource={formatData?.record}
               columns={getColumns()}
               loading={loading}
               pagination={false}
             />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            <Pagination
+              pageInfo={formatData?.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
         ) : null}
       </div>
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const query = context.query;
+  return {
+    props: {
+      type: query?.type || null,
+    },
+  };
+};

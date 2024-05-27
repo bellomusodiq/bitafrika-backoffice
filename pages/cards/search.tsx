@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Table } from "antd";
+import { Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
 import Loader from "@/components/Loader";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -508,7 +509,7 @@ const TRANSACTIONS_DATA = [
   },
 ];
 
-export default function Search() {
+export default function Search({ type }: { type: any }) {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -518,16 +519,18 @@ export default function Search() {
   const [searchType, setSearchType] = useState<string>("CARDS");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [payload, setPayload] = useState<string>(type || "");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const searchCards = () => {
-    setLoading(true);
-    axios
-      .post(
+  const { isLoading, data: result } = useCustomQuery({
+    queryKey: ["userInfo", payload, currentPage],
+    enabled: payload.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
         `${BASE_URL}/virtual-cards/search`,
         {
           page: currentPage,
@@ -539,41 +542,30 @@ export default function Search() {
             Authorization: auth.accessToken,
           },
         }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(
-            searchType === "CARDS"
-              ? res.data.data.data.map((item: any, i: number) => ({
-                  ...item,
-                  action: () => {
-                    router.push(`/cards/details/${item.cardId}`);
-                  },
-                }))
-              : res.data.data.transactions.map((item: any, i: number) => ({
-                  ...item,
-                  action: () => {
-                    router.push(`/cards/details/${item.cardId}`);
-                  },
-                }))
-          );
-          setPageInfo(res.data.pageInfo);
-        }
-      })
-      .catch((e) => {
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+      );
+      return result;
+    },
+  });
+
+  const formatData = useMemo(() => {
+    const temp = result?.data?.data?.data;
+    if (Array.isArray(temp)) {
+      const response = temp.map((item: any) => ({
+        ...item,
+        action: () => navigateToUser(item.cardId),
+      }));
+      return {
+        record: response,
+        pageInfo: result?.data?.data?.pageInfo || {},
+      };
+    }
+  }, [result]);
 
   const onSearch = () => {
-    searchCards();
+    setPayload(searchType);
   };
 
-  const showModal = (id: string) => {
+  const navigateToUser = (id: string) => {
     router.push(`/cards/details/${id}`);
   };
 
@@ -1009,8 +1001,8 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {loading ? (
-          <Loader />
+        {isLoading ? (
+          <Skeleton active />
         ) : (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
@@ -1022,15 +1014,15 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data.map((item: any) => ({
-                ...item,
-                action: () => showModal(item.cardId),
-              }))}
+              dataSource={formatData?.record}
               columns={getColumns()}
               loading={loading}
               pagination={false}
             />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            <Pagination
+              pageInfo={formatData?.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
         )}
       </div>

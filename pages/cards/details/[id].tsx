@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
@@ -15,6 +15,8 @@ import VirtualCard from "@/components/VirtualCard/VirtualCard";
 import Input from "@/components/Input/Input";
 import Loader from "@/components/Loader";
 import { toast } from "react-toastify";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { GetServerSideProps } from "next";
 
 const TRANSACTIONS_COLUMNS = [
   {
@@ -71,7 +73,7 @@ const TRANSACTIONS_COLUMNS = [
   },
 ];
 
-export default function Search() {
+const CardDetails = ({ cardId }: { cardId: string }) => {
   const router = useRouter();
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -85,6 +87,29 @@ export default function Search() {
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
+
+  const { isLoading, data: { data: result = {} } = {} } = useCustomQuery({
+    queryKey: ["cardDetails", cardId],
+    enabled: cardId?.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/virtual-cards/card-details`,
+        {
+          cardId: cardId,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
+  const cardData = useMemo(() => {
+    return result?.data;
+  }, [result]);
 
   const getCardDetails = () => {
     setLoading(true);
@@ -243,9 +268,9 @@ export default function Search() {
       });
   };
 
-  useEffect(() => {
-    getCardDetails();
-  }, [router.query]);
+  // useEffect(() => {
+  //   getCardDetails();
+  // }, [router.query]);
 
   const showModal = (user: any) => {
     setCurrentUser(user);
@@ -392,7 +417,7 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      {loading ? (
+      {isLoading ? (
         <div style={{ marginTop: 60 }}>
           <Loader />
         </div>
@@ -415,11 +440,11 @@ export default function Search() {
           <div className={styles.cardDetailContainer}>
             <div className={styles.cardLeft}>
               <VirtualCard
-                status={data?.cardDetails?.status}
-                name={data?.cardDetails?.nameOnCard}
-                cardNumber={data?.cardDetails?.cardNumber}
-                expDate={data?.cardDetails?.expiry}
-                cvv={data?.cardDetails?.cvv}
+                status={cardData?.cardDetails?.status}
+                name={cardData?.cardDetails?.nameOnCard}
+                cardNumber={cardData?.cardDetails?.cardNumber}
+                expDate={cardData?.cardDetails?.expiry}
+                cvv={cardData?.cardDetails?.cvv}
               />
               <div className={styles.btnContainer}>
                 <button onClick={() => setOpenModal("topup")}>
@@ -461,21 +486,21 @@ export default function Search() {
               <div className={styles.keyValue}>
                 <p className={styles.itemText}>Current balance</p>
                 <p className={styles.itemText}>
-                  ${data?.cardDetails?.cardBalance}
+                  ${cardData?.cardDetails?.cardBalance}
                 </p>
               </div>
               <div className={styles.divider} />
               <div className={styles.keyValue}>
                 <p className={styles.itemText}>Created date</p>
                 <p className={styles.itemText}>
-                  {data?.cardDetails?.createdAt}
+                  {cardData?.cardDetails?.createdAt}
                 </p>
               </div>
               <div className={styles.divider} />
               <div className={styles.keyValue}>
                 <p className={styles.itemText}>Expiration date</p>
                 <p className={styles.itemText}>
-                  {data?.cardDetails?.expiration}
+                  {cardData?.cardDetails?.expiration}
                 </p>
               </div>
             </div>
@@ -490,16 +515,28 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data?.transactions?.map((user: any) => ({
+              dataSource={cardData?.transactions?.map((user: any) => ({
                 ...user,
                 action: () => showModal(user),
               }))}
               columns={TRANSACTIONS_COLUMNS}
-              loading={loading}
+              loading={isLoading}
             />
           </div>
         </div>
       )}
     </PageLayout>
   );
-}
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  // console.log({ others });
+  return {
+    props: {
+      cardId: id,
+    },
+  };
+};
+
+export default CardDetails;
