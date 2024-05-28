@@ -10,134 +10,98 @@ import CustomPieChart from "@/components/Charts/PieChart";
 import TrendItem from "@/components/TrendItem";
 import CardListing from "@/components/CardListing";
 import ServicesListing from "@/components/ServicesListing";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Loader from "@/components/Loader";
 import { Skeleton } from "antd";
+import { useQueries } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export default function Home() {
   const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [dashboardStats, setDashboardStats] = useState<any>({});
-  const [coinStats, setCoinStats] = useState<any>({});
-  const [coinStatsLoading, setCoinStatsLoading] = useState<any>(false);
-  const [currencyStats, setCurrencyStats] = useState<any>({});
-  const [currencyStatsLoading, setCurrencyStatsLoading] = useState<any>(false);
-  const [userStats, setUserStats] = useState<any>({});
-  const [userstatsLoading, setUserStatsLoading] = useState<any>(false);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getCoinStats = () => {
-    setCoinStatsLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/overview/crypto-stats`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setCoinStatsLoading(false);
-        if (res.data.success) {
-          setCoinStats(res.data.data);
-        } else {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+  const requests = [
+    {
+      key: "coinStat",
+      url: `${BASE_URL}/overview/crypto-stats`,
+    },
+    {
+      key: "currencyStat",
+      url: `${BASE_URL}/overview/currency-stats`,
+    },
+    {
+      key: "userStat",
+      url: `${BASE_URL}/overview/users-stats`,
+    },
+  ];
 
-  const getCurrencyStats = () => {
-    setCurrencyStatsLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/overview/currency-stats`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setCurrencyStatsLoading(false);
-        if (res.data.success) {
-          setCurrencyStats(res.data.data);
-        } else {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
-  const getUserStats = () => {
-    setUserStatsLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/overview/users-stats`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setUserStatsLoading(false);
-        if (res.data.success) {
-          setUserStats(res.data.data);
-        } else {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+  const [coinStat, currencyStat, userStat] = useQueries({
+    queries: requests.map(({ key, url }) => ({
+      queryKey: [key],
+      queryFn: async () => {
+        const result = await axios.post(
+          url,
+          {},
+          {
+            headers: {
+              Authorization: auth.accessToken,
+            },
+          }
+        );
+        return result;
+      },
+    })),
+  });
 
   useEffect(() => {
     const auth = localStorage.getItem("auth");
     if (!auth) {
       router.replace("/signin");
     }
-    getCoinStats();
-    getUserStats();
-    getCurrencyStats();
-  }, []);
 
-  const COIN_LISTING = coinStats
-    ? Object.keys(coinStats).map((key: string) => ({
-        ...coinStats[key],
-      }))
-    : [];
+    if (coinStat && !coinStat.data?.data?.success) {
+      toast.error(!coinStat.data?.data.message);
+    }
+    if (currencyStat && !currencyStat.data?.data?.success) {
+      toast.error(!currencyStat.data?.data.message);
+    }
+    if (userStat && !userStat.data?.data?.success) {
+      toast.error(!userStat.data?.data.message);
+    }
+    if (coinStat.error || currencyStat.error || userStat.error) {
+      const msg = "Something went wrong, please try again";
+      const err =
+        coinStat.error || currencyStat.error || (userStat.error as any);
+      if (err?.response?.status === 401) {
+        localStorage.removeItem("auth");
+        router.replace("/", "/");
+      } else if (!err?.response?.data?.success) {
+        toast.error(err?.response?.data.message || msg);
+      } else {
+        toast.error(err?.response?.message || msg);
+      }
+    }
+  }, [coinStat, currencyStat, userStat]);
+
+  const COIN_LISTING = useMemo(() => {
+    const temp = coinStat.data?.data?.data;
+    const result = temp
+      ? Object.keys(temp).map((key: string) => ({
+          ...temp[key],
+        }))
+      : [];
+    return result;
+  }, [coinStat]);
 
   return (
-    <PageLayout title="Hone">
+    <PageLayout title="Home">
       <>
         <div className={styles.homeContainer}>
           <h1 className={styles.header}>Dashboard Overview</h1>
@@ -148,26 +112,32 @@ export default function Home() {
           <div className={styles.overviewContainer}>
             <div className={styles.cardContainer}>
               <p className={styles.cardTitle}>Total Users</p>
-              {userstatsLoading ? (
+              {userStat.isLoading ? (
                 <Skeleton paragraph={{ rows: 0, width: "100%" }} active />
               ) : (
-                <p className={styles.cardValue}>{userStats?.allUsers}</p>
+                <p className={styles.cardValue}>
+                  {userStat.data?.data?.data?.allUsers}
+                </p>
               )}
             </div>
             <div className={styles.cardContainer}>
               <p className={styles.cardTitle}>Verified</p>
-              {userstatsLoading ? (
+              {userStat.isLoading ? (
                 <Skeleton paragraph={{ rows: 0, width: "100%" }} active />
               ) : (
-                <p className={styles.cardValue}>{userStats?.verifiedUsers}</p>
+                <p className={styles.cardValue}>
+                  {userStat.data?.data?.data?.verifiedUsers}
+                </p>
               )}
             </div>
             <div className={styles.cardContainer}>
               <p className={styles.cardTitle}>Unverified</p>
-              {userstatsLoading ? (
+              {userStat.isLoading ? (
                 <Skeleton paragraph={{ rows: 0, width: "100%" }} active />
               ) : (
-                <p className={styles.cardValue}>{userStats?.unverifiedUsers}</p>
+                <p className={styles.cardValue}>
+                  {userStat.data?.data?.data?.unverifiedUsers}
+                </p>
               )}
             </div>
           </div>
@@ -175,12 +145,15 @@ export default function Home() {
             <CoinListing
               title="Available Coin balances"
               coins={COIN_LISTING}
-              loading={coinStatsLoading}
+              loading={coinStat.isLoading || coinStat.isFetching}
+              refresh={coinStat.refetch}
             />
             <div className={styles.avaibleContainer}>
               <StatsCard headerTitle="Transaction Stats">
-                {currencyStatsLoading ? (
-                  <Skeleton active />
+                {currencyStat.isLoading ? (
+                  <div style={{ padding: "24px" }}>
+                    <Skeleton active />
+                  </div>
                 ) : (
                   <>
                     <div className={styles.statsCardContainer}>
@@ -189,11 +162,13 @@ export default function Home() {
                           data={[
                             {
                               value:
-                                currencyStats?.totalBuy?.todayTotal + 0.000001,
+                                currencyStat.data?.data?.data?.totalBuy
+                                  ?.todayTotal + 0.000001,
                             },
                             {
                               value:
-                                currencyStats?.totalBuy?.monthTotal + 0.000001,
+                                currencyStat.data?.data?.data?.totalBuy
+                                  ?.monthTotal + 0.000001,
                             },
                           ]}
                         />
@@ -203,7 +178,7 @@ export default function Home() {
                           Total Buy Today (GHS):
                         </p>
                         <p className={styles.statsTextBold}>
-                          {currencyStats?.totalBuy?.todayTotal}
+                          {currencyStat.data?.data?.data?.totalBuy?.todayTotal}
                         </p>
                         <p
                           className={styles.statsTextGray}
@@ -212,7 +187,7 @@ export default function Home() {
                           Total Buy Month (GHS):
                         </p>
                         <p className={styles.statsTextNormal}>
-                          {currencyStats?.totalBuy?.monthTotal}
+                          {currencyStat.data?.data?.data?.totalBuy?.monthTotal}
                         </p>
                       </div>
                     </div>
@@ -223,11 +198,13 @@ export default function Home() {
                           data={[
                             {
                               value:
-                                currencyStats?.totalBuy?.todayTotal + 0.000001,
+                                currencyStat.data?.data?.data?.totalBuy
+                                  ?.todayTotal + 0.000001,
                             },
                             {
                               value:
-                                currencyStats?.totalBuy?.monthTotal + 0.000001,
+                                currencyStat.data?.data?.data?.totalBuy
+                                  ?.monthTotal + 0.000001,
                             },
                           ]}
                         />
@@ -237,7 +214,7 @@ export default function Home() {
                           Total Sell Today (GHS):
                         </p>
                         <p className={styles.statsTextBold}>
-                          {currencyStats?.totalSell?.todayTotal}
+                          {currencyStat.data?.data?.data?.totalSell?.todayTotal}
                         </p>
                         <p
                           className={styles.statsTextGray}
@@ -246,7 +223,7 @@ export default function Home() {
                           Total Sell Month (GHS):
                         </p>
                         <p className={styles.statsTextNormal}>
-                          {currencyStats?.totalSell?.monthTotal}
+                          {currencyStat.data?.data?.data?.totalSell?.monthTotal}
                         </p>
                       </div>
                     </div>
