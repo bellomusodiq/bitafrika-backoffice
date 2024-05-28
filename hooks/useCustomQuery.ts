@@ -18,7 +18,7 @@ const useCustomQuery = (query: IQuery) => {
 
   useEffect(() => {
     const res = result as any;
-    if (res && !res?.data?.status) {
+    if (res && !res?.data?.success) {
       toast.error(res?.data.message);
     } else if (error) {
       const msg = "Something went wrong, please try again";

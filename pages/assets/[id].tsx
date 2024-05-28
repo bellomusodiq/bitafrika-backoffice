@@ -3,95 +3,127 @@ import CustomAreaChart from "@/components/Charts/AreaChart";
 import CustomPieChart from "@/components/Charts/PieChart";
 import NavigationStep from "@/components/NavigationStep";
 import PageLayout from "@/components/PageLayout";
-import { NextPage } from "next";
-import React, { useEffect, useState } from "react";
+import { GetServerSideProps, NextPage } from "next";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./assets.module.css";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Loader from "@/components/Loader";
 import { Radio } from "antd";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
-const AssetsDetail: NextPage = () => {
+interface IProps {
+  id: string;
+}
+
+const AssetsDetail = ({ id }: IProps) => {
   const router = useRouter();
-  const assetCode: string = String(router.query.id);
-  const assetCodeLower = assetCode?.toLowerCase();
+  // const assetCode: string = String(router.query.id);
+  // const assetCodeLower = assetCode?.toLowerCase();
 
   const [filter, setFilter] = useState<string>("month");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [asset, setAsset] = useState<any>({});
+  // const [loading, setLoading] = useState<boolean>(false);
+  // const [asset, setAsset] = useState<any>({});
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const getAsset = () => {
-    setLoading(true);
-    axios
-      .post(
+  const {
+    isLoading,
+    isFetching,
+    data: { data: result } = {},
+    refetch,
+  } = useCustomQuery({
+    queryKey: ["asset", id],
+    enabled: id.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
         `${BASE_URL}/overview/coins-stats`,
-        { type: filter, currency: assetCodeLower },
+        { type: filter, currency: id },
         {
           headers: {
             Authorization: auth.accessToken,
           },
         }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          setAsset(res.data.data);
-        } else {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      })
-      .catch((err) => {
-        if (err.response.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+      );
+      return result;
+    },
+  });
 
-  useEffect(() => {
-    if (assetCodeLower !== "undefined") {
-      getAsset();
-    }
-  }, [filter, router.query]);
+  // const getAsset = () => {
+  //   setLoading(true);
+  //   axios
+  //     .post(
+  //       `${BASE_URL}/overview/coins-stats`,
+  //       { type: filter, currency: assetCodeLower },
+  //       {
+  //         headers: {
+  //           Authorization: auth.accessToken,
+  //         },
+  //       }
+  //     )
+  //     .then((res: any) => {
+  //       setLoading(false);
+  //       if (res.data.success) {
+  //         setAsset(res.data.data);
+  //       } else {
+  //         localStorage.removeItem("auth");
+  //         router.replace("/", "/");
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       if (err.response.status === 401) {
+  //         localStorage.removeItem("auth");
+  //         router.replace("/", "/");
+  //       }
+  //     });
+  // };
 
-  const graphsItem = asset?.trades?.chart?.options?.xAxis?.categories?.map(
-    (item: any, i: number) => ({
-      name: item,
-      x: item,
-      sell: asset?.trades?.chart?.series[0].data[i],
-      buy: asset?.trades?.chart?.series[1].data[i],
-    })
-  );
+  // useEffect(() => {
+  //   if (assetCodeLower !== "undefined") {
+  //     getAsset();
+  //   }
+  // }, [filter, router.query]);
+
+  const graphsItem = useMemo(() => {
+    const tempAsset = result?.data || {};
+    const formatData =
+      tempAsset?.trades?.chart?.options?.xAxis?.categories?.map(
+        (item: any, i: number) => ({
+          name: item,
+          x: item,
+          sell: tempAsset?.trades?.chart?.series[0].data[i],
+          buy: tempAsset?.trades?.chart?.series[1].data[i],
+        })
+      );
+    return formatData;
+  }, [result]);
 
   const pieChartData = [
     {
-      value: asset?.trades?.totalBuy?.usd + 0.000001,
+      value: result?.data?.trades?.totalBuy?.usd + 0.000001,
       color: "red",
     },
     {
-      value: asset?.trades?.totalSell?.usd + 0.000001,
+      value: result?.data?.trades?.totalSell?.usd + 0.000001,
       color: "blue",
     },
     {
-      value: asset?.transactions?.totalReceived?.usd + 0.000001,
+      value: result?.data?.transactions?.totalReceived?.usd + 0.000001,
       color: "green",
     },
     {
-      value: asset?.transactions?.totalSent?.usd + 0.000001,
+      value: result?.data?.transactions?.totalSent?.usd + 0.000001,
       color: "yellow",
     },
   ];
 
   return (
     <PageLayout>
-      {loading ? (
+      {isLoading || isFetching ? (
         <div style={{ marginTop: 60 }}>
           <Loader />
         </div>
@@ -102,12 +134,12 @@ const AssetsDetail: NextPage = () => {
               <Button color="white" isText onClick={() => router.back()}>
                 <img src="/icons/arrow-left.svg" />
               </Button>
-              <h1>{assetCode} balance </h1>
+              <h1>{id.toUpperCase()} balance </h1>
               {/* <span>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</span> */}
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ marginRight: 16 }}>
-                <Button color="white" onClick={getAsset}>
+                <Button color="white" onClick={refetch}>
                   Refresh
                 </Button>
               </div>
@@ -122,10 +154,13 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>Total bitcoin</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.totalCrypto?.crypto} {assetCode}
+                    {result?.data.overview?.totalCrypto?.crypto}{" "}
+                    {id.toUpperCase()}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.totalCrypto?.usd?.toFixed(2)}</p>
+                    <p>
+                      ${result?.data.overview?.totalCrypto?.usd?.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -133,11 +168,13 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>Users balance</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.usersBalance?.crypto?.toFixed(8)}{" "}
-                    {assetCode}
+                    {result?.data.overview?.usersBalance?.crypto?.toFixed(8)}{" "}
+                    {id.toUpperCase()}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.usersBalance?.usd?.toFixed(2)}</p>
+                    <p>
+                      ${result?.data.overview?.usersBalance?.usd?.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -145,11 +182,13 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>Our balance</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.platformBalance?.crypto?.toFixed(8)}{" "}
-                    {assetCode}
+                    {result?.data.overview?.platformBalance?.crypto?.toFixed(8)}{" "}
+                    {id.toUpperCase()}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.platformBalance?.usd?.toFixed(2)}</p>
+                    <p>
+                      ${result?.data.overview?.platformBalance?.usd?.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -157,10 +196,11 @@ const AssetsDetail: NextPage = () => {
                 <div>
                   <p className={styles.balanceTitle}>External wallet</p>
                   <p className={styles.balanceAmount}>
-                    {asset.overview?.external?.crypto?.toFixed(8)} {assetCode}
+                    {result?.data.overview?.external?.crypto?.toFixed(8)}{" "}
+                    {id.toUpperCase()}
                   </p>
                   <div className={styles.balanceAmount}>
-                    <p>${asset.overview?.external?.usd?.toFixed(2)}</p>
+                    <p>${result?.data.overview?.external?.usd?.toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -168,7 +208,7 @@ const AssetsDetail: NextPage = () => {
             <div className={styles.container}>
               <div className={styles.tradesTitle}>
                 <div className={styles.tradesTextContainer}>
-                  <h3>{assetCode} Trades</h3>
+                  <h3>{id.toUpperCase()} Trades</h3>
                 </div>
                 <Radio.Group
                   onChange={(e: any) => setFilter(e.target.value)}
@@ -226,16 +266,18 @@ const AssetsDetail: NextPage = () => {
                       <div>
                         <p className={styles.balanceTitle}>Bought</p>
                         <h3 className={styles.balanceAmount}>
-                          {asset?.trades?.totalBuy?.crypto?.toFixed(8)}{" "}
-                          {assetCode}
+                          {result?.data?.trades?.totalBuy?.crypto?.toFixed(8)}{" "}
+                          {id.toUpperCase()}
                         </h3>
                         <div className={styles.balanceFooter}>
-                          <p>${asset?.trades?.totalBuy?.usd?.toFixed(2)}</p>
+                          <p>
+                            ${result?.data?.trades?.totalBuy?.usd?.toFixed(2)}
+                          </p>
                           <div
                             className={styles.verticalDivider}
                             style={{ margin: "0 10px" }}
                           />
-                          <p>~GHC {asset?.trades?.totalBuy?.local}</p>
+                          <p>~GHC {result?.data?.trades?.totalBuy?.local}</p>
                         </div>
                       </div>
                     </div>
@@ -247,16 +289,18 @@ const AssetsDetail: NextPage = () => {
                       <div>
                         <p className={styles.balanceTitle}>Sold</p>
                         <h3 className={styles.balanceAmount}>
-                          {asset?.trades?.totalSell?.crypto?.toFixed(8)}{" "}
-                          {assetCode}
+                          {result?.data?.trades?.totalSell?.crypto?.toFixed(8)}{" "}
+                          {id.toUpperCase()}
                         </h3>
                         <div className={styles.balanceFooter}>
-                          <p>${asset?.trades?.totalSell?.usd?.toFixed(2)}</p>
+                          <p>
+                            ${result?.data?.trades?.totalSell?.usd?.toFixed(2)}
+                          </p>
                           <div
                             className={styles.verticalDivider}
                             style={{ margin: "0 10px" }}
                           />
-                          <p>~GHC {asset?.trades?.totalSell?.local}</p>
+                          <p>~GHC {result?.data?.trades?.totalSell?.local}</p>
                         </div>
                       </div>
                     </div>
@@ -327,11 +371,15 @@ const AssetsDetail: NextPage = () => {
                     <div>
                       <p className={styles.balanceTitle}>Sent</p>
                       <h3 className={styles.balanceAmount}>
-                        {asset?.transactions?.totalSent?.crypto} {assetCode}
+                        {result?.data?.transactions?.totalSent?.crypto}{" "}
+                        {id.toUpperCase()}
                       </h3>
                       <div className={styles.balanceFooter}>
                         <p>
-                          ${asset?.transactions?.totalSent?.usd?.toFixed(2)}
+                          $
+                          {result?.data?.transactions?.totalSent?.usd?.toFixed(
+                            2
+                          )}
                         </p>
                       </div>
                     </div>
@@ -344,11 +392,15 @@ const AssetsDetail: NextPage = () => {
                     <div>
                       <p className={styles.balanceTitle}>Received</p>
                       <h3 className={styles.balanceAmount}>
-                        {asset?.transactions?.totalReceived?.crypto} {assetCode}
+                        {result?.data?.transactions?.totalReceived?.crypto}{" "}
+                        {id.toUpperCase()}
                       </h3>
                       <div className={styles.balanceFooter}>
                         <p>
-                          ${asset?.transactions?.totalReceived?.usd?.toFixed(2)}
+                          $
+                          {result?.data?.transactions?.totalReceived?.usd?.toFixed(
+                            2
+                          )}
                         </p>
                       </div>
                     </div>
@@ -361,6 +413,15 @@ const AssetsDetail: NextPage = () => {
       )}
     </PageLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.query;
+  return {
+    props: {
+      id: id ? id.toString().toLowerCase() : "",
+    },
+  };
 };
 
 export default AssetsDetail;
