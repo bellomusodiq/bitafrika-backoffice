@@ -19,19 +19,28 @@
   margin-top: 16px;
 }
 .tabContainer {
+  width: 100%;
+  padding: 4px;
+  overflow-x: hidden;
   display: flex;
-  border-bottom: 2px solid #eaecf0;
-  padding-bottom: 16px;
+  align-items: center;
+  border-radius: 8px;
+  background: var(--gray-50, #f9fafb);
+  margin-bottom: 32px;
 }
 .tabItem {
-  font-style: normal;
+  color: var(--gray-700, #344054);
+  font-size: 14px;
+  font-family: "PP Telegraf";
   font-weight: 600;
-  font-size: 16px;
-  line-height: 24px;
-  color: #667085;
-  padding: 0 16px;
-  padding-bottom: 16px;
-  margin-bottom: -18px;
+  line-height: 20px;
+  display: flex;
+  padding: 8px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+  margin-right: 10px;
   cursor: pointer;
 }
 .tabItemActive {

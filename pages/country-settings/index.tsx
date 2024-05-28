@@ -4,8 +4,16 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/country-settings/country-settings.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Checkbox, DatePicker, Divider, Space, Switch, Table } from "antd";
-import Modal from "@/components/Modal";
+import {
+  Checkbox,
+  DatePicker,
+  Divider,
+  Space,
+  Tag,
+  Table,
+  Modal,
+  InputNumber,
+} from "antd";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
@@ -15,6 +23,7 @@ import axios from "axios";
 import Loader from "@/components/Loader";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import type { TableProps } from "antd";
 
 export default function Search() {
   const router = useRouter();
@@ -26,6 +35,7 @@ export default function Search() {
   const [data, setData] = useState<any>({});
   const previousData = useRef<any>({});
   const [selectedRate, setSelectedRate] = useState<string>("");
+  const [editRate, setEditRate] = useState<any>({ buy: 0, sell: 0 });
 
   console.log("previousData", previousData);
 
@@ -145,8 +155,8 @@ export default function Search() {
         {
           id: data.id,
           type: selectedRate,
-          sell: data.rates[selectedRate].sell,
-          buy: data.rates[selectedRate].buy,
+          sell: editRate.sell,
+          buy: editRate.buy,
         },
         {
           headers: {
@@ -158,6 +168,10 @@ export default function Search() {
         setBasicInfoLoading(false);
         setOpenModal(false);
         if (!res.data.success) {
+          const newData = { ...data };
+          newData.rates[selectedRate].sell = editRate.sell;
+          newData.rates[selectedRate].buy = editRate.buy;
+          setData(newData);
           toast.error(res.data.message);
         } else {
           toast.success("data updated sucessfully ");
@@ -178,9 +192,9 @@ export default function Search() {
   }, []);
 
   const changeRate = (value: string, rateType: string) => {
-    const newData = { ...data };
-    newData.rates[selectedRate][rateType] = value;
-    setData(newData);
+    const newData = { ...editRate };
+    newData[rateType] = value;
+    setEditRate(newData);
   };
 
   if (loading) {
@@ -193,76 +207,136 @@ export default function Search() {
     );
   }
 
+  const columns: TableProps<any>["columns"] = [
+    {
+      title: "Coin",
+      dataIndex: "coin",
+      key: "coin",
+      render: (text) => <a>{text}</a>,
+    },
+    {
+      title: "Buy",
+      dataIndex: "buy",
+      key: "buy",
+    },
+    {
+      title: "Sell",
+      dataIndex: "sell",
+      key: "sell",
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, { type }) => (
+        <Space size="middle">
+          <Button
+            onClick={() => {
+              previousData.current = data;
+              setOpenModal(true);
+              setSelectedRate(type);
+              setEditRate({
+                buy: data?.rates?.[type]?.buy,
+                sell: data?.rates?.[type]?.sell,
+              });
+            }}
+            color="white"
+          >
+            Edit
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const customData: any[] = [
+    {
+      key: "1",
+      coin: "BTC, BCH, LTC, DOGE",
+      buy: data?.rates?.currency?.buy,
+      sell: data?.rates?.currency?.sell,
+      type: "currency",
+    },
+    {
+      key: "2",
+      coin: "USDT , USDC, TRON",
+      buy: data?.rates?.usdt?.buy,
+      sell: data?.rates?.usdt?.sell,
+      type: "usdt",
+    },
+    {
+      key: "3",
+      coin: "ETH, MATIC, BSC",
+      buy: data?.rates?.evm?.buy,
+      sell: data?.rates?.evm?.sell,
+      type: "evm",
+    },
+  ];
+
   return (
     <PageLayout title="Hone">
       <Modal
-        customStyles={{ width: "30vw" }}
-        openModal={openModal}
-        onClose={() => {
+        title={`Update rate`}
+        open={openModal}
+        onCancel={() => {
           setOpenModal(false);
           setData(previousData.current);
         }}
+        onOk={updateRate}
       >
-        <div className={styles.modalContainer}>
-          <p className={styles.modalHeader}>Update {selectedRate} rate</p>
-          <div className={styles.inputContainer}>
-            <p>New Buy rate</p>
-            <input
-              className={styles.modalInput}
-              value={data.rates?.[selectedRate]?.buy}
-              onChange={(e: any) => changeRate(e.target.value, "buy")}
-            />
-            <p>New Sell rate</p>
-            <input
-              className={styles.modalInput}
-              value={data.rates?.[selectedRate]?.sell}
-              onChange={(e: any) => changeRate(e.target.value, "sell")}
-            />
-          </div>
-
-          <div className={styles.modalFooter}>
-            <Button
-              onClick={() => {
-                setData(previousData.current);
-                setOpenModal(false);
-              }}
-              className={styles.modalButton}
-              color="white"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={updateRate}
-              loading={basicInfoLoading}
-              className={styles.modalButton}
-            >
-              Add
-            </Button>
-          </div>
+        <div className={styles.inputContainer}>
+          <p>New Buy rate</p>
+          <InputNumber
+            className={styles.modalInput}
+            value={editRate.buy}
+            onChange={(value: any) => changeRate(value, "buy")}
+          />
+          <p>New Sell rate</p>
+          <InputNumber
+            className={styles.modalInput}
+            value={editRate.sell}
+            onChange={(value: any) => changeRate(value, "sell")}
+          />
         </div>
       </Modal>
       <div className={styles.container}>
         <h3 className={styles.header}>Country Settings</h3>
         <p className={styles.subHeader}></p>
+
         <div className={styles.tabContainer}>
-          <div
+          <button
             onClick={() => setCurrentTab("Basic Information")}
-            className={
-              currentTab === "Basic Information"
-                ? styles.tabItemActive
-                : styles.tabItem
-            }
+            style={{
+              background: currentTab === "Basic Information" ? "white" : "none",
+              border:
+                currentTab === "Basic Information"
+                  ? "1px solid var(--gray-100, #f2f4f7)"
+                  : "none",
+              boxShadow:
+                currentTab === "Basic Information"
+                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                  : "none",
+            }}
+            className={styles.tabItem}
           >
             Basic Information
-          </div>
-          <div
+          </button>
+          <button
             onClick={() => setCurrentTab("Rates")}
-            className={
-              currentTab === "Rates" ? styles.tabItemActive : styles.tabItem
-            }
+            style={{
+              background: currentTab === "Rates" ? "white" : "none",
+              border:
+                currentTab === "Rates"
+                  ? "1px solid var(--gray-100, #f2f4f7)"
+                  : "none",
+              boxShadow:
+                currentTab === "Rates"
+                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                  : "none",
+            }}
+            className={styles.tabItem}
           >
             Rates
-          </div>
+          </button>
         </div>
         {currentTab === "Basic Information" && (
           <div className={styles.body}>
@@ -373,72 +447,73 @@ export default function Search() {
           </>
         )}
         {currentTab === "Rates" && (
-          <>
-            <div className={styles.tableContainer} style={{ marginTop: 24 }}>
-              <div className={styles.bodyContainer}>
-                <div className={styles.tableRowHeader}>
-                  <p style={{ flex: 1 }}>Coin</p>
-                  <p style={{ width: "15%" }}>BUY</p>
-                  <p style={{ width: "15%" }}>SELL</p>
-                  <p style={{ width: "15%" }}>Actions</p>
-                </div>
-                <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>{data.currencyCode}</p>
-                  <p style={{ width: "15%" }}>{data.rates?.currency?.buy}</p>
-                  <p style={{ width: "15%" }}>{data.rates?.currency?.sell}</p>
-                  <p style={{ width: "15%" }}>
-                    <Button
-                      onClick={() => {
-                        previousData.current = { ...data };
-                        setOpenModal(true);
-                        setSelectedRate("currency");
-                      }}
-                      className={styles.editButton}
-                      color="white"
-                    >
-                      Edit
-                    </Button>
-                  </p>
-                </div>
-                <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>USDT</p>
-                  <p style={{ width: "15%" }}>{data?.rates?.usdt?.buy}</p>
-                  <p style={{ width: "15%" }}>{data?.rates?.usdt?.sell}</p>
-                  <p style={{ width: "15%" }}>
-                    <Button
-                      onClick={() => {
-                        previousData.current = { ...data };
-                        setOpenModal(true);
-                        setSelectedRate("usdt");
-                      }}
-                      className={styles.editButton}
-                      color="white"
-                    >
-                      Edit
-                    </Button>
-                  </p>
-                </div>
-                <div className={styles.tableRow}>
-                  <p style={{ flex: 1 }}>EVM</p>
-                  <p style={{ width: "15%" }}>{data?.rates?.evm?.buy}</p>
-                  <p style={{ width: "15%" }}>{data?.rates?.evm?.sell}</p>
-                  <p style={{ width: "15%" }}>
-                    <Button
-                      className={styles.editButton}
-                      onClick={() => {
-                        previousData.current = data;
-                        setOpenModal(true);
-                        setSelectedRate("evm");
-                      }}
-                      color="white"
-                    >
-                      Edit
-                    </Button>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </>
+          // <>
+          //   <div className={styles.tableContainer} style={{ marginTop: 24 }}>
+          //     <div className={styles.bodyContainer}>
+          //       <div className={styles.tableRowHeader}>
+          //         <p style={{ flex: 1 }}>Coin</p>
+          //         <p style={{ width: "15%" }}>BUY</p>
+          //         <p style={{ width: "15%" }}>SELL</p>
+          //         <p style={{ width: "15%" }}>Actions</p>
+          //       </div>
+          //       <div className={styles.tableRow}>
+          //         <p style={{ flex: 1 }}>{data.currencyCode}</p>
+          //         <p style={{ width: "15%" }}>{data.rates?.currency?.buy}</p>
+          //         <p style={{ width: "15%" }}>{data.rates?.currency?.sell}</p>
+          //         <p style={{ width: "15%" }}>
+          //           <Button
+          //             onClick={() => {
+          //               previousData.current = { ...data };
+          //               setOpenModal(true);
+          //               setSelectedRate("currency");
+          //             }}
+          //             className={styles.editButton}
+          //             color="white"
+          //           >
+          //             Edit
+          //           </Button>
+          //         </p>
+          //       </div>
+          //       <div className={styles.tableRow}>
+          //         <p style={{ flex: 1 }}>USDT</p>
+          //         <p style={{ width: "15%" }}>{data?.rates?.usdt?.buy}</p>
+          //         <p style={{ width: "15%" }}>{data?.rates?.usdt?.sell}</p>
+          //         <p style={{ width: "15%" }}>
+          //           <Button
+          //             onClick={() => {
+          //               previousData.current = { ...data };
+          //               setOpenModal(true);
+          //               setSelectedRate("usdt");
+          //             }}
+          //             className={styles.editButton}
+          //             color="white"
+          //           >
+          //             Edit
+          //           </Button>
+          //         </p>
+          //       </div>
+          //       <div className={styles.tableRow}>
+          //         <p style={{ flex: 1 }}>EVM</p>
+          //         <p style={{ width: "15%" }}>{data?.rates?.evm?.buy}</p>
+          //         <p style={{ width: "15%" }}>{data?.rates?.evm?.sell}</p>
+          //         <p style={{ width: "15%" }}>
+          //           <Button
+          //             className={styles.editButton}
+          //             onClick={() => {
+          //               previousData.current = data;
+          //               setOpenModal(true);
+          //               setSelectedRate("evm");
+          //             }}
+          //             color="white"
+          //           >
+          //             Edit
+          //           </Button>
+          //         </p>
+          //       </div>
+          //     </div>
+          //   </div>
+          // </>
+          <Table columns={columns} dataSource={customData} />
         )}
         {currentTab === "Payout methods" && (
           <>

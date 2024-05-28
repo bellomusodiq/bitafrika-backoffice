@@ -13,6 +13,7 @@ import {
   Modal as AntModal,
   Input as AntInput,
   message,
+  InputNumber,
 } from "antd";
 import KeyValue from "@/components/KeyValue/KeyValue";
 import Modal from "@/components/Modal";
@@ -176,21 +177,22 @@ const KYCVerificationTable: React.FC<any> = ({ data }) => {
   );
 };
 
-const AccountBalanceTable: React.FC<any> = ({ data }) => {
-  const code1 = useRef(null);
-  const code2 = useRef(null);
-  const code3 = useRef(null);
-  const code4 = useRef(null);
-  const codeMap: { [k: number]: any } = {
-    0: code1,
-    1: code2,
-    2: code3,
-    3: code4,
-  };
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
-  const [deduct, setDeduct] = useState<boolean>(false);
-  const [pin, setPin] = useState<string>("");
+const AccountBalanceTable: React.FC<any> = ({ data, username }) => {
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [currency, setCurrency] = useState<string>("");
+  const [userAddress, setUserAddress] = useState<string>("");
+  const [amount, setAmount] = useState<number | string>("");
+  const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+  const [openDeductModal, setOpenDeductModal] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
   const columns: any = [
     {
       title: "",
@@ -234,152 +236,162 @@ const AccountBalanceTable: React.FC<any> = ({ data }) => {
     {
       title: "",
       dataIndex: "action",
-      render: (_: any, { action }: any) => (
+      render: (_: any, { addAction, deductAction, symbol, address }: any) => (
         <div className={styles.actionButton}>
           <div style={{ marginRight: 10 }}>
-            <Button color="white" onClick={() => action(true)}>
+            <Button color="white" onClick={() => deductAction(symbol, address)}>
               Deduct
             </Button>
           </div>
           <div>
-            <Button onClick={action}>Add</Button>
+            <Button onClick={() => addAction(symbol, address)}>Add</Button>
           </div>
         </div>
       ),
     },
   ];
 
-  const updatePin = (digit: string) => {
-    if (pin.length < 4) {
-      codeMap[pin.length + 1]?.current?.focus();
-      setPin(`${pin}${digit}`);
-    }
+  const addBalance = () => {
+    setIsLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/manual-approvals/account-balance-update/initiate`,
+        {
+          username: username,
+          cryptoSymbol: currency,
+          userAddress,
+          cryptoAmount: amount,
+          action: "add",
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setIsLoading(false);
+        if (res.data.status) {
+          messageApi.success({
+            content: res.data.message,
+            duration: 5,
+          });
+          setAmount("");
+          setOpenAddModal(false);
+        } else {
+          messageApi.error({
+            content: res.data.message,
+            duration: 5,
+          });
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
   };
 
-  const deletePin = () => {
-    if (pin.length > 0) {
-      codeMap[pin.length - 1]?.current?.focus();
-      if (codeMap[pin.length - 1]) {
-        codeMap[pin.length - 1].current.value = "";
-      }
-      setPin(pin.slice(0, pin.length - 1));
-    }
+  const closeAddModal = () => {
+    messageApi.info({
+      content: `${username} ${currency} balance not topped up`,
+      duration: 5,
+    });
+    setOpenAddModal(false);
   };
 
-  const changeCode = (e: any) => {
-    if (e.key === "Backspace") {
-      deletePin();
-    } else {
-      updatePin(e.target.value);
-    }
+  const deductBalance = () => {
+    setIsLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/manual-approvals/account-balance-update/initiate`,
+        {
+          username: username,
+          cryptoSymbol: currency,
+          userAddress,
+          cryptoAmount: amount,
+          action: "deduct",
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setIsLoading(false);
+        if (res.data.status) {
+          messageApi.success({
+            content: res.data.message,
+            duration: 5,
+          });
+          setAmount("");
+          setOpenDeductModal(false);
+        } else {
+          messageApi.error({
+            content: res.data.message,
+            duration: 5,
+          });
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
+  };
+
+  const closeDeductModal = () => {
+    messageApi.info({
+      content: `${username} ${currency} balance not deducted`,
+      duration: 5,
+    });
+    setOpenDeductModal(false);
   };
 
   return (
     <>
-      <Modal
-        openModal={openModal}
-        onClose={() => setOpenModal(false)}
-        customStyles={{ width: "30vw" }}
-        headerLeft={
-          <p style={{ width: 300 }}>
-            {deduct
-              ? "Deduct Crypto from user balance"
-              : "Add crypto to user balance"}
-          </p>
-        }
+      {contextHolder}
+      <AntModal
+        title={`Add ${currency}`}
+        open={openAddModal}
+        onOk={addBalance}
+        onCancel={closeAddModal}
+        confirmLoading={isLoading}
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.inputContainer}>
-            <p>Amount</p>
-            <Dropdown
-              onChange={() => {}}
-              options={[
-                { title: "ETH", value: "ETH" },
-                { title: "BTC", value: "BTC" },
-                { title: "TRX", value: "TRX" },
-              ]}
-            />
-          </div>
-          <div className={styles.inputContainer}>
-            <p>Amount</p>
-            <Input
-              type="number"
-              className={styles.modalInput}
-              placeholder="0.00"
-            />
-          </div>
-          <div className={styles.modalFooter}>
-            <div>
-              <Button
-                onClick={() => setOpenModal(false)}
-                className={styles.modalButton}
-                color="white"
-              >
-                Cancel
-              </Button>
-            </div>
-            <div>
-              <Button
-                onClick={() => {
-                  setOpenModal(false);
-                  setOpenCodeModal(true);
-                }}
-                className={styles.modalButton}
-              >
-                {deduct ? "Deduct" : "Add"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Modal>
-      <Modal
-        headerLeft={
-          <div className={styles.lockContainer}>
-            <img src="/icons/lock.svg" />
-          </div>
-        }
-        onClose={() => setOpenCodeModal(false)}
-        openModal={openCodeModal}
-      >
-        <div className={styles.modalContainer}>
-          <h3 className={styles.modalTitle}>Enter email verificaiton code</h3>
-          <p className={styles.modalText}>
-            Check your email for a 4-Digit verification code to continue
+        <div style={{ paddingBottom: 20 }}>
+          <p>
+            Enter {currency} amount to add to {username}&apos;s account
           </p>
-          <div className={styles.codeContainer}>
-            <input
-              ref={code1}
-              onKeyUp={(e) => changeCode(e)}
-              className={styles.code}
-            />
-            <input
-              ref={code2}
-              onKeyUp={(e) => changeCode(e)}
-              className={styles.code}
-            />
-            <input
-              ref={code3}
-              onKeyUp={(e) => changeCode(e)}
-              className={styles.code}
-            />
-            <input
-              ref={code4}
-              onKeyUp={(e) => changeCode(e)}
-              className={styles.code}
-            />
-          </div>
-          <div className={styles.footerContainer}>
-            <Button className={styles.footerButton}>Cancel</Button>
-            <Button
-              onClick={() => setOpenCodeModal(false)}
-              color="white"
-              className={styles.footerButton}
-            >
-              Confirm
-            </Button>
-          </div>
+          <InputNumber
+            style={{ width: "100%" }}
+            type="number"
+            value={amount}
+            onChange={(value: any) => setAmount(value)}
+          />
         </div>
-      </Modal>
+      </AntModal>
+      <AntModal
+        title={`Deduct ${currency}`}
+        open={openDeductModal}
+        onOk={deductBalance}
+        onCancel={closeDeductModal}
+        confirmLoading={isLoading}
+      >
+        <div style={{ paddingBottom: 20 }}>
+          <p>
+            Enter {currency} amount to deduct from {username}&apos;s account
+          </p>
+          <InputNumber
+            style={{ width: "100%" }}
+            type="number"
+            value={amount}
+            onChange={(value: any) => setAmount(value)}
+          />
+        </div>
+      </AntModal>
       <Table
         style={{
           fontFamily: "PP Telegraf",
@@ -388,7 +400,19 @@ const AccountBalanceTable: React.FC<any> = ({ data }) => {
           boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
           overflow: "hidden",
         }}
-        dataSource={data}
+        dataSource={data.map((item: any) => ({
+          ...item,
+          addAction: (currency: string, address: string) => {
+            setOpenAddModal(true);
+            setCurrency(currency);
+            setUserAddress(address);
+          },
+          deductAction: (currency: string, address: string) => {
+            setOpenDeductModal(true);
+            setCurrency(currency);
+            setUserAddress(address);
+          },
+        }))}
         columns={columns}
       />
     </>
@@ -685,9 +709,115 @@ const CardsTable: React.FC = () => {
   );
 };
 
+const TransactionsTable: React.FC<{ username: string; userType: string }> = ({
+  username,
+  userType,
+}) => {
+  const router = useRouter();
+  const columns: any = [
+    {
+      title: "Transaction type",
+      dataIndex: "type",
+      key: "type",
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+      render: (_: any, { type }: any) => {
+        return (
+          <div>
+            {type === "Buy Transactions" && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/users/transactions/${username}?type=buy&userType=${userType}`
+                  )
+                }
+              >
+                View Buy Transactions
+              </Button>
+            )}
+            {type === "Sell Transactions" && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/users/transactions/${username}?type=sell&userType=${userType}`
+                  )
+                }
+              >
+                View Sell Transactions
+              </Button>
+            )}
+            {type === "Crypto Transactions" && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/users/transactions/${username}?type=crypto&userType=${userType}`
+                  )
+                }
+              >
+                View Crypto Transactions
+              </Button>
+            )}
+            {type === "Swap Transactions" && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    `/users/transactions/${username}?type=swap&userType=${userType}`
+                  )
+                }
+              >
+                View Swap Transactions
+              </Button>
+            )}
+          </div>
+        );
+      },
+    },
+  ];
+
+  const dataSource = [
+    {
+      key: "1",
+      type: "Buy Transactions",
+    },
+    {
+      key: "2",
+      type: "Sell Transactions",
+    },
+    {
+      key: "3",
+      type: "Crypto Transactions",
+    },
+    {
+      key: "4",
+      type: "Swap Transactions",
+    },
+  ];
+
+  return (
+    <>
+      <div className={styles.table} style={{ overflow: "hidden" }}>
+        <Table
+          style={{
+            fontFamily: "PP Telegraf",
+            border: "1px solid var(--Gray-200, #EAECF0)",
+            borderRadius: 12,
+            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+            overflow: "hidden",
+          }}
+          dataSource={dataSource}
+          columns={columns}
+        />
+      </div>
+    </>
+  );
+};
+
 interface IProps {
   userId: string;
-  userType?: string;
+  userType: string;
 }
 const UserDetails = ({ userId, userType }: IProps) => {
   const router = useRouter();
@@ -696,7 +826,13 @@ const UserDetails = ({ userId, userType }: IProps) => {
   const [currentTab, setCurrentTab] = useState<string>("paymentAccounts");
   const [loading, setLoading] = useState<boolean>(false);
   const [isSmsModalOpened, setIsSmsModalOpened] = useState<boolean>(false);
+  const [smsText, setSmsText] = useState<string>("");
+  const [isSmsLoading, setIsSmsLoading] = useState<boolean>(false);
+  const [buyLimit, setBuyLimit] = useState<number | string>("");
   const [isBuyModalOpened, setIsBuyModalOpened] = useState<boolean>(false);
+  const [isBuyLoading, setIsBuyLoading] = useState<boolean>(false);
+  const [isDisableModal, setIsDisableModal] = useState<boolean>(false);
+  const [isDisableLoading, setIsDisableLoading] = useState<boolean>(false);
   const [user, setUser] = useState<any>({});
 
   let auth: any = {};
@@ -747,30 +883,141 @@ const UserDetails = ({ userId, userType }: IProps) => {
       });
   };
 
-  // useEffect(() => {
-  //   getUserDetail();
-  // }, [router.query]);
   const sendSms = () => {
-    messageApi.success("SMS successfully sent");
-    setIsSmsModalOpened(false);
+    setIsSmsLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/users/send-sms`,
+        {
+          username: result?.data.user?.username,
+          message: smsText,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setIsSmsLoading(false);
+        if (res.data.success) {
+          setSmsText("");
+          messageApi.success({ content: "SMS successfully sent", duration: 5 });
+          setIsSmsModalOpened(false);
+        } else {
+          messageApi.error({
+            content: res.data.message,
+            duration: 5,
+          });
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
   };
 
   const cancelSendSms = () => {
-    messageApi.warning("SMS not sent because no message was provided");
+    messageApi.warning({
+      content: "SMS not sent because no message was provided",
+      duration: 5,
+    });
     setIsSmsModalOpened(false);
   };
 
-  const disableAccount = () => {
-    messageApi.success("Account successfully disabled");
+  const disableAccount = (isDisabled: boolean = true) => {
+    setIsDisableLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/users/update-user-status`,
+        {
+          username: result?.data.user?.username,
+          status: isDisabled ? "disable" : "enable",
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setIsDisableLoading(false);
+        if (res.data.success) {
+          messageApi.success({
+            content: `Account successfully ${
+              isDisabled ? "disabled" : "enabled"
+            }`,
+            duration: 5,
+          });
+          setIsDisableModal(false);
+        } else {
+          messageApi.error({
+            content: res.data.message,
+            duration: 5,
+          });
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
+  };
+
+  const cancelDisableAccount = (isDisabled: boolean = true) => {
+    messageApi.info({
+      content: `Account was not ${isDisabled ? "disabled" : "enabled"}`,
+      duration: 5,
+    });
   };
 
   const updateBuyLimit = () => {
-    messageApi.success("Limit successfully updated");
-    setIsBuyModalOpened(false);
+    setIsBuyLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/users/update-user-buy-limit`,
+        {
+          username: result?.data.user?.username,
+          limit: buyLimit,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setIsBuyLoading(false);
+        if (res.data.success) {
+          messageApi.success({
+            content: "Limit successfully updated",
+            duration: 5,
+          });
+          setIsBuyModalOpened(false);
+          setBuyLimit("");
+        } else {
+          messageApi.error({
+            content: res.data.message,
+            duration: 5,
+          });
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
   };
 
   const cancelBuyLimit = () => {
-    messageApi.warning("Limit not updated because no amount was provided");
+    messageApi.warning({
+      content: "Limit not updated because no amount was provided",
+      duration: 5,
+    });
     setIsBuyModalOpened(false);
   };
 
@@ -792,10 +1039,28 @@ const UserDetails = ({ userId, userType }: IProps) => {
             open={isSmsModalOpened}
             onOk={sendSms}
             onCancel={cancelSendSms}
+            confirmLoading={isSmsLoading}
           >
             <div style={{ paddingBottom: 20 }}>
               <p>Enter the SMS content. Limit for 1 SMS is 160 characters.</p>
-              <AntInput.TextArea rows={4} maxLength={160} showCount />
+              <AntInput.TextArea
+                rows={4}
+                maxLength={160}
+                showCount
+                value={smsText}
+                onChange={(e: any) => setSmsText(e.target.value)}
+              />
+            </div>
+          </AntModal>
+          <AntModal
+            title="Disable Account"
+            open={isDisableModal}
+            onOk={() => disableAccount(true)}
+            onCancel={() => cancelDisableAccount(true)}
+            confirmLoading={isDisableLoading}
+          >
+            <div style={{ paddingBottom: 20 }}>
+              <p>Are you sure you want to disable account?</p>
             </div>
           </AntModal>
           <AntModal
@@ -803,10 +1068,16 @@ const UserDetails = ({ userId, userType }: IProps) => {
             open={isBuyModalOpened}
             onOk={updateBuyLimit}
             onCancel={cancelBuyLimit}
+            confirmLoading={isBuyLoading}
           >
             <div style={{ paddingBottom: 20 }}>
               <p>Enter USD amount to update Buy Limit.</p>
-              <AntInput type="number" />
+              <InputNumber
+                value={buyLimit}
+                onChange={(value: any) => setBuyLimit(value)}
+                type="number"
+                style={{ width: "100%" }}
+              />
             </div>
           </AntModal>
           <div className={styles.header}>
@@ -839,7 +1110,7 @@ const UserDetails = ({ userId, userType }: IProps) => {
                   size="large"
                   className={styles.profileActionBtnsDanger}
                   danger
-                  onClick={disableAccount}
+                  onClick={() => setIsDisableModal(true)}
                 >
                   Disable Account
                 </AntButton>
@@ -900,6 +1171,14 @@ const UserDetails = ({ userId, userType }: IProps) => {
                       key: "Ghana Card No:",
                       value: result?.data.user?.cardNo,
                     },
+                    {
+                      key: "Can Send:",
+                      value: result?.data?.user?.canSend?.toString(),
+                    },
+                    {
+                      key: "Can deposit:",
+                      value: result?.data?.user?.canDeposit?.toString(),
+                    },
                   ]}
                 />
               </div>
@@ -943,62 +1222,20 @@ const UserDetails = ({ userId, userType }: IProps) => {
                         </div>
                       ),
                     },
+                    {
+                      key: "Verification TIER:",
+                      value: result?.data?.user?.verificationTier,
+                    },
+                    {
+                      key: "Can Withdraw:",
+                      value: result?.data?.user?.canWithdraw?.toString(),
+                    },
+                    {
+                      key: "Can trade",
+                      value: result?.data?.user?.canTrade?.toString(),
+                    },
                   ]}
                 />
-                <div className={styles.footer}>
-                  <div>
-                    <Button
-                      className={styles.footerBtns}
-                      color="white"
-                      onClick={() =>
-                        router.push(
-                          `/users/transactions/${result?.data?.kycInfo?.username}?type=buy&userType=${userType}`
-                        )
-                      }
-                    >
-                      View Buy Transactions
-                    </Button>
-                  </div>
-                  <div>
-                    <Button
-                      className={styles.footerBtns}
-                      color="white"
-                      onClick={() =>
-                        router.push(
-                          `/users/transactions/${result?.data?.kycInfo?.username}?type=sell&userType=${userType}`
-                        )
-                      }
-                    >
-                      View Sell Transactions
-                    </Button>
-                  </div>
-                  <div>
-                    <Button
-                      className={styles.footerBtns}
-                      color="white"
-                      onClick={() =>
-                        router.push(
-                          `/users/transactions/${result?.data?.kycInfo?.username}?type=crypto&userType=${userType}`
-                        )
-                      }
-                    >
-                      View Crypto Transactions
-                    </Button>
-                  </div>
-                  <div>
-                    <Button
-                      className={styles.footerBtns}
-                      color="white"
-                      onClick={() =>
-                        router.push(
-                          `/users/transactions/${result?.data?.kycInfo?.username}?type=swap&userType=${userType}`
-                        )
-                      }
-                    >
-                      View Swap Transactions
-                    </Button>
-                  </div>
-                </div>
               </div>
             </div>
             <Divider />
@@ -1075,9 +1312,29 @@ const UserDetails = ({ userId, userType }: IProps) => {
               >
                 Cards
               </button>
+              <button
+                onClick={() => setCurrentTab("transactions")}
+                style={{
+                  background: currentTab === "transactions" ? "white" : "none",
+                  border:
+                    currentTab === "transactions"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "transactions"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                Transactions
+              </button>
             </div>
             {currentTab === "accountBalance" && (
-              <AccountBalanceTable data={result?.data.cryptoAccountBalances} />
+              <AccountBalanceTable
+                data={result?.data.cryptoAccountBalances}
+                username={result?.data?.user?.username}
+              />
             )}
             {currentTab === "kycVerification" && (
               <KYCVerificationTable data={[result?.data.kycInfo]} />
@@ -1086,6 +1343,12 @@ const UserDetails = ({ userId, userType }: IProps) => {
               <PaymentAccountsTable data={result?.data.paymentAccounts} />
             )}
             {currentTab === "cards" && <CardsTable />}
+            {currentTab === "transactions" && (
+              <TransactionsTable
+                username={result?.data?.user?.username}
+                userType={userType}
+              />
+            )}
           </div>
         </>
       )}
@@ -1095,7 +1358,6 @@ const UserDetails = ({ userId, userType }: IProps) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id, type } = context.query;
-  // console.log({ others });
   return {
     props: {
       userId: id,
