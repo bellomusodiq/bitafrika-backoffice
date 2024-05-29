@@ -735,7 +735,7 @@ const TransactionsTable: React.FC<{ username: string; userType: string }> = ({
                   )
                 }
               >
-                View Buy Transactions
+                View
               </Button>
             )}
             {type === "Sell Transactions" && (
@@ -746,7 +746,7 @@ const TransactionsTable: React.FC<{ username: string; userType: string }> = ({
                   )
                 }
               >
-                View Sell Transactions
+                View
               </Button>
             )}
             {type === "Crypto Transactions" && (
@@ -757,7 +757,7 @@ const TransactionsTable: React.FC<{ username: string; userType: string }> = ({
                   )
                 }
               >
-                View Crypto Transactions
+                View
               </Button>
             )}
             {type === "Swap Transactions" && (
@@ -768,7 +768,7 @@ const TransactionsTable: React.FC<{ username: string; userType: string }> = ({
                   )
                 }
               >
-                View Swap Transactions
+                View
               </Button>
             )}
           </div>

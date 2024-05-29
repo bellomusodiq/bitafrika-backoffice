@@ -2,19 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/country-settings/country-settings.module.css";
-import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import {
-  Checkbox,
-  DatePicker,
-  Divider,
-  Space,
-  Tag,
-  Table,
-  Modal,
-  InputNumber,
-} from "antd";
-import DropModal from "@/components/DropModal";
+import { Divider, Space, Table, Modal, InputNumber, message } from "antd";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import Toggle from "@/components/Toggle";
@@ -27,6 +16,7 @@ import type { TableProps } from "antd";
 
 export default function Search() {
   const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<string>("Basic Information");
   const [ratesTab, setRatesTab] = useState<string>("BTC");
@@ -36,8 +26,6 @@ export default function Search() {
   const previousData = useRef<any>({});
   const [selectedRate, setSelectedRate] = useState<string>("");
   const [editRate, setEditRate] = useState<any>({ buy: 0, sell: 0 });
-
-  console.log("previousData", previousData);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -168,13 +156,13 @@ export default function Search() {
         setBasicInfoLoading(false);
         setOpenModal(false);
         if (!res.data.success) {
+          messageApi.error({ content: res.data.message, duration: 5 });
+        } else {
           const newData = { ...data };
           newData.rates[selectedRate].sell = editRate.sell;
           newData.rates[selectedRate].buy = editRate.buy;
           setData(newData);
-          toast.error(res.data.message);
-        } else {
-          toast.success("data updated sucessfully ");
+          messageApi.success({ content: "rate updated", duration: 5 });
         }
       })
       .catch((e) => {
@@ -274,7 +262,10 @@ export default function Search() {
 
   return (
     <PageLayout title="Hone">
+      {contextHolder}
       <Modal
+        okButtonProps={{ size: "large" }}
+        cancelButtonProps={{ size: "large" }}
         title={`Update rate`}
         open={openModal}
         onCancel={() => {
@@ -447,72 +438,6 @@ export default function Search() {
           </>
         )}
         {currentTab === "Rates" && (
-          // <>
-          //   <div className={styles.tableContainer} style={{ marginTop: 24 }}>
-          //     <div className={styles.bodyContainer}>
-          //       <div className={styles.tableRowHeader}>
-          //         <p style={{ flex: 1 }}>Coin</p>
-          //         <p style={{ width: "15%" }}>BUY</p>
-          //         <p style={{ width: "15%" }}>SELL</p>
-          //         <p style={{ width: "15%" }}>Actions</p>
-          //       </div>
-          //       <div className={styles.tableRow}>
-          //         <p style={{ flex: 1 }}>{data.currencyCode}</p>
-          //         <p style={{ width: "15%" }}>{data.rates?.currency?.buy}</p>
-          //         <p style={{ width: "15%" }}>{data.rates?.currency?.sell}</p>
-          //         <p style={{ width: "15%" }}>
-          //           <Button
-          //             onClick={() => {
-          //               previousData.current = { ...data };
-          //               setOpenModal(true);
-          //               setSelectedRate("currency");
-          //             }}
-          //             className={styles.editButton}
-          //             color="white"
-          //           >
-          //             Edit
-          //           </Button>
-          //         </p>
-          //       </div>
-          //       <div className={styles.tableRow}>
-          //         <p style={{ flex: 1 }}>USDT</p>
-          //         <p style={{ width: "15%" }}>{data?.rates?.usdt?.buy}</p>
-          //         <p style={{ width: "15%" }}>{data?.rates?.usdt?.sell}</p>
-          //         <p style={{ width: "15%" }}>
-          //           <Button
-          //             onClick={() => {
-          //               previousData.current = { ...data };
-          //               setOpenModal(true);
-          //               setSelectedRate("usdt");
-          //             }}
-          //             className={styles.editButton}
-          //             color="white"
-          //           >
-          //             Edit
-          //           </Button>
-          //         </p>
-          //       </div>
-          //       <div className={styles.tableRow}>
-          //         <p style={{ flex: 1 }}>EVM</p>
-          //         <p style={{ width: "15%" }}>{data?.rates?.evm?.buy}</p>
-          //         <p style={{ width: "15%" }}>{data?.rates?.evm?.sell}</p>
-          //         <p style={{ width: "15%" }}>
-          //           <Button
-          //             className={styles.editButton}
-          //             onClick={() => {
-          //               previousData.current = data;
-          //               setOpenModal(true);
-          //               setSelectedRate("evm");
-          //             }}
-          //             color="white"
-          //           >
-          //             Edit
-          //           </Button>
-          //         </p>
-          //       </div>
-          //     </div>
-          //   </div>
-          // </>
           <Table columns={columns} dataSource={customData} />
         )}
         {currentTab === "Payout methods" && (

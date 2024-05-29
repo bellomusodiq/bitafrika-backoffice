@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Skeleton, Table } from "antd";
+import { DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -56,16 +56,9 @@ const CARDS_COLUMNS = [
     dataIndex: "sstatus",
     key: "status",
     render: (_: any, { status }: any) => (
-      <span
-        style={{
-          borderRadius: 16,
-          padding: "12px 16px",
-          backgroundColor: status === "Card - Active" ? "#EDFCF2" : "#FAFAFA",
-          color: status === "Card - Active" ? "#087443" : "#424242",
-        }}
-      >
+      <Tag color={status === "Card - Active" ? "success" : "failed"}>
         {status}
-      </span>
+      </Tag>
     ),
   },
   {
@@ -88,7 +81,7 @@ export default function Search({ type }: { type: string }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>(type || "Active");
+  const [searchType, setSearchType] = useState<string>(type || "");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [payload, setPayload] = useState<string>(type || "");
@@ -265,6 +258,7 @@ export default function Search({ type }: { type: string }) {
               <Dropdown
                 value={searchType}
                 options={[
+                  { title: "All", value: "" },
                   { title: "Active", value: "Active" },
                   { title: "In-active", value: "inActive" },
                 ]}

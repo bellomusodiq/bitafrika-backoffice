@@ -36,7 +36,7 @@ const CoinListing: React.FC<CoinListingProps> = ({
                 <p className={styles.coinName}>{coin.coin}</p>
                 <p className={styles.coinBalance}>
                   {coin.amount.toFixed(8)} {coin.coin_code} ($
-                  {coin.usdAmount || 200000.0})
+                  {coin.usd.toFixed(2)})
                 </p>
               </Link>
               {i !== coins.length - 1 && <div className={styles.divider} />}
