@@ -527,8 +527,8 @@ export default function Search({ type }: { type: any }) {
   }
 
   const { isLoading, data: result } = useCustomQuery({
-    queryKey: ["userInfo", payload, currentPage],
-    enabled: payload.length > 0,
+    queryKey: ["userInfo", payload, search, currentPage],
+    enabled: payload.length > 0 && search.length > 0,
     queryFn: async () => {
       const result = await axios.post(
         `${BASE_URL}/virtual-cards/search`,
@@ -982,6 +982,7 @@ export default function Search({ type }: { type: any }) {
                 onChange={(value) => {
                   setSearchType(String(value));
                   setData([]);
+                  setPayload("");
                 }}
               />
             </div>
@@ -991,7 +992,10 @@ export default function Search({ type }: { type: any }) {
                 className={styles.input}
                 placeholder={renderPlaceHolder()}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPayload("");
+                }}
               />
             </div>
             <div>
@@ -1002,8 +1006,10 @@ export default function Search({ type }: { type: any }) {
           </div>
         </div>
         {isLoading ? (
-          <Skeleton active />
-        ) : (
+          <div style={{ marginTop: "20px" }}>
+            <Skeleton active />
+          </div>
+        ) : data && payload.length > 0 ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
@@ -1024,7 +1030,7 @@ export default function Search({ type }: { type: any }) {
               setCurrentPage={setCurrentPage}
             />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/users/user-home.module.css";
 import Button from "@/components/Button";
-import { Table, Tag } from "antd";
+import { Skeleton, Table, Tag } from "antd";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Dropdown from "@/components/Dropdown";
@@ -163,7 +163,7 @@ export default function Search({ type }: { type: string }) {
           </div>
         </div>
         {isLoading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : formatData && payload === searchType ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>

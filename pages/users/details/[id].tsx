@@ -14,6 +14,7 @@ import {
   Input as AntInput,
   message,
   InputNumber,
+  Skeleton,
 } from "antd";
 import KeyValue from "@/components/KeyValue/KeyValue";
 import Modal from "@/components/Modal";
@@ -26,8 +27,29 @@ import Loader from "@/components/Loader";
 import { UserOutlined } from "@ant-design/icons";
 import useCustomQuery from "@/hooks/useCustomQuery";
 
-const PaymentAccountsTable: React.FC<any> = ({ data }) => {
+const PaymentAccountsTable: React.FC<any> = ({ username, auth }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
+
+  const { isLoading: isLoading, data: { data: result = {} } = {} } =
+    useCustomQuery({
+      queryKey: ["userPaymentAccounts", username],
+      enabled: username.length > 0,
+      queryFn: async () => {
+        const result = await axios.post(
+          `${BASE_URL}/users/payment-accounts`,
+          {
+            username,
+          },
+          {
+            headers: {
+              Authorization: auth.accessToken,
+            },
+          }
+        );
+        return result;
+      },
+    });
+
   const columns: any = [
     {
       title: "Payment Type",
@@ -65,18 +87,39 @@ const PaymentAccountsTable: React.FC<any> = ({ data }) => {
         boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
         overflow: "hidden",
       }}
-      dataSource={data}
+      dataSource={result?.data || []}
       columns={columns}
+      loading={isLoading}
     />
   );
 };
 
-const KYCVerificationTable: React.FC<any> = ({ data }) => {
+const KYCVerificationTable: React.FC<any> = ({ username, auth }) => {
   const [openPhotosModal, setOpenPhotosModal] = useState<any>(null);
   const [openDocumentsModal, setOpenDocumentsModal] = useState<any>(null);
   const [openRejectModal, setOpenRejectModal] = useState<any>(null);
 
-  const dataSource = data.map((item: any) => ({
+  const { isLoading: isLoadingData, data: { data: result = {} } = {} } =
+    useCustomQuery({
+      queryKey: ["userKyc", username],
+      enabled: username.length > 0,
+      queryFn: async () => {
+        const result = await axios.post(
+          `${BASE_URL}/users/kyc`,
+          {
+            username,
+          },
+          {
+            headers: {
+              Authorization: auth.accessToken,
+            },
+          }
+        );
+        return result;
+      },
+    });
+
+  const dataSource = [result?.data].map((item: any) => ({
     ...item,
     onOpenPhotos: () => setOpenPhotosModal(item),
     onViewDocuments: () => setOpenDocumentsModal(item),
@@ -134,6 +177,7 @@ const KYCVerificationTable: React.FC<any> = ({ data }) => {
         }}
         dataSource={dataSource}
         columns={columns}
+        loading={isLoadingData}
       />
       <Modal
         openModal={Boolean(openPhotosModal)}
@@ -177,7 +221,7 @@ const KYCVerificationTable: React.FC<any> = ({ data }) => {
   );
 };
 
-const AccountBalanceTable: React.FC<any> = ({ data, username }) => {
+const AccountBalanceTable: React.FC<any> = ({ username, auth }) => {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -188,10 +232,25 @@ const AccountBalanceTable: React.FC<any> = ({ data, username }) => {
   const [openDeductModal, setOpenDeductModal] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  let auth: any = {};
-  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
-    auth = JSON.parse(localStorage.getItem("auth") || "");
-  }
+  const { isLoading: isLoadingData, data: { data: result = {} } = {} } =
+    useCustomQuery({
+      queryKey: ["userCryptoBalance", username],
+      enabled: username.length > 0,
+      queryFn: async () => {
+        const result = await axios.post(
+          `${BASE_URL}/users/crypto-balance`,
+          {
+            username,
+          },
+          {
+            headers: {
+              Authorization: auth.accessToken,
+            },
+          }
+        );
+        return result;
+      },
+    });
 
   const columns: any = [
     {
@@ -400,7 +459,7 @@ const AccountBalanceTable: React.FC<any> = ({ data, username }) => {
           boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
           overflow: "hidden",
         }}
-        dataSource={data.map((item: any) => ({
+        dataSource={(result?.data || []).map((item: any) => ({
           ...item,
           addAction: (currency: string, address: string) => {
             setOpenAddModal(true);
@@ -414,28 +473,49 @@ const AccountBalanceTable: React.FC<any> = ({ data, username }) => {
           },
         }))}
         columns={columns}
+        loading={isLoadingData}
       />
     </>
   );
 };
 
-const CardsTable: React.FC = () => {
+const CardsTable: React.FC<any> = ({ username, auth }) => {
   const router = useRouter();
   const [modalType, setModalType] = useState<
     "cardDetails" | "add" | "deduct" | null
   >(null);
+
+  const { isLoading, data: { data: result = {} } = {} } = useCustomQuery({
+    queryKey: ["userCards", username],
+    enabled: username.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/users/cards`,
+        {
+          username,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
   const columns: any = [
     {
-      title: "Name",
-      dataIndex: "name",
-      render: (_: any, { name }: any) => (
+      title: "Name & Status",
+      // dataIndex: "cardNumber",
+      render: (_: any, { cardNumber, status }: any) => (
         <div className={styles.cardContainer}>
-          <img src="/images/master-card.png" className={styles.cardImage} />
+          {/* <img src="/images/master-card.png" className={styles.cardImage} /> */}
           <div>
-            <p className={styles.cardTitle}>Mastercard ending in 5678</p>
+            <p className={styles.cardTitle}>{cardNumber}</p>
             <p className={styles.cardTitle}>
-              Name:{" "}
-              <span style={{ color: "rgb(34, 81, 250)" }}>Emma’s sub</span>
+              Status:{" "}
+              <span style={{ color: "rgb(34, 81, 250)" }}>{status}</span>
             </p>
           </div>
         </div>
@@ -443,19 +523,29 @@ const CardsTable: React.FC = () => {
     },
     {
       title: "Card type",
-      dataIndex: "cardType",
-      key: "cardType",
-      render: (_: any, { cardType }: any) => (
-        <p className={styles.cardType}>{cardType}</p>
+      dataIndex: "type",
+      key: "type",
+      render: (_: any, { type }: any) => (
+        <p className={styles.cardType}>{type}</p>
       ),
     },
     {
       title: "Card balance",
-      dataIndex: "cardBalance",
-      key: "cardBalance",
-      render: (_: any, { cardBalance }: any) => (
+      dataIndex: "balance",
+      key: "balance",
+      render: (_: any, { balance }: any) => (
         <div className={styles.cardContainer}>
-          <p className={styles.cardAddress}>${cardBalance}</p>
+          <p className={styles.cardAddress}>${balance}</p>
+        </div>
+      ),
+    },
+    {
+      title: "Card Expiry Date",
+      dataIndex: "expiryDate",
+      key: "expiryDate",
+      render: (_: any, { expiryDate }: any) => (
+        <div className={styles.cardContainer}>
+          <p className={styles.cardAddress}>{expiryDate}</p>
         </div>
       ),
     },
@@ -701,8 +791,9 @@ const CardsTable: React.FC = () => {
             boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
             overflow: "hidden",
           }}
-          dataSource={dataSource}
+          dataSource={result?.data}
           columns={columns}
+          loading={isLoading}
         />
       </div>
     </>
@@ -822,7 +913,6 @@ interface IProps {
 const UserDetails = ({ userId, userType }: IProps) => {
   const router = useRouter();
   const [messageApi, contextHolder] = message.useMessage();
-
   const [currentTab, setCurrentTab] = useState<string>("paymentAccounts");
   const [loading, setLoading] = useState<boolean>(false);
   const [isSmsModalOpened, setIsSmsModalOpened] = useState<boolean>(false);
@@ -845,8 +935,10 @@ const UserDetails = ({ userId, userType }: IProps) => {
     enabled: userId.length > 0,
     queryFn: async () => {
       const result = await axios.post(
-        `${BASE_URL}/users/${userId}`,
-        {},
+        `${BASE_URL}/users/details`,
+        {
+          username: userId,
+        },
         {
           headers: {
             Authorization: auth.accessToken,
@@ -857,39 +949,13 @@ const UserDetails = ({ userId, userType }: IProps) => {
     },
   });
 
-  const getUserDetail = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/users/${router.query.id}`,
-        {},
-        {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoading(false);
-        if (res.data.success) {
-          setUser(res.data.data);
-        }
-      })
-      .catch((e) => {
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
   const sendSms = () => {
     setIsSmsLoading(true);
     axios
       .post(
         `${BASE_URL}/users/send-sms`,
         {
-          username: result?.data.user?.username,
+          username: result?.data?.username,
           message: smsText,
         },
         {
@@ -933,7 +999,7 @@ const UserDetails = ({ userId, userType }: IProps) => {
       .post(
         `${BASE_URL}/users/update-user-status`,
         {
-          username: result?.data.user?.username,
+          username: result?.data?.username,
           status: isDisabled ? "disable" : "enable",
         },
         {
@@ -980,7 +1046,7 @@ const UserDetails = ({ userId, userType }: IProps) => {
       .post(
         `${BASE_URL}/users/update-user-buy-limit`,
         {
-          username: result?.data.user?.username,
+          username: result?.data?.username,
           limit: buyLimit,
         },
         {
@@ -1020,338 +1086,328 @@ const UserDetails = ({ userId, userType }: IProps) => {
     });
     setIsBuyModalOpened(false);
   };
-
-  useEffect(() => {
-    getUserDetail();
-  }, [router.query]);
-
   return (
     <PageLayout title="User Details">
-      {isLoading ? (
-        <div style={{ marginTop: 60 }}>
-          <Loader />
+      <>
+        {contextHolder}
+        <AntModal
+          title="Send SMS"
+          open={isSmsModalOpened}
+          onOk={sendSms}
+          onCancel={cancelSendSms}
+          confirmLoading={isSmsLoading}
+        >
+          <div style={{ paddingBottom: 20 }}>
+            <p>Enter the SMS content. Limit for 1 SMS is 160 characters.</p>
+            <AntInput.TextArea
+              rows={4}
+              maxLength={160}
+              showCount
+              value={smsText}
+              onChange={(e: any) => setSmsText(e.target.value)}
+            />
+          </div>
+        </AntModal>
+        <AntModal
+          title="Disable Account"
+          open={isDisableModal}
+          onOk={() => disableAccount(true)}
+          onCancel={() => cancelDisableAccount(true)}
+          confirmLoading={isDisableLoading}
+        >
+          <div style={{ paddingBottom: 20 }}>
+            <p>Are you sure you want to disable account?</p>
+          </div>
+        </AntModal>
+        <AntModal
+          title="Update Buy Limits"
+          open={isBuyModalOpened}
+          onOk={updateBuyLimit}
+          onCancel={cancelBuyLimit}
+          confirmLoading={isBuyLoading}
+        >
+          <div style={{ paddingBottom: 20 }}>
+            <p>Enter USD amount to update Buy Limit.</p>
+            <InputNumber
+              value={buyLimit}
+              onChange={(value: any) => setBuyLimit(value)}
+              type="number"
+              style={{ width: "100%" }}
+            />
+          </div>
+        </AntModal>
+        <div className={styles.header}>
+          <NavigationStep color="white" hideButton />
+          <div className={styles.headerContainer}>
+            <Button
+              color="white"
+              isText
+              onClick={() => router.push(`/users?type=${userType}`)}
+            >
+              <img src="/icons/arrow-left.svg" />
+            </Button>
+            <h1 className={styles.headerText}>User details</h1>
+          </div>
+          <Divider style={{ marginTop: 16, marginBottom: 0 }} />
         </div>
-      ) : (
-        <>
-          {contextHolder}
-          <AntModal
-            title="Send SMS"
-            open={isSmsModalOpened}
-            onOk={sendSms}
-            onCancel={cancelSendSms}
-            confirmLoading={isSmsLoading}
-          >
-            <div style={{ paddingBottom: 20 }}>
-              <p>Enter the SMS content. Limit for 1 SMS is 160 characters.</p>
-              <AntInput.TextArea
-                rows={4}
-                maxLength={160}
-                showCount
-                value={smsText}
-                onChange={(e: any) => setSmsText(e.target.value)}
-              />
-            </div>
-          </AntModal>
-          <AntModal
-            title="Disable Account"
-            open={isDisableModal}
-            onOk={() => disableAccount(true)}
-            onCancel={() => cancelDisableAccount(true)}
-            confirmLoading={isDisableLoading}
-          >
-            <div style={{ paddingBottom: 20 }}>
-              <p>Are you sure you want to disable account?</p>
-            </div>
-          </AntModal>
-          <AntModal
-            title="Update Buy Limits"
-            open={isBuyModalOpened}
-            onOk={updateBuyLimit}
-            onCancel={cancelBuyLimit}
-            confirmLoading={isBuyLoading}
-          >
-            <div style={{ paddingBottom: 20 }}>
-              <p>Enter USD amount to update Buy Limit.</p>
-              <InputNumber
-                value={buyLimit}
-                onChange={(value: any) => setBuyLimit(value)}
-                type="number"
-                style={{ width: "100%" }}
-              />
-            </div>
-          </AntModal>
-          <div className={styles.header}>
-            <NavigationStep color="white" hideButton />
-            <div className={styles.headerContainer}>
-              <Button
-                color="white"
-                isText
-                onClick={() => router.push(`/users?type=${userType}`)}
-              >
-                <img src="/icons/arrow-left.svg" />
-              </Button>
-              <h1 className={styles.headerText}>User details</h1>
-            </div>
-            <Divider style={{ marginTop: 16, marginBottom: 0 }} />
-          </div>
 
-          <div className={styles.profileHeader}>
-            <Avatar shape="square" size={64} icon={<UserOutlined />} />
-            <div className={styles.profileNameContainer}>
-              <h3>
-                {/* {user?.user?.firstName} {user?.user?.lastName} */}
-                {result?.data?.user.firstName} {result?.data.user.lastName}
-              </h3>
-              <p>@{result?.data.user.username}</p>
+        {isLoading ? (
+          <Skeleton active style={{ margin: "20px" }} />
+        ) : (
+          <>
+            <div className={styles.profileHeader}>
+              <Avatar shape="square" size={64} icon={<UserOutlined />} />
+              <div className={styles.profileNameContainer}>
+                <h3>
+                  {result?.data.firstName} {result?.data.lastName}
+                </h3>
+                <p>@{result?.data.username}</p>
+              </div>
+              <div className={styles.profileActions}>
+                <div style={{ marginLeft: 10 }}>
+                  <AntButton
+                    size="large"
+                    className={styles.profileActionBtnsDanger}
+                    danger
+                    onClick={() => setIsDisableModal(true)}
+                  >
+                    Disable Account
+                  </AntButton>
+                </div>
+                <div style={{ marginLeft: 10 }}>
+                  <Button
+                    className={styles.profileActionBtns}
+                    onClick={() => setIsSmsModalOpened(true)}
+                    color="white"
+                  >
+                    Send SMS
+                  </Button>
+                </div>
+                <div style={{ marginLeft: 10 }}>
+                  <Button
+                    onClick={() => setIsBuyModalOpened(true)}
+                    className={styles.profileActionBtns}
+                  >
+                    Update Buy Limits
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className={styles.profileActions}>
-              <div style={{ marginLeft: 10 }}>
-                <AntButton
-                  size="large"
-                  className={styles.profileActionBtnsDanger}
-                  danger
-                  onClick={() => setIsDisableModal(true)}
-                >
-                  Disable Account
-                </AntButton>
-              </div>
-              <div style={{ marginLeft: 10 }}>
-                <Button
-                  className={styles.profileActionBtns}
-                  onClick={() => setIsSmsModalOpened(true)}
-                  color="white"
-                >
-                  Send SMS
-                </Button>
-              </div>
-              <div style={{ marginLeft: 10 }}>
-                <Button
-                  onClick={() => setIsBuyModalOpened(true)}
-                  className={styles.profileActionBtns}
-                >
-                  Update Buy Limits
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className={styles.container}>
-            <div className={styles.profileDetailsContainer}>
-              <div className={styles.profileDetails}>
-                <KeyValue
-                  items={[
-                    {
-                      key: "First and Other Names:",
-                      value: result?.data.user?.firstName,
-                    },
-                    {
-                      key: "Last Name:",
-                      value: result?.data.user?.lastName,
-                    },
-                    {
-                      key: "Username:",
-                      value: result?.data.user?.username,
-                    },
-                    {
-                      key: "Email Address",
-                      value: result?.data.user?.email,
-                    },
-                    {
-                      key: "Phone Number:",
-                      value: `+${result?.data.user?.phone}`,
-                    },
-                    {
-                      key: "State/Region:",
-                      value: result?.data.user?.stateRegion,
-                    },
-                    {
-                      key: "Address:",
-                      value: result?.data.user?.homeAddress,
-                    },
-                    {
-                      key: "Ghana Card No:",
-                      value: result?.data.user?.cardNo,
-                    },
-                    {
-                      key: "Can Send:",
-                      value: result?.data?.user?.canSend?.toString(),
-                    },
-                    {
-                      key: "Can deposit:",
-                      value: result?.data?.user?.canDeposit?.toString(),
-                    },
-                  ]}
-                />
-              </div>
-              <div className={styles.profileStatus}>
-                <KeyValue
-                  noFooterBoder
-                  items={[
-                    {
-                      key: "KYC status:",
-                      valueComponent: (
-                        <Tag
-                          color={
-                            result?.data?.kycInfo?.status === "success"
-                              ? "success"
-                              : "error"
-                          }
-                        >
-                          {result?.data?.kycInfo?.status}
-                        </Tag>
-                      ),
-                    },
-                    {
-                      key: "Sign Up Date:",
-                      value: result?.data.user?.signUpDate,
-                    },
-                    {
-                      key: "Last Active:",
-                      value: result?.data.user?.lastActive,
-                    },
-                    {
-                      key: "Today's Limit",
-                      valueComponent: (
-                        <div className={styles.progressContainer}>
-                          <div className={styles.progress}>
-                            <div
-                              className={styles.fill}
-                              style={{ width: "70%" }}
-                            />
+            <div className={styles.container}>
+              <div className={styles.profileDetailsContainer}>
+                <div className={styles.profileDetails}>
+                  <KeyValue
+                    items={[
+                      {
+                        key: "First and Other Names:",
+                        value: result?.data?.firstName,
+                      },
+                      {
+                        key: "Last Name:",
+                        value: result?.data?.lastName,
+                      },
+                      {
+                        key: "Username:",
+                        value: result?.data?.username,
+                      },
+                      {
+                        key: "Email Address",
+                        value: result?.data?.email,
+                      },
+                      {
+                        key: "Phone Number:",
+                        value: `+${result?.data?.phone}`,
+                      },
+                      {
+                        key: "State/Region:",
+                        value: result?.data?.stateRegion,
+                      },
+                      {
+                        key: "Address:",
+                        value: result?.data?.homeAddress,
+                      },
+                      {
+                        key: "Ghana Card No:",
+                        value: result?.data?.cardNo,
+                      },
+                      {
+                        key: "Can Send:",
+                        value: result?.data?.canSend?.toString(),
+                      },
+                      {
+                        key: "Can deposit:",
+                        value: result?.data?.canDeposit?.toString(),
+                      },
+                    ]}
+                  />
+                </div>
+                <div className={styles.profileStatus}>
+                  <KeyValue
+                    noFooterBoder
+                    items={[
+                      {
+                        key: "KYC status:",
+                        valueComponent: (
+                          <Tag
+                            color={
+                              result?.data?.kycInfo?.status === "success"
+                                ? "success"
+                                : "error"
+                            }
+                          >
+                            {result?.data?.kycInfo?.status}
+                          </Tag>
+                        ),
+                      },
+                      {
+                        key: "Sign Up Date:",
+                        value: result?.data?.signUpDate,
+                      },
+                      {
+                        key: "Last Active:",
+                        value: result?.data?.lastActive,
+                      },
+                      {
+                        key: "Today's Limit",
+                        valueComponent: (
+                          <div className={styles.progressContainer}>
+                            <div className={styles.progress}>
+                              <div
+                                className={styles.fill}
+                                style={{ width: "70%" }}
+                              />
+                            </div>
+                            <span>70%</span>
                           </div>
-                          <span>70%</span>
-                        </div>
-                      ),
-                    },
-                    {
-                      key: "Verification TIER:",
-                      value: result?.data?.user?.verificationTier,
-                    },
-                    {
-                      key: "Can Withdraw:",
-                      value: result?.data?.user?.canWithdraw?.toString(),
-                    },
-                    {
-                      key: "Can trade",
-                      value: result?.data?.user?.canTrade?.toString(),
-                    },
-                  ]}
-                />
+                        ),
+                      },
+                      {
+                        key: "Verification TIER:",
+                        value: result?.data?.verificationTier,
+                      },
+                      {
+                        key: "Can Withdraw:",
+                        value: result?.data?.canWithdraw?.toString(),
+                      },
+                      {
+                        key: "Can trade",
+                        value: result?.data?.canTrade?.toString(),
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             </div>
-            <Divider />
-            <h2 className={styles.title}>User Details</h2>
-            <div className={styles.tabContainer}>
-              <button
-                onClick={() => setCurrentTab("paymentAccounts")}
-                style={{
-                  background:
-                    currentTab === "paymentAccounts" ? "white" : "none",
-                  border:
-                    currentTab === "paymentAccounts"
-                      ? "1px solid var(--gray-100, #f2f4f7)"
-                      : "none",
-                  boxShadow:
-                    currentTab === "paymentAccounts"
-                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                      : "none",
-                }}
-                className={styles.tabItem}
-              >
-                Payment Accounts
-              </button>
-              <button
-                onClick={() => setCurrentTab("accountBalance")}
-                style={{
-                  background:
-                    currentTab === "accountBalance" ? "white" : "none",
-                  border:
-                    currentTab === "accountBalance"
-                      ? "1px solid var(--gray-100, #f2f4f7)"
-                      : "none",
-                  boxShadow:
-                    currentTab === "accountBalance"
-                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                      : "none",
-                }}
-                className={styles.tabItem}
-              >
-                Account Balance
-              </button>
-              <button
-                onClick={() => setCurrentTab("kycVerification")}
-                style={{
-                  background:
-                    currentTab === "kycVerification" ? "white" : "none",
-                  border:
-                    currentTab === "kycVerification"
-                      ? "1px solid var(--gray-100, #f2f4f7)"
-                      : "none",
-                  boxShadow:
-                    currentTab === "kycVerification"
-                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                      : "none",
-                }}
-                className={styles.tabItem}
-              >
-                KYC Verification
-              </button>
-              <button
-                onClick={() => setCurrentTab("cards")}
-                style={{
-                  background: currentTab === "cards" ? "white" : "none",
-                  border:
-                    currentTab === "cards"
-                      ? "1px solid var(--gray-100, #f2f4f7)"
-                      : "none",
-                  boxShadow:
-                    currentTab === "cards"
-                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                      : "none",
-                }}
-                className={styles.tabItem}
-              >
-                Cards
-              </button>
-              <button
-                onClick={() => setCurrentTab("transactions")}
-                style={{
-                  background: currentTab === "transactions" ? "white" : "none",
-                  border:
-                    currentTab === "transactions"
-                      ? "1px solid var(--gray-100, #f2f4f7)"
-                      : "none",
-                  boxShadow:
-                    currentTab === "transactions"
-                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                      : "none",
-                }}
-                className={styles.tabItem}
-              >
-                Transactions
-              </button>
-            </div>
-            {currentTab === "accountBalance" && (
-              <AccountBalanceTable
-                data={result?.data.cryptoAccountBalances}
-                username={result?.data?.user?.username}
-              />
-            )}
-            {currentTab === "kycVerification" && (
-              <KYCVerificationTable data={[result?.data.kycInfo]} />
-            )}
-            {currentTab === "paymentAccounts" && (
-              <PaymentAccountsTable data={result?.data.paymentAccounts} />
-            )}
-            {currentTab === "cards" && <CardsTable />}
-            {currentTab === "transactions" && (
-              <TransactionsTable
-                username={result?.data?.user?.username}
-                userType={userType}
-              />
-            )}
+          </>
+        )}
+
+        <div className={styles.container}>
+          <Divider />
+          <h2 className={styles.title}>User Details</h2>
+          <div className={styles.tabContainer}>
+            <button
+              onClick={() => setCurrentTab("paymentAccounts")}
+              style={{
+                background: currentTab === "paymentAccounts" ? "white" : "none",
+                border:
+                  currentTab === "paymentAccounts"
+                    ? "1px solid var(--gray-100, #f2f4f7)"
+                    : "none",
+                boxShadow:
+                  currentTab === "paymentAccounts"
+                    ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                    : "none",
+              }}
+              className={styles.tabItem}
+            >
+              Payment Accounts
+            </button>
+            <button
+              onClick={() => setCurrentTab("accountBalance")}
+              style={{
+                background: currentTab === "accountBalance" ? "white" : "none",
+                border:
+                  currentTab === "accountBalance"
+                    ? "1px solid var(--gray-100, #f2f4f7)"
+                    : "none",
+                boxShadow:
+                  currentTab === "accountBalance"
+                    ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                    : "none",
+              }}
+              className={styles.tabItem}
+            >
+              Account Balance
+            </button>
+            <button
+              onClick={() => setCurrentTab("kycVerification")}
+              style={{
+                background: currentTab === "kycVerification" ? "white" : "none",
+                border:
+                  currentTab === "kycVerification"
+                    ? "1px solid var(--gray-100, #f2f4f7)"
+                    : "none",
+                boxShadow:
+                  currentTab === "kycVerification"
+                    ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                    : "none",
+              }}
+              className={styles.tabItem}
+            >
+              KYC Verification
+            </button>
+            <button
+              onClick={() => setCurrentTab("cards")}
+              style={{
+                background: currentTab === "cards" ? "white" : "none",
+                border:
+                  currentTab === "cards"
+                    ? "1px solid var(--gray-100, #f2f4f7)"
+                    : "none",
+                boxShadow:
+                  currentTab === "cards"
+                    ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                    : "none",
+              }}
+              className={styles.tabItem}
+            >
+              Cards
+            </button>
+            <button
+              onClick={() => setCurrentTab("transactions")}
+              style={{
+                background: currentTab === "transactions" ? "white" : "none",
+                border:
+                  currentTab === "transactions"
+                    ? "1px solid var(--gray-100, #f2f4f7)"
+                    : "none",
+                boxShadow:
+                  currentTab === "transactions"
+                    ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                    : "none",
+              }}
+              className={styles.tabItem}
+            >
+              Transactions
+            </button>
           </div>
-        </>
-      )}
+          {currentTab === "accountBalance" && (
+            <AccountBalanceTable username={userId} auth={auth} />
+          )}
+          {currentTab === "kycVerification" && (
+            <KYCVerificationTable username={userId} auth={auth} />
+          )}
+          {currentTab === "paymentAccounts" && (
+            <PaymentAccountsTable username={userId} auth={auth} />
+          )}
+          {currentTab === "cards" && (
+            <CardsTable username={userId} auth={auth} />
+          )}
+          {currentTab === "transactions" && (
+            <TransactionsTable username={userId} userType={userType} />
+          )}
+        </div>
+      </>
     </PageLayout>
   );
 };

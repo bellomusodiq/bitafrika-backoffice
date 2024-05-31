@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Table, Tag } from "antd";
+import { Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -53,7 +53,7 @@ const TRANSACTIONS_COLUMNS = [
     dataIndex: "transactionStatus",
     key: "transactionStatus",
     render: (_: any, { transactionStatus }: any) => (
-      <Tag color={transactionStatus === "Approved" ? "success" : "failed"}>
+      <Tag color={transactionStatus === "Approved" ? "success" : "warning"}>
         {transactionStatus}
       </Tag>
     ),
@@ -98,6 +98,29 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       return result;
     },
   });
+  const {
+    isLoading: isLoadingTransaction,
+    data: { data: cardTransactions = {} } = {},
+  } = useCustomQuery({
+    queryKey: ["cardTransactions", cardId],
+    enabled: cardId?.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/virtual-cards/card-transactions`,
+        {
+          cardId: cardId,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
+  console.log("cardTransactions", cardTransactions);
 
   const cardData = useMemo(() => {
     return result?.data;
@@ -268,6 +291,18 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
     setCurrentUser(user);
   };
 
+  const renderSkeleton = () => (
+    <Skeleton
+      active
+      title={false}
+      paragraph={{
+        rows: 1,
+        style: { margin: "5px 0 0 20px" },
+        width: "100%",
+      }}
+    />
+  );
+
   return (
     <PageLayout title="Home">
       <Modal
@@ -409,121 +444,131 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           </div>
         </div>
       </Modal>
-      {isLoading ? (
-        <div style={{ marginTop: 60 }}>
-          <Loader />
-        </div>
-      ) : (
-        <div className={styles.container}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <Button color="white" isText onClick={() => router.back()}>
-              <img src="/icons/arrow-left.svg" />
-            </Button>
-            <h3 className={styles.header} style={{ marginLeft: 5 }}>
-              Card details
-            </h3>
-          </div>
 
-          <div className={styles.cardDetailContainer}>
-            <div className={styles.cardLeft}>
-              <VirtualCard
-                status={cardData?.cardDetails?.status}
-                name={cardData?.cardDetails?.nameOnCard}
-                cardNumber={cardData?.cardDetails?.cardNumber}
-                expDate={cardData?.cardDetails?.expiry}
-                cvv={cardData?.cardDetails?.cvv}
-              />
-              <div className={styles.btnContainer}>
-                <button onClick={() => setOpenModal("topup")}>
-                  <div className={styles.btn}>
-                    <img src="/icons/cards-plus.svg" />
-                  </div>
-                  Top Up
-                </button>
-                <button onClick={() => setOpenModal("withdraw")}>
-                  <div className={styles.btn}>
-                    <img src="/icons/cards-minus.svg" />
-                  </div>
-                  Withdraw
-                </button>
-                <button onClick={() => setOpenModal("freeze")}>
-                  <div className={styles.btn}>
-                    <img src="/icons/freeze.svg" />
-                  </div>
-                  Freeze Card
-                </button>
-                <button onClick={() => setOpenModal("terminate")}>
-                  <div className={styles.btn}>
-                    <img src="/icons/terminate.svg" />
-                  </div>
-                  Terminate
-                </button>
-              </div>
+      <div className={styles.container}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Button color="white" isText onClick={() => router.back()}>
+            <img src="/icons/arrow-left.svg" />
+          </Button>
+          <h3 className={styles.header} style={{ marginLeft: 5 }}>
+            Card details
+          </h3>
+        </div>
+
+        <div className={styles.cardDetailContainer}>
+          <div className={styles.cardLeft}>
+            {isLoading ? (
+              <Skeleton active />
+            ) : (
+              <>
+                <VirtualCard
+                  status={cardData?.status}
+                  name={cardData?.nameOnCard}
+                  cardNumber={cardData?.cardNumber}
+                  expDate={cardData?.expiry}
+                  cvv={cardData?.cvv}
+                />
+                <div className={styles.btnContainer}>
+                  <button onClick={() => setOpenModal("topup")}>
+                    <div className={styles.btn}>
+                      <img src="/icons/cards-plus.svg" />
+                    </div>
+                    Top Up
+                  </button>
+                  <button onClick={() => setOpenModal("withdraw")}>
+                    <div className={styles.btn}>
+                      <img src="/icons/cards-minus.svg" />
+                    </div>
+                    Withdraw
+                  </button>
+                  <button onClick={() => setOpenModal("freeze")}>
+                    <div className={styles.btn}>
+                      <img src="/icons/freeze.svg" />
+                    </div>
+                    Freeze Card
+                  </button>
+                  <button onClick={() => setOpenModal("terminate")}>
+                    <div className={styles.btn}>
+                      <img src="/icons/terminate.svg" />
+                    </div>
+                    Terminate
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+          <div className={styles.cardRight}>
+            <p className={styles.cardItemTitle}>Details</p>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.itemText}>Username </p>
+              {isLoading ? (
+                renderSkeleton()
+              ) : (
+                <p className={styles.itemText}>{cardData?.username}</p>
+              )}
             </div>
-            <div className={styles.cardRight}>
-              <p className={styles.cardItemTitle}>Details</p>
-              <div className={styles.divider} />
-              <div className={styles.keyValue}>
-                <p className={styles.itemText}>Username</p>
-                <p className={styles.itemText}>
-                  @username (missing from backend)
-                </p>
-              </div>
-              <div className={styles.divider} />
-              <div className={styles.keyValue}>
-                <p className={styles.itemText}>Current balance</p>
-                <p className={styles.itemText}>
-                  ${cardData?.cardDetails?.cardBalance}
-                </p>
-              </div>
-              <div className={styles.divider} />
-              <div className={styles.keyValue}>
-                <p className={styles.itemText}>Created date</p>
-                <p className={styles.itemText}>
-                  {cardData?.cardDetails?.createdAt}
-                </p>
-              </div>
-              <div className={styles.divider} />
-              <div className={styles.keyValue}>
-                <p className={styles.itemText}>Expiration date</p>
-                <p className={styles.itemText}>
-                  {cardData?.cardDetails?.expiration}
-                </p>
-              </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.itemText}>Current balance</p>
+              {isLoading ? (
+                renderSkeleton()
+              ) : (
+                <p className={styles.itemText}>{cardData?.cardBalance}</p>
+              )}
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.itemText}>Created date</p>
+              {isLoading ? (
+                renderSkeleton()
+              ) : (
+                <p className={styles.itemText}>{cardData?.createdAt}</p>
+              )}
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.itemText}>Expiration date</p>
+              {isLoading ? (
+                renderSkeleton()
+              ) : (
+                <p className={styles.itemText}>{cardData?.expiration}</p>
+              )}
             </div>
           </div>
-          <h3 className={styles.tableHeader}>Transactions</h3>
-          <div className={styles.table} style={{ overflow: "hidden" }}>
-            <Table
-              style={{
-                fontFamily: "PP Telegraf",
-                border: "1px solid var(--Gray-200, #EAECF0)",
-                borderRadius: 12,
-                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                overflow: "hidden",
-              }}
-              dataSource={cardData?.transactions?.map((user: any) => ({
+        </div>
+        <h3 className={styles.tableHeader}>Transactions</h3>
+        <div className={styles.table} style={{ overflow: "hidden" }}>
+          <Table
+            style={{
+              fontFamily: "PP Telegraf",
+              border: "1px solid var(--Gray-200, #EAECF0)",
+              borderRadius: 12,
+              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+              overflow: "hidden",
+            }}
+            dataSource={cardTransactions?.data?.transactions?.map(
+              (user: any) => ({
                 ...user,
                 action: () => showModal(user),
-              }))}
-              columns={TRANSACTIONS_COLUMNS}
-              loading={isLoading}
-            />
-          </div>
+              })
+            )}
+            columns={TRANSACTIONS_COLUMNS}
+            loading={isLoadingTransaction}
+          />
         </div>
-      )}
+      </div>
     </PageLayout>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { id } = context.query;
-  // console.log({ others });
   return {
     props: {
       cardId: id,

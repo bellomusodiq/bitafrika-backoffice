@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/search/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Skeleton, Table } from "antd";
+import { Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -55,19 +55,9 @@ const USER_COLUMNS = [
     dataIndex: "kycVerified",
     key: "kycVerified",
     render: (_: any, { kycVerified }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: kycVerified ? "#EDFCF2" : "#FBEAE9",
-          color: kycVerified ? "#087443" : "#F04438",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>
-          {kycVerified ? "Verified" : "Not Verified"}
-        </span>
-      </div>
+      <Tag color={kycVerified ? "success" : "warning"}>
+        {kycVerified ? "Verified" : "Not Verified"}
+      </Tag>
     ),
   },
   {
@@ -142,17 +132,7 @@ const MOMO_TOPUP_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+      <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
     ),
   },
   {
@@ -217,17 +197,7 @@ const MOMO_WITHDRWAL_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12, margin: "0px 10px" }}>{status}</span>
-      </div>
+      <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
     ),
   },
   {
@@ -290,17 +260,7 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+      <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
     ),
   },
   // {

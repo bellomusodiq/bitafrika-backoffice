@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/transactions/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table, Tag } from "antd";
+import { DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -250,9 +250,7 @@ export default function Search() {
             alignItems: "center",
           }}
         >
-          <div className={styles.statusContainer}>
-            <div className={styles.statusIndicator} /> {status}
-          </div>
+          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
           <p style={{ marginLeft: 5 }}>{createdOn}</p>
         </div>
       ),
@@ -1399,7 +1397,7 @@ export default function Search() {
           </div>
         </div>
         {loading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>{data.length} result found!</p>
