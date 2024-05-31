@@ -56,7 +56,7 @@ const CARDS_COLUMNS = [
     dataIndex: "sstatus",
     key: "status",
     render: (_: any, { status }: any) => (
-      <Tag color={status === "Card - Active" ? "success" : "failed"}>
+      <Tag color={status === "Card - Active" ? "success" : "warning"}>
         {status}
       </Tag>
     ),
@@ -81,12 +81,10 @@ export default function Search({ type }: { type: string }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>(type || "");
+  const [searchType, setSearchType] = useState<string>(type || "All");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [payload, setPayload] = useState<string>(type || "");
-
-  console.log("type", type, "payload", payload);
 
   const showModal = (user: any) => {
     setCurrentUser(user);
@@ -103,7 +101,7 @@ export default function Search({ type }: { type: string }) {
   }
 
   const { isLoading, data: result } = useCustomQuery({
-    queryKey: ["userInfo", payload, currentPage],
+    queryKey: ["cardInfo", payload, currentPage],
     enabled: payload.length > 0,
     queryFn: async () => {
       const result = await axios.post(
@@ -258,7 +256,7 @@ export default function Search({ type }: { type: string }) {
               <Dropdown
                 value={searchType}
                 options={[
-                  { title: "All", value: "" },
+                  { title: "All", value: "All" },
                   { title: "Active", value: "Active" },
                   { title: "In-active", value: "inActive" },
                 ]}
@@ -286,7 +284,7 @@ export default function Search({ type }: { type: string }) {
           </div>
         </div>
         {isLoading ? (
-          <Skeleton active />
+          <Skeleton active style={{ marginTop: "20px" }} />
         ) : formatData && searchType === payload ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>

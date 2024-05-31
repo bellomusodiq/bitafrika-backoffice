@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/swap/search.module.css";
-import { Button } from "antd";
+import { Button, Skeleton, Tag } from "antd";
 import { Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
@@ -68,9 +68,7 @@ const REQUESTS_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
+      <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
     ),
   },
   {
@@ -229,7 +227,9 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {result && search === params ? (
+        {isLoading ? (
+          <Skeleton active style={{ margin: "20px 0" }} />
+        ) : result && search === params ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
               {result?.data.length} result found!
@@ -250,9 +250,7 @@ export default function Search() {
               loading={isLoading}
             />
           </div>
-        ) : (
-          <p className={styles.searchHint}></p>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );

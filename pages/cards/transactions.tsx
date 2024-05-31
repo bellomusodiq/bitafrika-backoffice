@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table, Tag } from "antd";
+import { DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -59,7 +59,7 @@ const TRANSACTIONS_COLUMNS = [
     dataIndex: "transactionStatus",
     key: "transactionStatus",
     render: (_: any, { transactionStatus }: any) => (
-      <Tag color={transactionStatus === "Approved" ? "#087443" : "#424242"}>
+      <Tag color={transactionStatus === "Approved" ? "success" : "warning"}>
         {transactionStatus}
       </Tag>
     ),
@@ -199,148 +199,140 @@ export default function Search() {
 
   return (
     <PageLayout title="Hone">
-      {loading ? (
-        <Loader />
-      ) : (
+      <Modal
+        openModal={openModal}
+        onClose={() => setOpenModal(false)}
+        headerCenter={
+          <div className={styles.modalHeader}>
+            <p>Details</p>
+            <div className={styles.breadCrumb}>Transactions</div>
+          </div>
+        }
+      >
         <>
-          <Modal
-            openModal={openModal}
-            onClose={() => setOpenModal(false)}
-            headerCenter={
-              <div className={styles.modalHeader}>
-                <p>Details</p>
-                <div className={styles.breadCrumb}>Transactions</div>
-              </div>
-            }
-          >
-            <>
-              <div className={styles.modalContainer}>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>
-                    User:{" "}
-                    <span style={{ color: "black" }}>
-                      @Samuel12345 (missing)
-                    </span>
-                  </p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Transaction ID</p>
-                  <p className={styles.value}>{currentUser?.id}</p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Amount</p>
-                  <p className={styles.value}>
-                    ${currentUser?.transactionAmount}
-                  </p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Merchant</p>
-                  <p className={styles.value}>{currentUser?.merchantName}</p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Card</p>
-                  <p className={styles.value}>{currentUser?.maskPan}</p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Transaction type</p>
-                  <p className={styles.value}>{currentUser?.transactionType}</p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Total</p>
-                  <p className={styles.value}>
-                    ${currentUser?.transactionAmount}
-                  </p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Description</p>
-                  <p className={styles.value}>{currentUser?.description}</p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Status</p>
-                  <span
-                    style={{
-                      borderRadius: 16,
-                      padding: "12px 16px",
-                      backgroundColor:
-                        currentUser?.transactionStatus === "Approved"
-                          ? "#EDFCF2"
-                          : "#FAFAFA",
-                      color:
-                        currentUser?.transactionStatus === "Approved"
-                          ? "#087443"
-                          : "#424242",
-                    }}
-                  >
-                    {currentUser?.transactionStatus}
-                  </span>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Transaction date</p>
-                  <p className={styles.value}>{currentUser?.createdAt}</p>
-                </div>
-                <div className={styles.divider} />
-                <div className={styles.keyValue}>
-                  <p className={styles.key}>Location</p>
-                  <p className={styles.value}>
-                    {currentUser?.merchantCity}, {currentUser?.merchantCountry}
-                  </p>
-                </div>
-              </div>
-              <div className={styles.modalFooter}>
-                <div>
-                  <Button onClick={() => setOpenModal(false)}>Close</Button>
-                </div>
-              </div>
-            </>
-          </Modal>
-          <div className={styles.container}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <Button color="white" isText onClick={router.back}>
-                <img src="/icons/arrow-left.svg" />
-              </Button>
-              <h3 className={styles.header}>Transactions</h3>
-            </div>
-
-            <div className={styles.table} style={{ overflow: "hidden" }}>
-              <p className={styles.resultText}>
-                {pageInfo?.totalCount} result found!
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>
+                User:{" "}
+                <span style={{ color: "black" }}>@Samuel12345 (missing)</span>
               </p>
-              <Table
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction ID</p>
+              <p className={styles.value}>{currentUser?.id}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Amount</p>
+              <p className={styles.value}>${currentUser?.transactionAmount}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Merchant</p>
+              <p className={styles.value}>{currentUser?.merchantName}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Card</p>
+              <p className={styles.value}>{currentUser?.maskPan}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction type</p>
+              <p className={styles.value}>{currentUser?.transactionType}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Total</p>
+              <p className={styles.value}>${currentUser?.transactionAmount}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Description</p>
+              <p className={styles.value}>{currentUser?.description}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Status</p>
+              <span
                 style={{
-                  fontFamily: "PP Telegraf",
-                  border: "1px solid var(--Gray-200, #EAECF0)",
-                  borderRadius: 12,
-                  boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-                  overflow: "hidden",
+                  borderRadius: 16,
+                  padding: "12px 16px",
+                  backgroundColor:
+                    currentUser?.transactionStatus === "Approved"
+                      ? "#EDFCF2"
+                      : "#FAFAFA",
+                  color:
+                    currentUser?.transactionStatus === "Approved"
+                      ? "#087443"
+                      : "#424242",
                 }}
-                dataSource={data?.map((item: any) => ({
-                  ...item,
-                  action: () => showModal(item),
-                }))}
-                columns={TRANSACTIONS_COLUMNS}
-                loading={loading}
-                pagination={false}
-              />
-              <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+              >
+                {currentUser?.transactionStatus}
+              </span>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Transaction date</p>
+              <p className={styles.value}>{currentUser?.createdAt}</p>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.keyValue}>
+              <p className={styles.key}>Location</p>
+              <p className={styles.value}>
+                {currentUser?.merchantCity}, {currentUser?.merchantCountry}
+              </p>
+            </div>
+          </div>
+          <div className={styles.modalFooter}>
+            <div>
+              <Button onClick={() => setOpenModal(false)}>Close</Button>
             </div>
           </div>
         </>
-      )}
+      </Modal>
+      <div className={styles.container}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <Button color="white" isText onClick={router.back}>
+            <img src="/icons/arrow-left.svg" />
+          </Button>
+          <h3 className={styles.header}>Transactions</h3>
+        </div>
+
+        {loading ? (
+          <Skeleton active style={{ margin: "30px 0" }} />
+        ) : (
+          <div className={styles.table} style={{ overflow: "hidden" }}>
+            <p className={styles.resultText}>
+              {pageInfo?.totalCount} result found!
+            </p>
+            <Table
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
+              dataSource={data?.map((item: any) => ({
+                ...item,
+                action: () => showModal(item),
+              }))}
+              columns={TRANSACTIONS_COLUMNS}
+              loading={loading}
+              pagination={false}
+            />
+            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+          </div>
+        )}
+      </div>
     </PageLayout>
   );
 }
