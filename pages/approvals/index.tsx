@@ -10,6 +10,9 @@ import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import { toast } from "react-toastify";
+import useCustomQuery from "@/hooks/useCustomQuery";
+import { BASE_URL } from "@/CONFIG";
+import axios from "axios";
 
 const columns: any = [
   {
@@ -88,6 +91,30 @@ export default function Search() {
     intiator: "",
   });
   const [pin, setPin] = useState<string>("");
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const { isLoading, data: result } = useCustomQuery({
+    queryKey: ["authorizations"],
+    enabled: true,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/authorizations`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+
+  console.log("result", result);
 
   const dataSource = [
     {

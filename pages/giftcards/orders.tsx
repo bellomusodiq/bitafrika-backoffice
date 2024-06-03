@@ -11,6 +11,7 @@ import { BASE_URL } from "@/CONFIG";
 import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
+import { GetServerSideProps } from "next";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -127,7 +128,13 @@ const GIFTCRARDS_DATA = [
   },
 ];
 
-export default function Search() {
+interface IProps {
+  status: string;
+  from: string;
+  to: string;
+}
+
+export default function Search({ status, from, to }: IProps) {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -135,6 +142,11 @@ export default function Search() {
   const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Transaction ID");
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
 
   const onSearch = () => {
     switch (searchType) {
@@ -283,3 +295,14 @@ export default function Search() {
     </PageLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { status, from, to } = context.query;
+  return {
+    props: {
+      status,
+      from,
+      to,
+    },
+  };
+};

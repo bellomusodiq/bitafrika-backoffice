@@ -32,6 +32,23 @@ const Cards: NextPage = () => {
       return result;
     },
   });
+  const { isLoading: isLoadingBalance, data: { data: balance } = {} } =
+    useCustomQuery({
+      queryKey: ["swapBalance"],
+      queryFn: async () => {
+        const result = await axios.post(
+          `${BASE_URL}/swap/usdt-balance`,
+          {},
+          {
+            headers: {
+              Authorization: auth.accessToken,
+            },
+          }
+        );
+        return result;
+      },
+    });
+  console.log("res", balance);
 
   return (
     <PageLayout>
@@ -52,11 +69,11 @@ const Cards: NextPage = () => {
           </div>
           <div className={styles.card}>
             <p className={styles.cardHeader}>Available USDT balance</p>
-            {isLoading ? (
+            {isLoadingBalance ? (
               <Skeleton active paragraph={{ rows: 0 }} />
             ) : (
               <p className={styles.cardText}>
-                {result?.data?.availableUsdtBalance} {result?.data?.currency}
+                {balance?.data?.availableUsdtBalance} {balance?.data?.currency}
               </p>
             )}
           </div>

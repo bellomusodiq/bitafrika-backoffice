@@ -17,7 +17,7 @@ const Cards: NextPage = () => {
   }
 
   const { isLoading, data: result } = useCustomQuery({
-    queryKey: [],
+    queryKey: ["giftCardOverview"],
     enabled: true,
     queryFn: async () => {
       const result = await axios.post(
@@ -115,7 +115,7 @@ const Cards: NextPage = () => {
               <p className={styles.cardHeader}>
                 Platform Balance (Balance with provider)
               </p>
-              <p className={styles.cardText}>${overview?.totalOrdersUsd}</p>
+              <p className={styles.cardText}>${overview?.platformBalance}</p>
             </div>
           </div>
         </div>

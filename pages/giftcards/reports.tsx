@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Divider, Table } from "antd";
+import { DatePicker, Divider, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
@@ -16,13 +16,13 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
 export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [status, setStatus] = useState<string>("Successful");
   const [data, setData] = useState<any>({
     orders: [
       { name: "Apple", count: 1001, usdTotal: 10000.0 },
@@ -41,35 +41,132 @@ export default function Search() {
   const [searchType, setSearchType] = useState<string>("Balance");
   const [sort, setSort] = useState<string>("highest");
   const [currentPage, setCurrentPage] = useState<number | null>(1);
+  const [coin, setCoin] = useState<string>("BTC");
+  const [status, setStatus] = useState<string>("ALL");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
-  const [coin, setCoin] = useState<string>("BTC");
+  const [params, setParams] = useState<Record<string, string> | null>(null);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+    queryKey: ["giftCardReport", params],
+    enabled: !!params,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/gift-cards/report`,
+        {
+          status: params?.status,
+          startDate: params?.fromDate,
+          endDate: params?.toDate,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
+  console.log("result", result);
+  const getStatusCode = () => {
+    switch (status) {
+      case "all":
+      case "success":
+      case "confirmed":
+        return "success";
+      case "pending":
+        return "warning";
+      case "error":
+        return "error";
+      default:
+        return "error";
+    }
+  };
+
+  const onSearch = () => {
+    setParams({
+      status,
+      fromDate,
+      toDate,
+    });
+  };
+
+  const getRandomHexColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const COLUMNS = useMemo(() => {
+    return [
+      {
+        title: "Pair",
+        dataIndex: "type",
+        key: "type",
+        render: (_: any, { type }: any) => {
+          const color = getRandomHexColor();
+          return (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div
+                className={styles.orderIcon}
+                style={{ backgroundColor: color }}
+              />
+              <p>{type}</p>
+            </div>
+          );
+        },
+      },
+      {
+        title: "Count",
+        dataIndex: "count",
+        key: "count",
+        render: (_: any, { count }: any) => <p>{count} giftcards</p>,
+      },
+      {
+        title: "Amount",
+        dataIndex: "amount",
+        key: "amount",
+        render: (_: any, { amount }: any) => <p>{amount} USD</p>,
+      },
+    ];
+  }, []);
+
+  const isActiveData = () => {
+    let isActive = true;
+    if (params?.status !== status) isActive = false;
+    if (params?.fromDate !== fromDate) isActive = false;
+    if (params?.toDate !== toDate) isActive = false;
+    return isActive;
+  };
+
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <p className={styles.filterTitle}>Filter giftcard results by</p>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Type</p>
+              <p className={styles.dropdownTitle}>Status</p>
               <Dropdown
-                value={searchType}
+                value={status}
                 options={[
-                  {
-                    title: "Giftcard transactions",
-                    value: "Giftcard transactions",
-                  },
+                  { title: "Successful", value: "success" },
+                  { title: "Failed", value: "failed" },
+                  { title: "All", value: "ALL" },
                 ]}
-                onChange={(value) => {}}
+                onChange={(value) => {
+                  setStatus(String(value));
+                }}
               />
             </div>
-
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Date range</p>
               <DatePicker.RangePicker
@@ -80,21 +177,7 @@ export default function Search() {
                 }}
               />
             </div>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Status</p>
-              <Dropdown
-                value={coin}
-                options={[
-                  { title: "Successful", value: "Successful" },
-                  { title: "Pending", value: "Pending" },
-                  { title: "Failed", value: "Failed" },
-                ]}
-                onChange={(value) => {
-                  setCoin(String(value));
-                  setData(false);
-                }}
-              />
-            </div>
+
             <div
               style={{
                 flex: 1,
@@ -106,8 +189,8 @@ export default function Search() {
             >
               <div>
                 <Button
-                  onClick={() => {}}
-                  disabled={loading}
+                  onClick={onSearch}
+                  disabled={isLoading}
                   className={styles.searchButton}
                 >
                   Apply filter
@@ -116,86 +199,129 @@ export default function Search() {
             </div>
           </div>
         </div>
-        <div className={styles.bodyContainer}>
-          <h3 className={styles.header}>Giftcard transactions report</h3>
-          <p className={styles.date}>
-            Date: {fromDate} — {toDate}
-          </p>
-          <p className={styles.date}>Status: {status}</p>
-
-          <h3 style={{ marginTop: 14 }} className={styles.header}>
-            Giftcard orders
-          </h3>
-          <div className={styles.ordersContainer}>
-            <div style={{ flex: 1 }}>
-              {data?.orders?.map((order: any) => (
-                <div className={styles.order} key={order.name}>
-                  <div
-                    className={styles.orderIcon}
-                    style={{
-                      backgroundColor: "grey",
-                    }}
-                  />
-                  <p className={styles.orderText}>
-                    <span>{order.name}</span> -{" "}
-                    <span> {order.count} orders</span> -{" "}
-                    <span className={styles.grey}>{order.usdTotal} USD</span>
-                  </p>
-                </div>
-              ))}
-            </div>
+        {isLoading ? (
+          <Skeleton active style={{ margin: "20px 0" }} />
+        ) : result && Object.keys(result?.data).length > 0 && isActiveData() ? (
+          <div className={styles.bodyContainer}>
+            <h3 className={styles.header}>Giftcard transactions report</h3>
+            <p className={styles.date}>
+              Date: {fromDate} — {toDate}
+            </p>
             <div
               style={{
-                width: "50%",
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
                 alignItems: "center",
+                gap: 5,
+                width: "50px",
+                marginTop: 4,
               }}
             >
-              <div style={{ width: 200, height: 200 }}>
-                <CustomPieChart
-                  data={data?.orders?.map((order: any) => ({
-                    value: order.usdTotal,
-                  }))}
-                />
-              </div>
-              <div className={styles.pieIndicators}>
+              <p style={{ width: "50px" }} className={styles.date}>
+                Status:
+              </p>
+              <Tag
+                color={getStatusCode()}
+                style={{ textTransform: "capitalize" }}
+              >
+                {status}
+              </Tag>
+            </div>
+
+            <h3 style={{ marginTop: 14 }} className={styles.header}>
+              Giftcard orders
+            </h3>
+            {/* <div className={styles.ordersContainer}>
+              <div style={{ flex: 1 }}>
                 {data?.orders?.map((order: any) => (
-                  <div key={order.name} className={styles.pieIndicator}>
+                  <div className={styles.order} key={order.name}>
                     <div
+                      className={styles.orderIcon}
                       style={{
                         backgroundColor: "grey",
                       }}
-                    />{" "}
-                    {(
-                      (order.amountTotal * 100) /
-                      (data.totalAmount + 0.000001)
-                    ).toFixed(2)}
-                    %
+                    />
+                    <p className={styles.orderText}>
+                      <span>{order.name}</span> -{" "}
+                      <span> {order.count} orders</span> -{" "}
+                      <span className={styles.grey}>{order.usdTotal} USD</span>
+                    </p>
                   </div>
                 ))}
               </div>
+              <div
+                style={{
+                  width: "50%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ width: 200, height: 200 }}>
+                  <CustomPieChart
+                    data={data?.orders?.map((order: any) => ({
+                      value: order.usdTotal,
+                    }))}
+                  />
+                </div>
+                <div className={styles.pieIndicators}>
+                  {data?.orders?.map((order: any) => (
+                    <div key={order.name} className={styles.pieIndicator}>
+                      <div
+                        style={{
+                          backgroundColor: "grey",
+                        }}
+                      />{" "}
+                      {(
+                        (order.amountTotal * 100) /
+                        (data.totalAmount + 0.000001)
+                      ).toFixed(2)}
+                      %
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div> */}
+            {result?.data?.transactions?.length === 0 ? (
+              <p>No Report found</p>
+            ) : (
+              <Table
+                style={{
+                  fontFamily: "PP Telegraf",
+                  border: "1px solid var(--Gray-200, #EAECF0)",
+                  borderRadius: 12,
+                  boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                  overflow: "hidden",
+                }}
+                dataSource={result?.data?.transactions}
+                columns={COLUMNS}
+                loading={isLoading}
+                pagination={false}
+              />
+            )}
+            <div className={styles.divider} style={{ margin: "24px 0" }} />
+            <div className={styles.totalHeader}>
+              <p>Total gifted orders: {result?.data?.count}</p>
+              <Link
+                href={`/giftcards/orders?status=${status}&from=${fromDate}&to=${toDate}`}
+              >
+                View orders
+              </Link>
+              <Link href="/giftcards/ranking">View ranking</Link>
+            </div>
+            <div className={styles.footerHeaderContainer}>
+              <p>TOTAL AMOUNT</p>
+              <p>TOTAL FEES</p>
+              <p>GRAND TOTAL</p>
+            </div>
+            <div className={styles.divider} style={{ marginTop: 5 }} />
+            <div className={styles.totalContainer}>
+              <p>GHS {result?.data?.totalAmount}</p>
+              <p>GHS {result?.data?.totalFees}</p>
+              <p style={{ color: "#1570EF" }}>GHS {result?.data?.grandTotal}</p>
             </div>
           </div>
-          <div className={styles.divider} style={{ margin: "24px 0" }} />
-          <div className={styles.totalHeader}>
-            <p>Total gifted orders: {data?.totalCount}</p>
-            <Link href="/giftcards/orders">View orders</Link>
-            <Link href="/giftcards/ranking">View ranking</Link>
-          </div>
-          <div className={styles.footerHeaderContainer}>
-            <p>TOTAL AMOUNT</p>
-            <p>TOTAL FEES</p>
-            <p>GRAND TOTAL</p>
-          </div>
-          <div className={styles.divider} style={{ marginTop: 5 }} />
-          <div className={styles.totalContainer}>
-            <p>GHS {data?.totalAmount}</p>
-            <p>GHS {data?.totalFees}</p>
-            <p style={{ color: "#1570EF" }}>GHS {data?.grandTotal}</p>
-          </div>
-        </div>
+        ) : null}
       </div>
     </PageLayout>
   );
