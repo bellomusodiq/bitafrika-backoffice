@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+import { DatePicker, Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -36,7 +36,6 @@ export default function Search() {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>({});
-  console.log(data?.orders);
 
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
@@ -265,7 +264,7 @@ export default function Search() {
           </div>
         </div>
         {loading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : (
           Object.keys(data).length > 0 && (
             <>

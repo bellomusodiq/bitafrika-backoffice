@@ -3,7 +3,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Table } from "antd";
+import { Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
@@ -534,7 +534,7 @@ export default function Search() {
           </div>
         </div>
         {isLoading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : formatData && params === filterBy ? (
           <>
             <p style={{ color: "#98a2b3" }} className={styles.subHeader}>

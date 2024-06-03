@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/swap/reports/reports.module.css";
-import { Alert, Button, DatePicker, Table } from "antd";
+import { Alert, Button, DatePicker, Skeleton, Table, Tag } from "antd";
 import Dropdown from "@/components/Dropdown";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
@@ -57,13 +57,12 @@ export default function Search({ statusType, from, to }: IProps) {
   });
   const getStatusCode = () => {
     switch (status) {
+      case "all":
       case "success":
       case "confirmed":
         return "success";
       case "pending":
         return "warning";
-      case "all":
-        return "info";
       case "error":
         return "error";
       default:
@@ -205,7 +204,7 @@ export default function Search({ statusType, from, to }: IProps) {
           </div>
         </div>
         {isLoading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : result && Object.keys(result?.data).length > 0 && isActiveData() ? (
           <div className={styles.bodyContainer}>
             <h3 className={styles.header}>Swap transactions report</h3>
@@ -224,11 +223,12 @@ export default function Search({ statusType, from, to }: IProps) {
               <p style={{ width: "50px" }} className={styles.date}>
                 Status:
               </p>
-              <Alert
-                message={status}
-                type={getStatusCode()}
+              <Tag
+                color={getStatusCode()}
                 style={{ textTransform: "capitalize" }}
-              />
+              >
+                {status}
+              </Tag>
             </div>
 
             <h3 style={{ marginTop: 14 }} className={styles.header}>

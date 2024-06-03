@@ -251,7 +251,7 @@ export default function Search() {
           }}
         >
           <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
-          <p style={{ marginLeft: 5 }}>{createdOn}</p>
+          <p style={{ marginLeft: 5, fontSize: 12 }}>{createdOn}</p>
         </div>
       ),
     },
@@ -315,6 +315,9 @@ export default function Search() {
       dataIndex: "date",
       key: "date",
       width: "20%",
+      render: (_: any, { date }: any) => (
+        <span style={{ fontSize: 12 }}>{date}</span>
+      ),
     },
     {
       title: "Actions",
@@ -382,6 +385,9 @@ export default function Search() {
       dataIndex: "date",
       key: "date",
       width: "20%",
+      render: (_: any, { date }: any) => (
+        <span style={{ fontSize: 12 }}>{date}</span>
+      ),
     },
     {
       title: "Actions",
@@ -873,7 +879,7 @@ export default function Search() {
           </div>
           <div className={styles.divider} />
           <div className={styles.keyValue}>
-            <p className={styles.key}>receive from:</p>
+            <p className={styles.key}>Receive from:</p>
             <p className={styles.value}>{currentUser.from}</p>
           </div>
           <div className={styles.divider} />
