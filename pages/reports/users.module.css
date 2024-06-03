@@ -146,6 +146,10 @@
   font-weight: 500;
   line-height: 20px; /* 142.857% */
 }
+.whiteButton:hover {
+  background: var(--Base-White, #fff) !important;
+  opacity: 0.6;
+}
 .modalHeader {
   display: flex;
   flex-direction: row;

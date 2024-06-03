@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
-import styles from "@/pages/transactions/transactions.module.css";
+import styles from "@/pages/orders/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
-import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+// import Button from "@/components/Button";
+import { DatePicker, Table, Button, Tag, Skeleton } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -94,21 +94,22 @@ export default function Search() {
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div
-          className={styles.statusContainer}
-          style={{
-            backgroundColor: status === "success" ? "#EDFCF2" : "#FBEAE9",
-            color: status === "success" ? "#087443" : "#F04438",
-          }}
-        >
-          <div
-            className={styles.statusIndicator}
-            style={{
-              backgroundColor: status === "success" ? "#087443" : "#F04438",
-            }}
-          />{" "}
-          {status}
-        </div>
+        // <div
+        //   className={styles.statusContainer}
+        //   style={{
+        //     backgroundColor: status === "success" ? "#EDFCF2" : "#FBEAE9",
+        //     color: status === "success" ? "#087443" : "#F04438",
+        //   }}
+        // >
+        //   <div
+        //     className={styles.statusIndicator}
+        //     style={{
+        //       backgroundColor: status === "success" ? "#087443" : "#F04438",
+        //     }}
+        //   />{" "}
+        //   {status}
+        // </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -188,21 +189,22 @@ export default function Search() {
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div
-          className={styles.statusContainer}
-          style={{
-            backgroundColor: status === "success" ? "#EDFCF2" : "#FBEAE9",
-            color: status === "success" ? "#087443" : "#F04438",
-          }}
-        >
-          <div
-            className={styles.statusIndicator}
-            style={{
-              backgroundColor: status === "success" ? "#087443" : "#F04438",
-            }}
-          />{" "}
-          {status}
-        </div>
+        // <div
+        //   className={styles.statusContainer}
+        //   style={{
+        //     backgroundColor: status === "success" ? "#EDFCF2" : "#FBEAE9",
+        //     color: status === "success" ? "#087443" : "#F04438",
+        //   }}
+        // >
+        //   <div
+        //     className={styles.statusIndicator}
+        //     style={{
+        //       backgroundColor: status === "success" ? "#087443" : "#F04438",
+        //     }}
+        //   />{" "}
+        //   {status}
+        // </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -283,7 +285,10 @@ export default function Search() {
           }}
         >
           <div className={styles.statusContainer}>
-            <div className={styles.statusIndicator} /> {status}
+            {/* <div className={styles.statusIndicator} /> {status} */}
+            <Tag color={status === "success" ? "success" : "error"}>
+              {status}
+            </Tag>
           </div>
           <p style={{ marginLeft: 5 }}>{createdOn}</p>
         </div>
@@ -342,7 +347,8 @@ export default function Search() {
       key: "status",
       render: (_: any, { status }: any) => (
         <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
+          {/* <div className={styles.statusIndicator} /> {status} */}
+          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
         </div>
       ),
     },
@@ -411,7 +417,8 @@ export default function Search() {
       key: "status",
       render: (_: any, { status }: any) => (
         <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
+          {/* <div className={styles.statusIndicator} /> {status} */}
+          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
         </div>
       ),
     },
@@ -454,8 +461,6 @@ export default function Search() {
         }
       )
       .then((res: any) => {
-        console.log("res", res.data);
-
         setLoading(false);
         if (res.data.success) {
           setData(
@@ -469,8 +474,9 @@ export default function Search() {
               asset: item.cryptoSymbol,
               status,
               action: () => {
-                // getTopupTransactionsDetail(item.uniqId);
                 setLoadingIndex(i);
+                setCurrentUser(res.data.data);
+                setOpenModal(true);
               },
             }))
           );
@@ -486,7 +492,7 @@ export default function Search() {
   };
 
   const getSellTransactions = () => {
-    setLoadingDetail(true);
+    setLoading(true);
     axios
       .post(
         `${BASE_URL}/reports/transactions/sell/view?page=${currentPage}&status=${status}&from=${fromDate}&to=${toDate}&pageSize=30`,
@@ -498,11 +504,26 @@ export default function Search() {
         }
       )
       .then((res: any) => {
-        setLoadingDetail(false);
-        setLoadingIndex(null);
+        setLoading(false);
         if (res.data.success) {
-          setCurrentUser(res.data.data);
-          setOpenModal(true);
+          setData(
+            res.data.data.map((item: any, i: number) => ({
+              ...item,
+              transactionId: item.uniqId,
+              email: item.email,
+              phoneNumber: item.phone,
+              country: item.countryCode,
+              total: `${item.currency} ${item.amount}`,
+              asset: item.cryptoSymbol,
+              status,
+              action: () => {
+                setLoadingIndex(i);
+                setCurrentUser(res.data.data);
+                setOpenModal(true);
+              },
+            }))
+          );
+          setPageInfo(res.data.pageInfo);
         }
       })
       .catch((e) => {
@@ -544,43 +565,68 @@ export default function Search() {
     onSearch();
   }, [currentPage, status, fromDate, toDate, type]);
 
+  const getStatusCode = () => {
+    switch (status) {
+      case "all":
+      case "success":
+      case "confirmed":
+        return "success";
+      case "pending":
+        return "warning";
+      case "error":
+        return "error";
+      default:
+        return "error";
+    }
+  };
+
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
-        <h3 className={styles.header}>
-          {type === "buy" ? "Buy" : "Sell"} transactions report
-        </h3>
-        <p className={styles.date} style={{ textAlign: "left" }}>
-          Date: {fromDate} — {toDate}
-        </p>
-        <p className={styles.date} style={{ textAlign: "left" }}>
-          Status:{" "}
-          <span
-            style={{
-              padding: "2px 12px 4px 12px",
-              borderRadius: 16,
-              backgroundColor:
-                status === "success"
-                  ? "#EDFCF2"
-                  : status === "pending"
-                  ? "#f7900953"
-                  : "#FBEAE9",
-              color:
-                status === "success"
-                  ? "#087443"
-                  : status === "pending"
-                  ? "#F79009"
-                  : "#F04438",
-              textAlign: "center",
-            }}
-          >
-            <span style={{ fontSize: 12 }}>{status}</span>
-          </span>
-        </p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <Button type="text" onClick={() => router.back()}>
+              <img src="/icons/arrow-left.svg" />
+            </Button>
+          </div>
+          <p className={styles.filterTitle}>
+            {type === "buy" ? "Buy" : "Sell"} transactions report
+          </p>
+        </div>
+
         {loading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : data ? (
-          <div className={styles.table} style={{ overflow: "hidden" }}>
+          <div style={{ overflow: "hidden" }}>
+            <div style={{ margin: "30px 0" }}>
+              <p className={styles.date}>
+                Date: {fromDate} — {toDate}
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  width: "50px",
+                  marginTop: 4,
+                }}
+              >
+                <p style={{ width: "50px" }} className={styles.date}>
+                  Status:
+                </p>
+                <Tag
+                  color={getStatusCode()}
+                  style={{ textTransform: "capitalize" }}
+                >
+                  {status}
+                </Tag>
+              </div>
+            </div>
             <p className={styles.resultText}>{data.length} result found!</p>
             <Table
               style={{

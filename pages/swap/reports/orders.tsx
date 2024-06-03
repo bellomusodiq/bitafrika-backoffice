@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
-import { Button, Table } from "antd";
+import { Button, Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -245,7 +245,7 @@ export default function SwapOrders({ status, from, to }: IProps) {
         </div>
 
         {isLoading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : result ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>

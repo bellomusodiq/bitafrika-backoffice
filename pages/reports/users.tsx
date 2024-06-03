@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Divider, Table } from "antd";
+import { DatePicker, Divider, Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
@@ -33,18 +33,10 @@ const BALANCE_COLUMNS = [
     dataIndex: "action",
     render: (_: any, { action, loading }: any) => (
       <div className={styles.actionButton}>
-        <div>
-          <Button className={styles.whiteButton} onClick={action}>
-            {loading ? (
-              <>Loading...</>
-            ) : (
-              <>
-                <img src="/icons/assets.svg" />
-                <span>Asset breakdown</span>
-              </>
-            )}
-          </Button>
-        </div>
+        <Button className={styles.whiteButton} onClick={action}>
+          <img src="/icons/assets.svg" />
+          <span>Asset breakdown</span>
+        </Button>
       </div>
     ),
   },
@@ -72,12 +64,10 @@ const BUY_COLUMNS = [
     dataIndex: "action",
     render: (_: any, { action }: any) => (
       <div className={styles.actionButton}>
-        <div>
-          <Button className={styles.whiteButton} onClick={action}>
-            <img src="/icons/assets.svg" />
-            <span>Asset breakdown</span>
-          </Button>
-        </div>
+        <Button className={styles.whiteButton} onClick={action}>
+          <img src="/icons/assets.svg" />
+          <span>Asset breakdown</span>
+        </Button>
       </div>
     ),
   },
@@ -105,12 +95,10 @@ const SELL_COLUMN = [
     dataIndex: "action",
     render: (_: any, { action }: any) => (
       <div className={styles.actionButton}>
-        <div>
-          <Button className={styles.whiteButton} onClick={action}>
-            <img src="/icons/assets.svg" />
-            <span>Asset breakdown</span>
-          </Button>
-        </div>
+        <Button className={styles.whiteButton} onClick={action}>
+          <img src="/icons/assets.svg" />
+          <span>Asset breakdown</span>
+        </Button>
       </div>
     ),
   },
@@ -369,8 +357,6 @@ export default function Search() {
       onSearch();
     }
   }, [currentPage]);
-
-  console.log("currentPage", currentPage);
 
   return (
     <PageLayout title="Hone">
@@ -713,7 +699,7 @@ export default function Search() {
           </div>
         </div>
         {loading ? (
-          <Loader />
+          <Skeleton active style={{ margin: "20px 0" }} />
         ) : data ? (
           <div
             className={styles.table}
