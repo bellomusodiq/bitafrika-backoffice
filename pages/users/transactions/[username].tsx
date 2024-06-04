@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/transactions/transactions.module.css";
-import { Button, Table } from "antd";
+import { Button, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import Pagination from "@/components/Pagination";
 import { GetServerSideProps } from "next";
@@ -81,9 +80,7 @@ export default function UserTransactions({
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -161,9 +158,10 @@ export default function UserTransactions({
             alignItems: "center",
           }}
         >
-          <div className={styles.statusContainer}>
+          {/* <div className={styles.statusContainer}>
             <div className={styles.statusIndicator} /> {status}
-          </div>
+          </div> */}
+          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
           <p style={{ marginLeft: 5 }}>{createdOn}</p>
         </div>
       ),
@@ -216,9 +214,10 @@ export default function UserTransactions({
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
+        // <div className={styles.statusContainer}>
+        //   <div className={styles.statusIndicator} /> {status}
+        // </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -299,9 +298,10 @@ export default function UserTransactions({
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <div className={styles.statusContainer}>
-          <div className={styles.statusIndicator} /> {status}
-        </div>
+        // <div className={styles.statusContainer}>
+        //   <div className={styles.statusIndicator} /> {status}
+        // </div>
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
       ),
     },
     {
@@ -464,7 +464,7 @@ export default function UserTransactions({
         }
       >
         {isLoadingDetails ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : (
           <div className={styles.modalContainer}>
             <div className={styles.divider} />
@@ -556,7 +556,7 @@ export default function UserTransactions({
         }
       >
         {isLoadingDetails ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : (
           <div className={styles.modalContainer}>
             <div className={styles.divider} />
@@ -649,7 +649,7 @@ export default function UserTransactions({
         }
       >
         {isLoadingDetails ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : (
           <div className={styles.modalContainer}>
             <div className={styles.divider} />
@@ -725,7 +725,7 @@ export default function UserTransactions({
         }
       >
         {isLoadingDetails ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : (
           <div className={styles.modalContainer}>
             <div className={styles.divider} />
@@ -804,11 +804,12 @@ export default function UserTransactions({
         </div>
 
         {isLoading ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : formatData ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
-              {formatData.record.length} result found!
+              {formatData?.pageInfo?.totalCount || formatData.record.length}{" "}
+              result found!
             </p>
             <Table
               style={{

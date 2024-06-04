@@ -23,11 +23,16 @@ const CoinListing: React.FC<CoinListingProps> = ({
         ) : (
           coins.map((coin, i) => (
             <React.Fragment key={coin.coin}>
-              <Link
+              {/* <Link
                 href={{
                   pathname: `assets/${coin.coin_code}`,
                 }}
                 className={styles.coinItem}
+              > */}
+              <div
+                style={{ cursor: "pointer" }}
+                className={styles.coinItem}
+                onClick={() => router.push(`/assets/${coin.coin_code}`)}
               >
                 <img
                   className={styles.coinImage}
@@ -38,7 +43,8 @@ const CoinListing: React.FC<CoinListingProps> = ({
                   {coin.amount.toFixed(8)} {coin.coin_code} ($
                   {coin.usd.toFixed(2)})
                 </p>
-              </Link>
+              </div>
+              {/* </Link> */}
               {i !== coins.length - 1 && <div className={styles.divider} />}
             </React.Fragment>
           ))

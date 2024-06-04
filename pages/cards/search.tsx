@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Skeleton, Table } from "antd";
+import { Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -51,17 +51,26 @@ const REQUESTS_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div
-        style={{
-          padding: 4,
-          borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
-        }}
+      // <div
+      //   style={{
+      //     padding: 4,
+      //     borderRadius: 16,
+      //     backgroundColor: "#EDFCF2",
+      //     color: "#087443",
+      //     textAlign: "center",
+      //   }}
+      // >
+      //   <span style={{ fontSize: 12 }}>{status}</span>
+      // </div>
+      <Tag
+        color={
+          status === "success" || status === "Card - Active"
+            ? "success"
+            : "warning"
+        }
       >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+        {status}
+      </Tag>
     ),
   },
   {
@@ -74,58 +83,6 @@ const REQUESTS_COLUMNS = [
         </div>
       </div>
     ),
-  },
-];
-
-const REQUESTS_DATA = [
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
-  },
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
-  },
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
-  },
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
-  },
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
-  },
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
-  },
-  {
-    username: "Samuel 12345",
-    name: "Samuel Samuel",
-    type: "Mastercard",
-    fundingAmount: "$100.50",
-    status: "Successful",
   },
 ];
 
@@ -171,16 +128,19 @@ const CARDS_COLUMNS = [
     dataIndex: "sstatus",
     key: "status",
     render: (_: any, { status }: any) => (
-      <span
-        style={{
-          borderRadius: 16,
-          padding: "12px 16px",
-          backgroundColor: status === "Card - Active" ? "#EDFCF2" : "#FAFAFA",
-          color: status === "Card - Active" ? "#087443" : "#424242",
-        }}
-      >
+      // <span
+      //   style={{
+      //     borderRadius: 16,
+      //     padding: "12px 16px",
+      //     backgroundColor: status === "Card - Active" ? "#EDFCF2" : "#FAFAFA",
+      //     color: status === "Card - Active" ? "#087443" : "#424242",
+      //   }}
+      // >
+      //   {status}
+      // </span>
+      <Tag color={status === "Card - Active" ? "success" : "warning"}>
         {status}
-      </span>
+      </Tag>
     ),
   },
   {
@@ -193,39 +153,6 @@ const CARDS_COLUMNS = [
         </div>
       </div>
     ),
-  },
-];
-
-const CARDS_DATA = [
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
-  },
-  {
-    username: "@samuel12345",
-    cardNumber: "ending in 9090",
-    expDate: "12/25",
-    type: "Mastercard",
   },
 ];
 
@@ -273,57 +200,6 @@ const DISPUTES_COLUMNS = [
   },
 ];
 
-const DISPUTES_DATA = [
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    disputeAmount: "$9.99",
-    merchantName: "SpotifyNG",
-    date: "Thur 18th jan 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    disputeAmount: "$9.99",
-    merchantName: "SpotifyNG",
-    date: "Thur 18th jan 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    disputeAmount: "$9.99",
-    merchantName: "SpotifyNG",
-    date: "Thur 18th jan 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    disputeAmount: "$9.99",
-    merchantName: "SpotifyNG",
-    date: "Thur 18th jan 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    disputeAmount: "$9.99",
-    merchantName: "SpotifyNG",
-    date: "Thur 18th jan 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    disputeAmount: "$9.99",
-    merchantName: "SpotifyNG",
-    date: "Thur 18th jan 2023",
-  },
-];
-
 const TOPUPS_COLUMNS = [
   {
     title: "#Transaction ID",
@@ -358,45 +234,6 @@ const TOPUPS_COLUMNS = [
   },
 ];
 
-const TOPUPS_DATA = [
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    transactionType: "Momo to bank",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    transactionType: "Momo to bank",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    transactionType: "Momo to bank",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    transactionType: "Momo to bank",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    transactionType: "Momo to bank",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    cardNumber: "Ending in 0000",
-    transactionType: "Momo to bank",
-  },
-];
-
 const TRANSACTIONS_COLUMNS = [
   {
     title: "Transaction ID",
@@ -427,17 +264,20 @@ const TRANSACTIONS_COLUMNS = [
     dataIndex: "transactionStatus",
     key: "transactionStatus",
     render: (_: any, { transactionStatus }: any) => (
-      <span
-        style={{
-          borderRadius: 16,
-          padding: "12px 16px",
-          backgroundColor:
-            transactionStatus === "Approved" ? "#EDFCF2" : "#FAFAFA",
-          color: transactionStatus === "Approved" ? "#087443" : "#424242",
-        }}
-      >
+      // <span
+      //   style={{
+      //     borderRadius: 16,
+      //     padding: "12px 16px",
+      //     backgroundColor:
+      //       transactionStatus === "Approved" ? "#EDFCF2" : "#FAFAFA",
+      //     color: transactionStatus === "Approved" ? "#087443" : "#424242",
+      //   }}
+      // >
+      //   {transactionStatus}
+      // </span>
+      <Tag color={transactionStatus === "Approved" ? "success" : "warning"}>
         {transactionStatus}
-      </span>
+      </Tag>
     ),
   },
   {
@@ -458,66 +298,11 @@ const TRANSACTIONS_COLUMNS = [
   },
 ];
 
-const TRANSACTIONS_DATA = [
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    merchant: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    merchant: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    merchant: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    merchant: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    merchant: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "#12345566...9934",
-    username: "@samuel12345",
-    merchant: "AppleMusic.com",
-    amount: "$9.99",
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-];
-
 export default function Search({ type }: { type: any }) {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
-  const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("CARDS");
-  const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [payload, setPayload] = useState<string>(type || "");
 
@@ -978,10 +763,14 @@ export default function Search({ type }: { type: any }) {
                     title: "Transactions",
                     value: "TRANSACTIONS",
                   },
+                  {
+                    title: "User",
+                    value: "USERNAME",
+                  },
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData([]);
+                  setSearch("");
                   setPayload("");
                 }}
               />
@@ -1009,9 +798,12 @@ export default function Search({ type }: { type: any }) {
           <div style={{ marginTop: "20px" }}>
             <Skeleton active />
           </div>
-        ) : data && payload.length > 0 ? (
+        ) : payload.length > 0 ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {formatData?.pageInfo?.totalCount || formatData?.record?.length}{" "}
+              result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -1022,7 +814,7 @@ export default function Search({ type }: { type: any }) {
               }}
               dataSource={formatData?.record}
               columns={getColumns()}
-              loading={loading}
+              loading={isLoading}
               pagination={false}
             />
             <Pagination

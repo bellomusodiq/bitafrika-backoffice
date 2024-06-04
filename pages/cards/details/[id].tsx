@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Skeleton, Table, Tag } from "antd";
+import { Skeleton, Table, Tag, Button as AntdButton } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -63,6 +63,17 @@ const TRANSACTIONS_COLUMNS = [
     dataIndex: "createdAt",
     key: "createdAt",
   },
+  {
+    title: "Actions",
+    dataIndex: "action",
+    render: (_: any, { action }: any) => (
+      <div className={styles.actionButton}>
+        <div>
+          <Button onClick={action}>View</Button>
+        </div>
+      </div>
+    ),
+  },
 ];
 
 const CardDetails = ({ cardId }: { cardId: string }) => {
@@ -119,8 +130,6 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       return result;
     },
   });
-
-  console.log("cardTransactions", cardTransactions);
 
   const cardData = useMemo(() => {
     return result?.data;
@@ -288,6 +297,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
   // }, [router.query]);
 
   const showModal = (user: any) => {
+    setOpenModal("transaction");
     setCurrentUser(user);
   };
 
@@ -323,7 +333,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           <Input placeholder="Enter reason for termination" />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter the keyword</p>
-            <p className={styles.info}>delete-0223</p>
+            {/* <p className={styles.info}>delete-0223</p> */}
+            <AntdButton size="small">Send OTP</AntdButton>
           </div>
           <Input
             placeholder=""
@@ -360,15 +371,17 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             <p className={styles.label}>Amount</p>
           </div>
           <Input
+            leftIcon={<div className={styles.leftIcon}>$</div>}
             placeholder="0.00"
             type="number"
             onChange={(e) => setAmount(e.target.value)}
           />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter otp code (Telegram)</p>
-            <p style={{ cursor: "pointer" }} className={styles.info}>
+            {/* <p style={{ cursor: "pointer" }} className={styles.info}>
               Send OTP
-            </p>
+            </p> */}
+            <AntdButton size="small">Send OTP</AntdButton>
           </div>
           <Input
             placeholder=""
@@ -399,7 +412,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           <Input placeholder="Enter reason for freezing card" />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter the keyword</p>
-            <p className={styles.info}>freeze-0223</p>
+            {/* <p className={styles.info}>freeze-0223</p> */}
+            <AntdButton size="small">Send OTP</AntdButton>
           </div>
           <Input placeholder="" />
           <div className={styles.modalFooter2}>
@@ -424,13 +438,14 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             <p className={styles.label}>Amount</p>
           </div>
           <Input
+            leftIcon={<div className={styles.leftIcon}>$</div>}
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter otp code (Telegram)</p>
-            <p className={styles.info}>Send OTP</p>
+            <AntdButton size="small">Send OTP</AntdButton>
           </div>
           <Input placeholder="" />
           <div className={styles.modalFooter2}>
@@ -441,6 +456,63 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             >
               Top up
             </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        openModal={openModal === "transaction"}
+        onClose={() => setOpenModal(null)}
+        customStyles={{ width: "40%" }}
+        headerLeft={<>Card Transactions</>}
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>ID</p>
+            <p className={styles.label}>{currentUser?.cardId}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Description</p>
+            <p className={styles.label}>{currentUser?.description}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Currency Code</p>
+            <p className={styles.label}>{currentUser?.currencyCode}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Merchant Name</p>
+            <p className={styles.label}>{currentUser?.merchantName}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Merchant Mid</p>
+            <p className={styles.label}>{currentUser?.merchantMid}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Merchant City</p>
+            <p className={styles.label}>{currentUser?.merchantCity}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Merchant Country</p>
+            <p className={styles.label}>{currentUser?.merchantCountry}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Network</p>
+            <p className={styles.label}>{currentUser?.network}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Transaction Amount</p>
+            <p className={styles.label}>{currentUser?.transactionAmount}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Transaction Status</p>
+            <p className={styles.label}>{currentUser?.transactionStatus}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Transaction Type</p>
+            <p className={styles.label}>{currentUser?.transactionType}</p>
+          </div>
+          <div className={styles.itemContainer}>
+            <p className={styles.value}>Transaction Time</p>
+            <p className={styles.label}>{currentUser?.transactionTime}</p>
           </div>
         </div>
       </Modal>
@@ -474,25 +546,37 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
                   cvv={cardData?.cvv}
                 />
                 <div className={styles.btnContainer}>
-                  <button onClick={() => setOpenModal("topup")}>
+                  <button
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOpenModal("topup")}
+                  >
                     <div className={styles.btn}>
                       <img src="/icons/cards-plus.svg" />
                     </div>
                     Top Up
                   </button>
-                  <button onClick={() => setOpenModal("withdraw")}>
+                  <button
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOpenModal("withdraw")}
+                  >
                     <div className={styles.btn}>
                       <img src="/icons/cards-minus.svg" />
                     </div>
                     Withdraw
                   </button>
-                  <button onClick={() => setOpenModal("freeze")}>
+                  <button
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOpenModal("freeze")}
+                  >
                     <div className={styles.btn}>
                       <img src="/icons/freeze.svg" />
                     </div>
                     Freeze Card
                   </button>
-                  <button onClick={() => setOpenModal("terminate")}>
+                  <button
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setOpenModal("terminate")}
+                  >
                     <div className={styles.btn}>
                       <img src="/icons/terminate.svg" />
                     </div>
@@ -543,25 +627,29 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           </div>
         </div>
         <h3 className={styles.tableHeader}>Transactions</h3>
-        <div className={styles.table} style={{ overflow: "hidden" }}>
-          <Table
-            style={{
-              fontFamily: "PP Telegraf",
-              border: "1px solid var(--Gray-200, #EAECF0)",
-              borderRadius: 12,
-              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-              overflow: "hidden",
-            }}
-            dataSource={cardTransactions?.data?.transactions?.map(
-              (user: any) => ({
-                ...user,
-                action: () => showModal(user),
-              })
-            )}
-            columns={TRANSACTIONS_COLUMNS}
-            loading={isLoadingTransaction}
-          />
-        </div>
+        {isLoadingTransaction ? (
+          <Skeleton active />
+        ) : (
+          <div className={styles.table} style={{ overflow: "hidden" }}>
+            <Table
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
+              dataSource={cardTransactions?.data?.transactions?.map(
+                (user: any) => ({
+                  ...user,
+                  action: () => showModal(user),
+                })
+              )}
+              columns={TRANSACTIONS_COLUMNS}
+              loading={isLoadingTransaction}
+            />
+          </div>
+        )}
       </div>
     </PageLayout>
   );

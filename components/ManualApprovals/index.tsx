@@ -1,6 +1,7 @@
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
 import Button from "@/components/Button";
 import { TManualApprovalFilter } from "@/types";
+import { Tag } from "antd";
 
 export const getTableColumn = (
   args: TManualApprovalFilter,
@@ -99,9 +100,10 @@ const withdrawal = [
           alignItems: "center",
         }}
       >
-        <div className={styles.statusContainer}>
+        {/* <div className={styles.statusContainer}>
           <div className={styles.statusIndicator} /> {status}
-        </div>
+        </div> */}
+        <Tag color={"success"}>{status}</Tag>
         <p style={{ marginLeft: 5 }}>{createdOn}</p>
       </div>
     ),
@@ -154,9 +156,11 @@ const topUp = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div className={styles.statusContainer}>
-        <div className={styles.statusIndicator} /> {status}
-      </div>
+      // <div className={styles.statusContainer}>
+      //   <div className={styles.statusIndicator} /> {status}
+      // </div>
+
+      <Tag color={"success"}>{status}</Tag>
     ),
   },
   {

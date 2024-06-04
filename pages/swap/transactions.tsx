@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
-import { Button, DatePicker, Table } from "antd";
+import { Button, DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -11,6 +11,7 @@ import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import { toast } from "react-toastify";
 
 export default function Transactions() {
   const router = useRouter();
@@ -66,17 +67,35 @@ export default function Transactions() {
       },
     });
 
+  //   <div onClick={onCopy} className={styles.transactionId}>
+  //   <p>
+  //     {transactionId?.slice(0, 5)} . . .
+  //     {transactionId?.slice(transactionId?.length - 5)}
+  //   </p>
+  //   <img src="/icons/copy.svg" />
+  // </div>
   const REQUESTS_COLUMNS = useMemo(() => {
     return [
       {
         title: "Transaction ID",
         dataIndex: "",
         key: "uniqId",
-        render: (_: any, { uniqId }: any) => (
-          <p className={styles.username}>{`${uniqId.slice(
-            0,
-            6
-          )}...${uniqId.slice(uniqId.length - 6)}`}</p>
+        render: (_: any, { uniqId, onCopy }: any) => (
+          <div
+            style={{
+              display: "flex",
+              gap: 4,
+              alignItems: "center",
+              cursor: "pointer",
+              width: "fit-content",
+            }}
+            onClick={onCopy}
+          >
+            <span className={styles.username}>
+              {`${uniqId.slice(0, 6)}...${uniqId.slice(uniqId.length - 6)}`}
+            </span>
+            <img src="/icons/copy.svg" />
+          </div>
         ),
       },
       {
@@ -94,7 +113,7 @@ export default function Transactions() {
           return (
             <div style={{ display: "flex" }}>
               <p>{res?.sourceCrypto}</p>
-              <p style={{ color: "green", margin: "0 10px" }}>&rarr;</p>
+              <p style={{ color: "green", margin: "0 5px" }}>&rarr;</p>
               <p>{res?.destinationCrypto}</p>
             </div>
           );
@@ -106,7 +125,7 @@ export default function Transactions() {
         render: (_: any, res: any) => {
           return (
             <p>
-              {res?.sourceAmount} {res?.sourceCrypto}
+              {Number(res?.sourceAmount).toFixed(8)} {res?.sourceCrypto}
             </p>
           );
         },
@@ -127,9 +146,9 @@ export default function Transactions() {
         dataIndex: "status",
         key: "status",
         render: (_: any, { status }: any) => (
-          <div className={styles.statusContainer}>
-            <div className={styles.statusIndicator} /> {status}
-          </div>
+          <Tag color={status === "success" ? "success" : "warning"}>
+            {status}
+          </Tag>
         ),
       },
       {
@@ -138,17 +157,17 @@ export default function Transactions() {
         key: "date",
         width: "20%",
       },
-      {
-        title: "Actions",
-        dataIndex: "action",
-        render: (_: any, { action }: any) => (
-          <div className={styles.actionButton}>
-            <div>
-              <Button onClick={action}>View</Button>
-            </div>
-          </div>
-        ),
-      },
+      // {
+      //   title: "Actions",
+      //   dataIndex: "action",
+      //   render: (_: any, { action }: any) => (
+      //     <div className={styles.actionButton}>
+      //       <div>
+      //         <Button onClick={action}>View</Button>
+      //       </div>
+      //     </div>
+      //   ),
+      // },
     ];
   }, []);
 
@@ -317,11 +336,11 @@ export default function Transactions() {
         </div>
 
         {isLoading ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : result && isActiveData() ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
-              {result?.data.length} result found!
+              {result?.pageInfo.totalCount || result?.data.length} result found!
             </p>
             <Table
               style={{
@@ -336,6 +355,19 @@ export default function Transactions() {
                 action: () => {
                   setDetailsId(item.uniqId);
                   setOpenModal(true);
+                },
+                onCopy: () => {
+                  navigator.clipboard.writeText(item.uniqId);
+                  toast("Copied to clipboard", {
+                    position: "top-center",
+                    autoClose: 500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                  });
                 },
               }))}
               columns={REQUESTS_COLUMNS}

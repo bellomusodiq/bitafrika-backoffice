@@ -167,7 +167,8 @@ export default function Search({ type }: { type: string }) {
         ) : formatData && payload === searchType ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
-              {formatData.record.length} result found!
+              {formatData.pageInfo.totalCount || formatData.record.length}{" "}
+              result found!
             </p>
             <Table
               style={{
