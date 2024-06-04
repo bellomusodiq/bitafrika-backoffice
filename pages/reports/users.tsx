@@ -109,6 +109,7 @@ export default function Search() {
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loadingDetails, setLoadingDetails] = useState<boolean>(false);
   const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Balance");
@@ -126,9 +127,10 @@ export default function Search() {
   }
 
   const getAssetBreakdown = (user: any, i: number) => {
+    setOpenModal(true);
     setCurrentUser(user);
     setLoadingIndex(i);
-    setLoading(true);
+    setLoadingDetails(true);
     axios
       .post(
         `${BASE_URL}/reports/user/balance/${user.username}?page=${currentPage}`,
@@ -141,7 +143,7 @@ export default function Search() {
       )
       .then((res) => {
         setLoadingIndex(null);
-        setLoading(false);
+        setLoadingDetails(false);
         setOpenModal(res.data);
       })
       .catch((e) => {
@@ -150,15 +152,16 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoadingIndex(null);
-        setLoading(false);
+        setLoadingDetails(false);
         toast.error(e.response.data.message);
       });
   };
 
   const getBuyAssetBreakdown = (user: any, i: number) => {
+    setOpenModal(true);
     setCurrentUser(user);
     setLoadingIndex(i);
-    setLoading(true);
+    setLoadingDetails(true);
     axios
       .post(
         `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}&page=${currentPage}`,
@@ -170,7 +173,7 @@ export default function Search() {
         }
       )
       .then((res) => {
-        setLoading(false);
+        setLoadingDetails(false);
         setLoadingIndex(null);
         setOpenModal(res.data);
       })
@@ -180,15 +183,16 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoadingIndex(null);
-        setLoading(false);
+        setLoadingDetails(false);
         toast.error(e.response.data.message);
       });
   };
 
   const getSellAssetBreakdown = (user: any, i: number) => {
+    setOpenModal(true);
     setCurrentUser(user);
     setLoadingIndex(i);
-    setLoading(true);
+    setLoadingDetails(true);
     axios
       .post(
         `${BASE_URL}/reports/user/sell/${user.username}?from=${fromDate}&to=${toDate}&page=${currentPage}`,
@@ -202,7 +206,7 @@ export default function Search() {
       .then((res) => {
         setLoadingIndex(null);
         setOpenModal(res.data);
-        setLoading(false);
+        setLoadingDetails(false);
       })
       .catch((e) => {
         if (e?.response?.status === 401) {
@@ -210,7 +214,7 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoadingIndex(null);
-        setLoading(false);
+        setLoadingDetails(false);
         toast.error(e.response.data.message);
       });
   };
@@ -366,83 +370,95 @@ export default function Search() {
         headerLeft={<img src="/icons/assets-dark.svg" />}
         headerCenter={<p>Assets breakdown</p>}
       >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                User:{" "}
-                <span style={{ color: "#1570EF" }}>
-                  @{currentUser.username}
-                </span>
-              </p>
-            </div>
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                Total balance:{" "}
-                <span style={{ color: "black" }}>
-                  ${openModal?.totalUsdAmount}
-                </span>
-              </p>
-            </div>
-          </div>
-          <div className={styles.assetPieContainer}>
-            <p>Assets</p>
-            <div style={{ width: 160, height: 160 }}>
-              <CustomPieChart
-                data={openModal?.data?.map((item: any) => ({
-                  name: item.name,
-                  value: item.percentage,
-                }))}
-              />
-            </div>
-          </div>
-          <div className={styles.divider} />
-          {openModal?.data?.map((asset: any) => (
+        {loadingDetails ? (
+          <Skeleton active />
+        ) : (
+          <div className={styles.modalContainer}>
+            <div className={styles.divider} />
             <div
-              key={asset.name}
-              className={styles.keyValue}
-              style={{ marginBottom: 24 }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
+              <div className={styles.keyValue}>
+                <p className={styles.key}>
+                  User:{" "}
+                  <span style={{ color: "#1570EF" }}>
+                    @{currentUser.username}
+                  </span>
+                </p>
+              </div>
+              <div className={styles.keyValue}>
+                <p className={styles.key}>
+                  Total balance:{" "}
+                  <span style={{ color: "black" }}>
+                    ${openModal?.totalUsdAmount}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div className={styles.assetPieContainer}>
+              <p>Assets</p>
+              <div style={{ width: 160, height: 160 }}>
+                <CustomPieChart
+                  data={openModal?.data?.map((item: any) => ({
+                    name: item.name,
+                    value: item.percentage,
+                  }))}
+                />
+              </div>
+            </div>
+            <div className={styles.divider} />
+            {openModal?.data?.map((asset: any) => (
               <div
-                className={styles.key}
-                style={{ display: "flex", alignItems: "center" }}
+                key={asset.name}
+                className={styles.keyValue}
+                style={{ marginBottom: 24 }}
               >
                 <div
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: "#9BB0FD",
-                    marginRight: 8,
-                    fontSize: 14,
-                    lineHeight: 20,
-                    color: "#101828",
-                  }}
-                />
-                {asset.name} ({asset.percentage * 100}%)
-              </div>
-              <div className={styles.value}>
-                <p
-                  style={{ fontSize: 14, color: "#101828", textAlign: "right" }}
+                  className={styles.key}
+                  style={{ display: "flex", alignItems: "center" }}
                 >
-                  {asset.cryptoBalance} {asset.coin}
-                </p>
-                <p
-                  style={{ fontSize: 14, color: "#667085", textAlign: "right" }}
-                >
-                  ~${asset.usd}
-                </p>
+                  <div
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: "#9BB0FD",
+                      marginRight: 8,
+                      fontSize: 14,
+                      lineHeight: 20,
+                      color: "#101828",
+                    }}
+                  />
+                  {asset.name} ({asset.percentage * 100}%)
+                </div>
+                <div className={styles.value}>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: "#101828",
+                      textAlign: "right",
+                    }}
+                  >
+                    {asset.cryptoBalance} {asset.coin}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: "#667085",
+                      textAlign: "right",
+                    }}
+                  >
+                    ~${asset.usd}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </Modal>
       <Modal
         openModal={openModal && searchType === "Buy"}

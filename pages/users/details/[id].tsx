@@ -78,7 +78,9 @@ const PaymentAccountsTable: React.FC<any> = ({ username, auth }) => {
     },
   ];
 
-  return (
+  return isLoading ? (
+    <Skeleton active style={{ marginTop: 20 }} />
+  ) : (
     <Table
       style={{
         fontFamily: "PP Telegraf",
@@ -99,31 +101,33 @@ const KYCVerificationTable: React.FC<any> = ({ username, auth }) => {
   const [openDocumentsModal, setOpenDocumentsModal] = useState<any>(null);
   const [openRejectModal, setOpenRejectModal] = useState<any>(null);
 
-  const { isLoading: isLoadingData, data: { data: result = {} } = {} } =
-    useCustomQuery({
-      queryKey: ["userKyc", username],
-      enabled: username.length > 0,
-      queryFn: async () => {
-        const result = await axios.post(
-          `${BASE_URL}/users/kyc`,
-          {
-            username,
+  const { isLoading, data: { data: result = {} } = {} } = useCustomQuery({
+    queryKey: ["userKyc", username],
+    enabled: username.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/users/kyc`,
+        {
+          username,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
           },
-          {
-            headers: {
-              Authorization: auth.accessToken,
-            },
-          }
-        );
-        return result;
-      },
-    });
+        }
+      );
+      return result;
+    },
+  });
 
   const dataSource = [result?.data].map((item: any) => ({
     ...item,
     onOpenPhotos: () => setOpenPhotosModal(item),
     onViewDocuments: () => setOpenDocumentsModal(item),
     onReject: () => setOpenRejectModal(item),
+    onViewKYC: () => {
+      window.open(item?.photos?.selfieUrl || "", "_blank");
+    },
   }));
 
   const columns: any = [
@@ -150,13 +154,16 @@ const KYCVerificationTable: React.FC<any> = ({ username, auth }) => {
     {
       title: "",
       dataIndex: "action",
-      render: (_: any, { onOpenPhotos, onViewDocuments, onReject }: any) => (
+      render: (
+        _: any,
+        { onOpenPhotos, onViewDocuments, onReject, onViewKYC }: any
+      ) => (
         <div className={styles.actionButton}>
           <div style={{ marginRight: 10 }}>
             <Button onClick={onOpenPhotos}>View photos</Button>
           </div>
           <div style={{ marginRight: 10 }}>
-            <Button color="white" onClick={onViewDocuments}>
+            <Button color="white" onClick={onViewKYC}>
               View KYC
             </Button>
           </div>
@@ -167,18 +174,21 @@ const KYCVerificationTable: React.FC<any> = ({ username, auth }) => {
 
   return (
     <>
-      <Table
-        style={{
-          fontFamily: "PP Telegraf",
-          border: "1px solid var(--Gray-200, #EAECF0)",
-          borderRadius: 12,
-          boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-          overflow: "hidden",
-        }}
-        dataSource={dataSource}
-        columns={columns}
-        loading={isLoadingData}
-      />
+      {isLoading ? (
+        <Skeleton active style={{ marginTop: 20 }} />
+      ) : (
+        <Table
+          style={{
+            fontFamily: "PP Telegraf",
+            border: "1px solid var(--Gray-200, #EAECF0)",
+            borderRadius: 12,
+            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+            overflow: "hidden",
+          }}
+          dataSource={dataSource}
+          columns={columns}
+        />
+      )}
       <Modal
         openModal={Boolean(openPhotosModal)}
         onClose={() => setOpenPhotosModal(null)}
@@ -451,30 +461,35 @@ const AccountBalanceTable: React.FC<any> = ({ username, auth }) => {
           />
         </div>
       </AntModal>
-      <Table
-        style={{
-          fontFamily: "PP Telegraf",
-          border: "1px solid var(--Gray-200, #EAECF0)",
-          borderRadius: 12,
-          boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-          overflow: "hidden",
-        }}
-        dataSource={(result?.data || []).map((item: any) => ({
-          ...item,
-          addAction: (currency: string, address: string) => {
-            setOpenAddModal(true);
-            setCurrency(currency);
-            setUserAddress(address);
-          },
-          deductAction: (currency: string, address: string) => {
-            setOpenDeductModal(true);
-            setCurrency(currency);
-            setUserAddress(address);
-          },
-        }))}
-        columns={columns}
-        loading={isLoadingData}
-      />
+
+      {isLoadingData ? (
+        <Skeleton active style={{ marginTop: 20 }} />
+      ) : (
+        <Table
+          style={{
+            fontFamily: "PP Telegraf",
+            border: "1px solid var(--Gray-200, #EAECF0)",
+            borderRadius: 12,
+            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+            overflow: "hidden",
+          }}
+          dataSource={(result?.data || []).map((item: any) => ({
+            ...item,
+            addAction: (currency: string, address: string) => {
+              setOpenAddModal(true);
+              setCurrency(currency);
+              setUserAddress(address);
+            },
+            deductAction: (currency: string, address: string) => {
+              setOpenDeductModal(true);
+              setCurrency(currency);
+              setUserAddress(address);
+            },
+          }))}
+          columns={columns}
+          loading={isLoadingData}
+        />
+      )}
     </>
   );
 };
@@ -579,44 +594,6 @@ const CardsTable: React.FC<any> = ({ username, auth }) => {
           </div>
         </div>
       ),
-    },
-  ];
-
-  const dataSource = [
-    {
-      key: "1",
-      username: "@username",
-      cardType: "Physical Mastercard",
-      cardBalance: "5.00",
-      action: setModalType,
-    },
-    {
-      key: "2",
-      username: "@username",
-      cardType: "Physical Mastercard",
-      cardBalance: "5.00",
-      action: setModalType,
-    },
-    {
-      key: "3",
-      username: "@username",
-      cardType: "Physical Mastercard",
-      cardBalance: "5.00",
-      action: setModalType,
-    },
-    {
-      key: "4",
-      username: "@username",
-      cardType: "Physical Mastercard",
-      cardBalance: "5.00",
-      action: setModalType,
-    },
-    {
-      key: "5",
-      username: "@username",
-      cardType: "Physical Mastercard",
-      cardBalance: "5.00",
-      action: setModalType,
     },
   ];
 
@@ -782,20 +759,25 @@ const CardsTable: React.FC<any> = ({ username, auth }) => {
           </div>
         </div>
       </Modal>
-      <div className={styles.table} style={{ overflow: "hidden" }}>
-        <Table
-          style={{
-            fontFamily: "PP Telegraf",
-            border: "1px solid var(--Gray-200, #EAECF0)",
-            borderRadius: 12,
-            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-            overflow: "hidden",
-          }}
-          dataSource={result?.data}
-          columns={columns}
-          loading={isLoading}
-        />
-      </div>
+
+      {isLoading ? (
+        <Skeleton active style={{ marginTop: 20 }} />
+      ) : (
+        <div className={styles.table} style={{ overflow: "hidden" }}>
+          <Table
+            style={{
+              fontFamily: "PP Telegraf",
+              border: "1px solid var(--Gray-200, #EAECF0)",
+              borderRadius: 12,
+              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+              overflow: "hidden",
+            }}
+            dataSource={result?.data}
+            columns={columns}
+            loading={isLoading}
+          />
+        </div>
+      )}
     </>
   );
 };

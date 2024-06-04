@@ -348,8 +348,38 @@
   margin-bottom: 10px;
   align-items: center;
 }
+.itemContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 10px;
+  align-items: center;
+  border-bottom: 1px solid #f4f2f2;
+  padding-bottom: 15px;
+}
+.value {
+  color: #a29a9a;
+}
 .info {
   color: #cb1a14;
   background-color: #fbeae9;
   padding: 5px;
+}
+
+.leftIcon {
+  display: flex;
+  padding: 10px 12px 10px 14px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px 0px 0px 8px;
+  background: var(--primary-400, #456dfb);
+  height: 100%;
+  color: var(--base-white, #fff);
+  font-family: "PP Telegraf";
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px;
 }

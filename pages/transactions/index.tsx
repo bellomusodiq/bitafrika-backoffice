@@ -307,7 +307,13 @@ export default function Search() {
       dataIndex: "status",
       key: "status",
       render: (_: any, { status }: any) => (
-        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+        <Tag
+          color={
+            status === "success" || status === "confirmed" ? "success" : "error"
+          }
+        >
+          {status}
+        </Tag>
       ),
     },
     {
@@ -1406,7 +1412,9 @@ export default function Search() {
           <Skeleton active style={{ margin: "20px 0" }} />
         ) : data ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
-            <p className={styles.resultText}>{data.length} result found!</p>
+            <p className={styles.resultText}>
+              {pageInfo?.totalCount || data.length} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",

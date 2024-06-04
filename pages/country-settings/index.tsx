@@ -3,7 +3,16 @@ import React, { useEffect, useRef, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/country-settings/country-settings.module.css";
 import Button from "@/components/Button";
-import { Divider, Space, Table, Modal, InputNumber, message } from "antd";
+import {
+  Divider,
+  Space,
+  Table,
+  Modal,
+  InputNumber,
+  message,
+  Skeleton,
+  Button as AntdButton,
+} from "antd";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
 import Toggle from "@/components/Toggle";
@@ -185,16 +194,6 @@ export default function Search() {
     setEditRate(newData);
   };
 
-  if (loading) {
-    return (
-      <PageLayout title="Home">
-        <div style={{ marginTop: 60 }}>
-          <Loader />
-        </div>
-      </PageLayout>
-    );
-  }
-
   const columns: TableProps<any>["columns"] = [
     {
       title: "Coin",
@@ -217,7 +216,7 @@ export default function Search() {
       key: "action",
       render: (_, { type }) => (
         <Space size="middle">
-          <Button
+          <AntdButton
             onClick={() => {
               previousData.current = data;
               setOpenModal(true);
@@ -227,10 +226,9 @@ export default function Search() {
                 sell: data?.rates?.[type]?.sell,
               });
             }}
-            color="white"
           >
             Edit
-          </Button>
+          </AntdButton>
         </Space>
       ),
     },
@@ -293,181 +291,188 @@ export default function Search() {
         <h3 className={styles.header}>Country Settings</h3>
         <p className={styles.subHeader}></p>
 
-        <div className={styles.tabContainer}>
-          <button
-            onClick={() => setCurrentTab("Basic Information")}
-            style={{
-              background: currentTab === "Basic Information" ? "white" : "none",
-              border:
-                currentTab === "Basic Information"
-                  ? "1px solid var(--gray-100, #f2f4f7)"
-                  : "none",
-              boxShadow:
-                currentTab === "Basic Information"
-                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                  : "none",
-            }}
-            className={styles.tabItem}
-          >
-            Basic Information
-          </button>
-          <button
-            onClick={() => setCurrentTab("Rates")}
-            style={{
-              background: currentTab === "Rates" ? "white" : "none",
-              border:
-                currentTab === "Rates"
-                  ? "1px solid var(--gray-100, #f2f4f7)"
-                  : "none",
-              boxShadow:
-                currentTab === "Rates"
-                  ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
-                  : "none",
-            }}
-            className={styles.tabItem}
-          >
-            Rates
-          </button>
-        </div>
-        {currentTab === "Basic Information" && (
-          <div className={styles.body}>
-            <div className={styles.bodyInputContainer}>
-              <p>Country</p>
-              <div>
-                <Dropdown
-                  value={data.shortName}
-                  options={[
-                    { title: "Ghana", value: "GN" },
-                    { title: "Cameroon", value: "CM" },
-                    { title: "Nigeria", value: "NG" },
-                  ]}
-                  onChange={() => {}}
-                />
-              </div>
-            </div>
-            <Divider style={{ margin: 0 }} />
-            <div className={styles.bodyInputContainer}>
-              <p>Country annotation (eg. USA)</p>
-              <div>
-                <Input
-                  value={data.shortName}
-                  onChange={(e) =>
-                    setData({ ...data, shortName: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <Divider style={{ margin: 0 }} />
-            <div className={styles.bodyInputContainer}>
-              <p>Currency</p>
-              <div>
-                <Input
-                  value={data.currencyName}
-                  onChange={(e) =>
-                    setData({ ...data, currencyName: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <Divider style={{ margin: 0 }} />
-            <div className={styles.bodyInputContainer}>
-              <p>Currency code (eg. USD)</p>
-              <div>
-                <Input
-                  value={data.currencyCode}
-                  onChange={(e) =>
-                    setData({ ...data, currencyCode: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <Divider style={{ margin: 0 }} />
-            <div className={styles.bodyInputContainer}>
-              <p>Phone code</p>
-              <div>
-                <Input
-                  value={data.phoneCode}
-                  onChange={(e) =>
-                    setData({ ...data, phoneCode: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-            <Divider style={{ margin: 0 }} />
-            <div className={styles.bodyFooter}>
-              <div></div>
-              <div className={styles.cancelBtns}>
-                <div style={{ marginRight: 12 }}>
-                  <Button color="white">Cancel</Button>
-                </div>
-                <div>
-                  <Button
-                    loading={basicInfoLoading}
-                    onClick={updateBasicInformation}
-                  >
-                    Save
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {currentTab === "Payment methods" && (
+        {loading ? (
+          <Skeleton active />
+        ) : (
           <>
-            <div className={styles.body}>
-              <div className={styles.bodyInputContainer}>
-                <p>Mobile money</p>
-                <div>
-                  <Toggle
-                    defaultValue={data.momo}
-                    onToggle={(value) => updatePaymentMethod("momo", value)}
-                  />
+            <div className={styles.tabContainer}>
+              <button
+                onClick={() => setCurrentTab("Basic Information")}
+                style={{
+                  background:
+                    currentTab === "Basic Information" ? "white" : "none",
+                  border:
+                    currentTab === "Basic Information"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "Basic Information"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                Basic Information
+              </button>
+              <button
+                onClick={() => setCurrentTab("Rates")}
+                style={{
+                  background: currentTab === "Rates" ? "white" : "none",
+                  border:
+                    currentTab === "Rates"
+                      ? "1px solid var(--gray-100, #f2f4f7)"
+                      : "none",
+                  boxShadow:
+                    currentTab === "Rates"
+                      ? "0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1)"
+                      : "none",
+                }}
+                className={styles.tabItem}
+              >
+                Rates
+              </button>
+            </div>
+            {currentTab === "Basic Information" && (
+              <div className={styles.body}>
+                <div className={styles.bodyInputContainer}>
+                  <p>Country</p>
+                  <div>
+                    <Dropdown
+                      value={data.shortName}
+                      options={[
+                        { title: "Ghana", value: "GN" },
+                        { title: "Cameroon", value: "CM" },
+                        { title: "Nigeria", value: "NG" },
+                      ]}
+                      onChange={() => {}}
+                    />
+                  </div>
+                </div>
+                <Divider style={{ margin: 0 }} />
+                <div className={styles.bodyInputContainer}>
+                  <p>Country annotation (eg. USA)</p>
+                  <div>
+                    <Input
+                      value={data.shortName}
+                      onChange={(e) =>
+                        setData({ ...data, shortName: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <Divider style={{ margin: 0 }} />
+                <div className={styles.bodyInputContainer}>
+                  <p>Currency</p>
+                  <div>
+                    <Input
+                      value={data.currencyName}
+                      onChange={(e) =>
+                        setData({ ...data, currencyName: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <Divider style={{ margin: 0 }} />
+                <div className={styles.bodyInputContainer}>
+                  <p>Currency code (eg. USD)</p>
+                  <div>
+                    <Input
+                      value={data.currencyCode}
+                      onChange={(e) =>
+                        setData({ ...data, currencyCode: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <Divider style={{ margin: 0 }} />
+                <div className={styles.bodyInputContainer}>
+                  <p>Phone code</p>
+                  <div>
+                    <Input
+                      value={data.phoneCode}
+                      onChange={(e) =>
+                        setData({ ...data, phoneCode: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <Divider style={{ margin: 0 }} />
+                <div className={styles.bodyFooter}>
+                  <div></div>
+                  <div className={styles.cancelBtns}>
+                    <div style={{ marginRight: 12 }}>
+                      <Button color="white">Cancel</Button>
+                    </div>
+                    <div>
+                      <Button
+                        loading={basicInfoLoading}
+                        onClick={updateBasicInformation}
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer}>
-                <p>Bank Transfer</p>
-                <div>
-                  <Toggle
-                    defaultValue={data.bank}
-                    onToggle={(value) => updatePaymentMethod("bank", value)}
-                  />
+            )}
+            {currentTab === "Payment methods" && (
+              <>
+                <div className={styles.body}>
+                  <div className={styles.bodyInputContainer}>
+                    <p>Mobile money</p>
+                    <div>
+                      <Toggle
+                        defaultValue={data.momo}
+                        onToggle={(value) => updatePaymentMethod("momo", value)}
+                      />
+                    </div>
+                  </div>
+                  <Divider style={{ margin: 0 }} />
+                  <div className={styles.bodyInputContainer}>
+                    <p>Bank Transfer</p>
+                    <div>
+                      <Toggle
+                        defaultValue={data.bank}
+                        onToggle={(value) => updatePaymentMethod("bank", value)}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </>
-        )}
-        {currentTab === "Rates" && (
-          <Table columns={columns} dataSource={customData} />
-        )}
-        {currentTab === "Payout methods" && (
-          <>
-            <div className={styles.body}>
-              <div className={styles.bodyInputContainer2}>
-                <p style={{ marginRight: 64 }}>Figo</p>
-                <Toggle />
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer2}>
-                <p style={{ marginRight: 64 }}>Thepeer</p>
-                <Toggle />
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer2}>
-                <p style={{ marginRight: 64 }}>P2P</p>
-                <Toggle />
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer2}>
-                <p style={{ marginRight: 64 }}>Vella</p>
-                <Toggle />
-              </div>
-              <Divider style={{ margin: 0 }} />
-              <div className={styles.bodyInputContainer2}>
-                <p style={{ marginRight: 64 }}>Opay</p>
-                <Toggle />
-              </div>
-            </div>
+              </>
+            )}
+            {currentTab === "Rates" && (
+              <Table columns={columns} dataSource={customData} />
+            )}
+            {currentTab === "Payout methods" && (
+              <>
+                <div className={styles.body}>
+                  <div className={styles.bodyInputContainer2}>
+                    <p style={{ marginRight: 64 }}>Figo</p>
+                    <Toggle />
+                  </div>
+                  <Divider style={{ margin: 0 }} />
+                  <div className={styles.bodyInputContainer2}>
+                    <p style={{ marginRight: 64 }}>Thepeer</p>
+                    <Toggle />
+                  </div>
+                  <Divider style={{ margin: 0 }} />
+                  <div className={styles.bodyInputContainer2}>
+                    <p style={{ marginRight: 64 }}>P2P</p>
+                    <Toggle />
+                  </div>
+                  <Divider style={{ margin: 0 }} />
+                  <div className={styles.bodyInputContainer2}>
+                    <p style={{ marginRight: 64 }}>Vella</p>
+                    <Toggle />
+                  </div>
+                  <Divider style={{ margin: 0 }} />
+                  <div className={styles.bodyInputContainer2}>
+                    <p style={{ marginRight: 64 }}>Opay</p>
+                    <Toggle />
+                  </div>
+                </div>
+              </>
+            )}
           </>
         )}
       </div>

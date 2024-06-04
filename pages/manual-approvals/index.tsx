@@ -90,38 +90,47 @@ export default function Search() {
     if (Array.isArray(response)) {
       switch (params) {
         case "withdrawal":
-          return response.map((item: any) => ({
-            ...item,
-            transactionId: item.uniq,
-            email: item.email,
-            phoneNumber: item.phone,
-            amount: `$${item.usdAmount}`,
-            asset: item.cryptoCurrency,
-            total: `${item.rawAmount} ${item.localCurrency}`,
-            date: item.newDate,
-            action: () => {
-              // fetchManualApprovalDetail(item.uniq);
-              setDetailsId(item.uniq);
-              setOpenModal(true);
-            },
-          }));
+          return {
+            rercord: response.map((item: any) => ({
+              ...item,
+              transactionId: item.uniq,
+              email: item.email,
+              phoneNumber: item.phone,
+              amount: `$${item.usdAmount}`,
+              asset: item.cryptoCurrency,
+              total: `${item.rawAmount} ${item.localCurrency}`,
+              date: item.newDate,
+              action: () => {
+                // fetchManualApprovalDetail(item.uniq);
+                setDetailsId(item.uniq);
+                setOpenModal(true);
+              },
+            })),
+            pageInfo: result?.data?.pageInfo,
+          };
         case "top-up":
-          return response.map((item: any) => ({
-            ...item,
-            transactionId: item.txid,
-            email: item.email,
-            phoneNumber: item.phone,
-            country: item.countryCode,
-            total: `${item.currency} ${item.amount}`,
-            asset: item.cryptoSymbol,
-            // action: () => fetchManualApprovalDetail(item.txid),
-            action: () => {
-              setDetailsId(item.txid);
-              setOpenModal(true);
-            },
-          }));
+          return {
+            record: response.map((item: any) => ({
+              ...item,
+              transactionId: item.txid,
+              email: item.email,
+              phoneNumber: item.phone,
+              country: item.countryCode,
+              total: `${item.currency} ${item.amount}`,
+              asset: item.cryptoSymbol,
+              // action: () => fetchManualApprovalDetail(item.txid),
+              action: () => {
+                setDetailsId(item.txid);
+                setOpenModal(true);
+              },
+            })),
+            pageInfo: result?.data?.pageInfo,
+          };
         default:
-          return null;
+          return {
+            record: [],
+            pageInfo: {},
+          };
       }
     }
     return null;
@@ -538,7 +547,8 @@ export default function Search() {
         ) : formatData && params === filterBy ? (
           <>
             <p style={{ color: "#98a2b3" }} className={styles.subHeader}>
-              {formatData?.length} result found!
+              {formatData?.pageInfo?.totalCount || formatData?.record?.length}{" "}
+              result found!
             </p>
             <div className={styles.searchContainer}>
               <div className={styles.table} style={{ overflow: "hidden" }}>
@@ -550,7 +560,7 @@ export default function Search() {
                     boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                     overflow: "hidden",
                   }}
-                  dataSource={formatData}
+                  dataSource={formatData.record}
                   columns={getTableColumn(filterBy, loadingDetail)}
                 />
               </div>
