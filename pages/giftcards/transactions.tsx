@@ -155,24 +155,11 @@ export default function Transactions() {
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction Status</p>
               <Tag
-                color={status === "failed" ? "error" : "success"}
+                color={currentUser?.status === "failed" ? "error" : "success"}
                 style={{ textTransform: "capitalize", width: "fit-content" }}
               >
                 {currentUser?.status}
               </Tag>
-              {/* <div className={styles.value}>
-                <div
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: 16,
-                    backgroundColor: "#EDFCF2",
-                    color: "#087443",
-                    textAlign: "center",
-                  }}
-                >
-                  <span style={{ fontSize: 12 }}>Approved</span>
-                </div>
-              </div> */}
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
