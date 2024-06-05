@@ -56,11 +56,19 @@ const Cards: NextPage = () => {
           </div>
           <div className={styles.card}>
             <p className={styles.cardHeader}>Number of Orders</p>
-            <p className={styles.cardText}>{overview?.ordersCount}</p>
+            {isLoading ? (
+              <Skeleton active paragraph={{ rows: 0 }} />
+            ) : (
+              <p className={styles.cardText}>{overview?.ordersCount}</p>
+            )}
           </div>
           <div className={styles.card}>
             <p className={styles.cardHeader}>Total Giftcards</p>
-            <p className={styles.cardText}>{overview?.totalGiftCards}</p>
+            {isLoading ? (
+              <Skeleton active paragraph={{ rows: 0 }} />
+            ) : (
+              <p className={styles.cardText}>{overview?.totalGiftCards}</p>
+            )}
           </div>
         </div>
         <div className={styles.bodyContainer}>
@@ -115,7 +123,11 @@ const Cards: NextPage = () => {
               <p className={styles.cardHeader}>
                 Platform Balance (Balance with provider)
               </p>
-              <p className={styles.cardText}>${overview?.platformBalance}</p>
+              {isLoading ? (
+                <Skeleton active paragraph={{ rows: 0 }} />
+              ) : (
+                <p className={styles.cardText}>${overview?.platformBalance}</p>
+              )}
             </div>
           </div>
         </div>

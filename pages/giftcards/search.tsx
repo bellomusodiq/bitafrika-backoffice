@@ -87,7 +87,7 @@ export default function Search({ type }: { type: string }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any>([]);
   const [currentGiftcard, setCurrentGiftcard] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>(type || "transactions");
+  const [searchType, setSearchType] = useState<string>(type || "TRANSACTIONS");
   const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [payload, setPayload] = useState<string>(type || "");
@@ -96,9 +96,8 @@ export default function Search({ type }: { type: string }) {
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
-
   const { isLoading, data: result } = useCustomQuery({
-    queryKey: ["userInfo", payload, currentPage],
+    queryKey: ["giftcard", payload, search, currentPage],
     enabled: payload.length > 0,
     queryFn: async () => {
       const result = await axios.post(
@@ -132,8 +131,6 @@ export default function Search({ type }: { type: string }) {
     }
   }, [result]);
 
-  console.log("formatData", formatData);
-
   const onSearch = () => {
     setPayload(searchType);
   };
@@ -143,17 +140,14 @@ export default function Search({ type }: { type: string }) {
     setOpenModal(true);
   };
 
-  const getColumns = () => {
-    switch (searchType) {
-      case "TRANSACTIONS":
-        return GIFTCRARDS_COLUMNS;
-    }
-  };
-
   const renderPlaceHolder = () => {
     switch (searchType) {
       case "TRANSACTIONS":
         return "Enter giftcard transaction ID";
+      case "CARD_TYPE":
+        return "Enter card type";
+      case "USERNAME":
+        return "Enter username";
     }
   };
 
@@ -249,13 +243,14 @@ export default function Search({ type }: { type: string }) {
               <Dropdown
                 value={searchType}
                 options={[
-                  { title: "Transaction ID", value: "transactions" },
-                  { title: "Card type", value: "card_type" },
-                  { title: "Username", value: "username" },
+                  { title: "Transaction ID", value: "TRANSACTIONS" },
+                  { title: "Card type", value: "CARD_TYPE" },
+                  { title: "Username", value: "USERNAME" },
                 ]}
                 onChange={(value) => {
                   setSearchType(String(value));
-                  setData([]);
+                  setPayload("");
+                  setSearch("");
                 }}
               />
             </div>
@@ -265,7 +260,10 @@ export default function Search({ type }: { type: string }) {
                 className={styles.input}
                 placeholder={renderPlaceHolder()}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPayload("");
+                }}
               />
             </div>
             <div>
@@ -276,11 +274,12 @@ export default function Search({ type }: { type: string }) {
           </div>
         </div>
         {isLoading ? (
-          <Skeleton active />
-        ) : formatData ? (
+          <Skeleton active style={{ marginTop: 20 }} />
+        ) : searchType === payload && formatData ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
-              {formatData.pageInfo?.totalCount} result found!
+              {formatData.pageInfo?.totalCount || formatData.record.length}{" "}
+              result found!
             </p>
             <Table
               style={{

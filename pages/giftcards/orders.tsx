@@ -1,33 +1,25 @@
 import React, { useState } from "react";
-
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/giftcards/search.module.css";
-import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Table } from "antd";
+import { Table, Button as AntdButton, Tag, Skeleton } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import getToken from "@/utils/getToken";
-import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
-
-const COUNTRY_MAP: { [k: string]: string } = {
-  GH: "Ghana",
-  CM: "Cameroon",
-  NG: "Nigeria",
-};
+import useCustomQuery from "@/hooks/useCustomQuery";
+import Pagination from "@/components/Pagination";
 
 const GIFTCRARDS_COLUMNS = [
   {
     title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
+    dataIndex: "transId",
+    key: "transId",
+    render: (_: any, { transId }: any) => (
       <>
-        {transactionId.slice(0, 6)}...
-        {transactionId.slice(transactionId.length - 6)}
+        {transId.slice(0, 6)}...
+        {transId.slice(transId.length - 6)}
       </>
     ),
   },
@@ -41,8 +33,8 @@ const GIFTCRARDS_COLUMNS = [
   },
   {
     title: "Card type",
-    dataIndex: "type",
-    key: "type",
+    dataIndex: "cardType",
+    key: "cardType",
   },
   {
     title: "Amount",
@@ -55,76 +47,32 @@ const GIFTCRARDS_COLUMNS = [
     dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <div
-        style={{
-          borderRadius: 16,
-          backgroundColor: "#EDFCF2",
-          color: "#087443",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ fontSize: 12 }}>{status}</span>
-      </div>
+      // <div
+      //   style={{
+      //     borderRadius: 16,
+      //     backgroundColor: "#EDFCF2",
+      //     color: "#087443",
+      //     textAlign: "center",
+      //   }}
+      // >
+      //   <span style={{ fontSize: 12 }}>{status}</span>
+      // </div>
+      <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
     ),
   },
   {
     title: "Date",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "createdAt",
+    key: "createdAt",
   },
   {
     title: "Actions",
     dataIndex: "action",
     render: (_: any, { action }: any) => (
       <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
+        <Button onClick={action}>View</Button>
       </div>
     ),
-  },
-];
-
-const GIFTCRARDS_DATA = [
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
-  },
-  {
-    transactionId: "1243342353453453453",
-    username: "samuel12345",
-    type: "Apple Itunes",
-    amount: 100.99,
-    status: "Successful",
-    date: "Thur 18 Jan, 2023",
   },
 ];
 
@@ -136,49 +84,46 @@ interface IProps {
 
 export default function Search({ status, from, to }: IProps) {
   const router = useRouter();
-  const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
   const [currentUser, setCurrentUser] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("Transaction ID");
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const onSearch = () => {
-    switch (searchType) {
-      case "Transaction ID":
-        setData(GIFTCRARDS_DATA);
-        break;
-    }
-  };
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+    queryKey: ["giftCardTransactions", status, from, to, currentPage],
+    enabled: status.length > 0 && from.length > 0 && to.length > 0,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/gift-cards/transactions`,
+        {
+          status,
+          startDate: from,
+          endDate: to,
+          page: currentPage,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      );
+      return result;
+    },
+  });
 
   const showModal = (user: any) => {
     setCurrentUser(user);
     setOpenModal(true);
   };
 
-  const getColumns = () => {
-    switch (searchType) {
-      case "Transaction ID":
-        return GIFTCRARDS_COLUMNS;
-    }
-  };
-
-  const renderPlaceHolder = () => {
-    switch (searchType) {
-      case "Transaction ID":
-        return "Enter giftcard transaction ID";
-    }
-  };
-
   return (
     <PageLayout title="Hone">
       <Modal
-        openModal={openModal && searchType === "Transaction ID"}
+        openModal={openModal}
         onClose={() => setOpenModal(false)}
         headerCenter={
           <div className={styles.modalHeader}>
@@ -192,18 +137,25 @@ export default function Search({ status, from, to }: IProps) {
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>
-                User: <span style={{ color: "black" }}>@Samuel12345</span>
+                User:{" "}
+                <span style={{ color: "black" }}>@{currentUser?.username}</span>
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction ID</p>
-              <p className={styles.value}>1234Y456342342342354</p>
+              <p className={styles.value}>{currentUser?.transId}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction Status</p>
-              <div className={styles.value}>
+              <Tag
+                color={status === "failed" ? "error" : "success"}
+                style={{ textTransform: "capitalize", width: "fit-content" }}
+              >
+                {currentUser?.status}
+              </Tag>
+              {/* <div className={styles.value}>
                 <div
                   style={{
                     padding: "4px 8px",
@@ -215,32 +167,32 @@ export default function Search({ status, from, to }: IProps) {
                 >
                   <span style={{ fontSize: 12 }}>Approved</span>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Card type</p>
-              <p className={styles.value}>Googlepay ($100.00)</p>
+              <p className={styles.value}>{currentUser?.cardType}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Amount paid</p>
-              <p className={styles.value}>100 USDT</p>
+              <p className={styles.value}>{currentUser?.amount} USDT</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Recipient email</p>
-              <p className={styles.value}>email@username.com</p>
+              <p className={styles.value}>{currentUser?.recipient}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Note</p>
-              <p className={styles.value}>Note goes here</p>
+              <p className={styles.value}>{currentUser?.note}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction date</p>
-              <p className={styles.value}>Monday 23 Jan, 2023 07:52 AM</p>
+              <p className={styles.value}>{currentUser?.createdAt}</p>
             </div>
           </div>
         </>
@@ -251,11 +203,54 @@ export default function Search({ status, from, to }: IProps) {
           style={{
             display: "flex",
             alignItems: "center",
+          }}
+        >
+          <div>
+            <AntdButton type="text" onClick={() => router.push("/giftcards")}>
+              <img src="/icons/arrow-left.svg" />
+            </AntdButton>
+          </div>
+          <p className={styles.filterTitle}>Giftcard orders results</p>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+            marginTop: 20,
+            marginBottom: 10,
+          }}
+        >
+          {/* <p className={styles.subHeader}> */}
+          <p className={styles.subHeader}>
+            Date: {from && new Date(from).toDateString()} -{" "}
+            {to && new Date(to).toDateString()}
+          </p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            <p className={styles.subHeader}>Status:</p>
+            <Tag
+              color={status === "failed" ? "error" : "success"}
+              style={{ textTransform: "capitalize", width: "fit-content" }}
+            >
+              {status}
+            </Tag>
+          </div>
+        </div>
+        {/* <div
+          style={{
+            display: "flex",
+            alignItems: "center",
             justifyContent: "space-between",
           }}
         >
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <h3 className={styles.header}>Giftcard orders</h3>
+            
             <p className={styles.subHeader}>
               Date: 5th October — 12th October 2023
             </p>
@@ -271,26 +266,39 @@ export default function Search({ status, from, to }: IProps) {
               <Button onClick={() => {}}>Download</Button>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className={styles.table} style={{ overflow: "hidden" }}>
-          <p className={styles.resultText}>{data.length} result found!</p>
-          <Table
-            style={{
-              fontFamily: "PP Telegraf",
-              border: "1px solid var(--Gray-200, #EAECF0)",
-              borderRadius: 12,
-              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-              overflow: "hidden",
-            }}
-            dataSource={GIFTCRARDS_DATA.map((user: any) => ({
-              ...user,
-              action: () => showModal(user),
-            }))}
-            columns={GIFTCRARDS_COLUMNS}
-            loading={loading}
-          />
-        </div>
+        {isLoading ? (
+          <Skeleton active style={{ marginTop: 20 }} />
+        ) : result?.data ? (
+          <div className={styles.table} style={{ overflow: "hidden" }}>
+            <p className={styles.resultText}>
+              {result?.data.pageInfo.totalCount ||
+                result?.data?.transactions.length}{" "}
+              result found!
+            </p>
+            <Table
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
+              dataSource={result?.data?.transactions.map((user: any) => ({
+                ...user,
+                action: () => showModal(user),
+              }))}
+              columns={GIFTCRARDS_COLUMNS}
+              loading={isLoading}
+              pagination={false}
+            />
+            <Pagination
+              pageInfo={result?.data?.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
+          </div>
+        ) : null}
       </div>
     </PageLayout>
   );

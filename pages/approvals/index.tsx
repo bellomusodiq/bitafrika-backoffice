@@ -4,7 +4,15 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/approvals/approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Checkbox, DatePicker, Divider, Space, Table } from "antd";
+import {
+  Checkbox,
+  DatePicker,
+  Divider,
+  Pagination,
+  Skeleton,
+  Space,
+  Table,
+} from "antd";
 import Modal from "@/components/Modal";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
@@ -13,12 +21,16 @@ import { toast } from "react-toastify";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 const columns: any = [
   {
     title: "Type",
     dataIndex: "type",
     key: "type",
+    render: (_: any, { type }: any) => (
+      <p style={{ textTransform: "capitalize" }}>{type}</p>
+    ),
   },
   {
     title: "Initiator type",
@@ -70,17 +82,23 @@ const columns: any = [
 ];
 
 export default function Search() {
-  const code1 = useRef(null);
-  const code2 = useRef(null);
-  const code3 = useRef(null);
-  const code4 = useRef(null);
+  const router = useRouter();
+  const code1 = useRef<HTMLInputElement | null>(null);
+  const code2 = useRef<HTMLInputElement | null>(null);
+  const code3 = useRef<HTMLInputElement | null>(null);
+  const code4 = useRef<HTMLInputElement | null>(null);
+  const code5 = useRef<HTMLInputElement | null>(null);
+  const code6 = useRef<HTMLInputElement | null>(null);
   const codeMap: { [k: number]: any } = {
     0: code1,
     1: code2,
     2: code3,
     3: code4,
+    4: code5,
+    5: code6,
   };
-  const [search, setSearch] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [currData, setCurrData] = useState<any>(null);
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
@@ -97,7 +115,11 @@ export default function Search() {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const { isLoading, data: result } = useCustomQuery({
+  const {
+    isLoading,
+    refetch,
+    data: { data: result } = {},
+  } = useCustomQuery({
     queryKey: ["authorizations"],
     enabled: true,
     queryFn: async () => {
@@ -114,70 +136,48 @@ export default function Search() {
     },
   });
 
-  console.log("result", result);
+  const handleApproval = () => {
+    const approveUrl = `${BASE_URL}/authorizations/approve-transaction`;
+    const declineUrl = `${BASE_URL}/authorizations/decline-transaction`;
+    const url = currData?.approve ? approveUrl : declineUrl;
 
-  const dataSource = [
-    {
-      key: "1",
-      type: "Balance top up",
-      initiatorType: "Admin",
-      initiator: "@Admin",
-      description: "Add balance to @username",
-      coin: "BTC",
-      amount: "0.98999882 BTC",
-      usdAmount: "$1000.00",
-      action: () => setOpenCodeModal(true),
-      reject: () => {
-        setOpenRejectModal(true);
-        setApprovalType({
-          type: "Balance top up",
-          initiator: "@Admin",
-          amount: "0.98999882 BTC",
-        });
-      },
-    },
-    {
-      key: "2",
-      type: "Over 1 BTC",
-      initiatorType: "User",
-      initiator: "@User",
-      description: "Asset withdrawal over 1 BTC",
-      coin: "BTC",
-      amount: "0.98999882 BTC",
-      usdAmount: "$1000.00",
-      action: () => setOpenCodeModal(true),
-      reject: () => {
-        setOpenRejectModal(true);
-        setApprovalType({
-          type: "Over 1 BTC",
-          initiator: "@User",
-          amount: "0.98999882 BTC",
-        });
-      },
-    },
-    {
-      key: "3",
-      type: "Deduction",
-      initiatorType: "Admin",
-      initiator: "@Admin",
-      description: "deduct balance @username",
-      coin: "BTC",
-      amount: "0.98999882 BTC",
-      usdAmount: "$1000.00",
-      action: () => setOpenCodeModal(true),
-      reject: () => {
-        setOpenRejectModal(true);
-        setApprovalType({
-          type: "Deduction",
-          initiator: "@Admin",
-          amount: "0.98999882 BTC",
-        });
-      },
-    },
-  ];
+    setLoading(true);
+    axios
+      .post(
+        url,
+        {
+          id: currData?.id,
+          mfaToken: pin,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        if (res.data.success) {
+          refetch();
+          setOpenCodeModal(true);
+          toast.success(res.data.message);
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        } else {
+          toast.error("Something went wrong, please try again");
+        }
+      });
+  };
 
   const updatePin = (digit: string) => {
-    if (pin.length < 4) {
+    if (pin.length < 6) {
       codeMap[pin.length + 1]?.current?.focus();
       setPin(`${pin}${digit}`);
     }
@@ -201,22 +201,40 @@ export default function Search() {
     }
   };
 
+  const onClose = () => {
+    setPin("");
+    if (code1.current) code1.current.value = "";
+    if (code2.current) code2.current.value = "";
+    if (code3.current) code3.current.value = "";
+    if (code4.current) code4.current.value = "";
+    if (code5.current) code5.current.value = "";
+    if (code6.current) code6.current.value = "";
+    setOpenCodeModal(false);
+  };
+
   return (
     <PageLayout title="Hone">
       <Modal
-        customStyles={{ width: "30%" }}
+        // customStyles={{ width: "40%" }}
         headerCenter={
           <div className={styles.lockContainer}>
             <img src="/images/email.png" style={{ width: 48, height: 48 }} />
           </div>
         }
-        onClose={() => setOpenCodeModal(false)}
+        onClose={onClose}
         openModal={openCodeModal}
       >
         <div className={styles.modalContainer}>
-          <h3 className={styles.modalTitle}>Enter email verificaiton code</h3>
+          <h3
+            style={{ textTransform: "capitalize" }}
+            className={styles.modalTitle}
+          >
+            {/* Enter Authenticator verification code */}
+            {currData?.approve ? "Approve" : "Reject"}{" "}
+            {currData?.transactionType} Request
+          </h3>
           <p className={styles.modalText}>
-            Check your email for a 4-Digit verification code to continue
+            Check your Authenticator for verification code to continue
           </p>
           <div className={styles.codeContainer}>
             <input
@@ -239,13 +257,31 @@ export default function Search() {
               onKeyUp={(e) => changeCode(e)}
               className={styles.code}
             />
+            <input
+              ref={code5}
+              onKeyUp={(e) => changeCode(e)}
+              className={styles.code}
+            />
+            <input
+              ref={code6}
+              onKeyUp={(e) => changeCode(e)}
+              className={styles.code}
+            />
           </div>
           <div className={styles.footerContainer}>
-            <Button className={styles.footerButton}>Cancel</Button>
             <Button
-              onClick={() => setOpenCodeModal(false)}
+              disabled={loading}
+              className={styles.footerButton}
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleApproval}
               color="white"
               className={styles.footerButton}
+              disabled={loading}
+              loading={loading}
             >
               Confirm
             </Button>
@@ -443,17 +479,58 @@ export default function Search() {
       <div className={styles.container}>
         <h3 className={styles.header}>Authorizations</h3>
         <p className={styles.subHeader}></p>
-        <Table
-          style={{
-            fontFamily: "PP Telegraf",
-            border: "1px solid var(--Gray-200, #EAECF0)",
-            borderRadius: 12,
-            boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-            overflow: "hidden",
-          }}
-          dataSource={dataSource}
-          columns={columns}
-        />
+        {isLoading ? (
+          <Skeleton active style={{ marginTop: 20 }} />
+        ) : (
+          <>
+            <Table
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
+              dataSource={result?.data.map((item: any) => ({
+                key: item.id,
+                type: item.transactionType,
+                initiatorType: item.initiatorType,
+                initiator: item.initiator,
+                description: item.description,
+                coin: item.cryptoSymbol,
+                amount: `${item.cryptoAmount} ${item.cryptoSymbol}`,
+                usdAmount: `$${item.usdValue}`,
+                status: `${item.status}`,
+                action: () => {
+                  setOpenCodeModal(true);
+                  setCurrData({
+                    ...item,
+                    approve: true,
+                  });
+                },
+                reject: () => {
+                  setOpenCodeModal(true);
+                  setCurrData({
+                    ...item,
+                    approve: false,
+                  });
+                  // setOpenRejectModal(true);
+                  // setApprovalType({
+                  //   type: item.transactionType,
+                  //   initiator: item.initiator,
+                  //   amount: `${item.cryptoAmount} ${item.cryptoSymbol}`,
+                  // });
+                },
+              }))}
+              columns={columns}
+              pagination={false}
+            />
+            {/* <Pagination
+          pageInfo={result?.data?.pageInfo}
+          setCurrentPage={setCurrentPage}
+        /> */}
+          </>
+        )}
       </div>
     </PageLayout>
   );

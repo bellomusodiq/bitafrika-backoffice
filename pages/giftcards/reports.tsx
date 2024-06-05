@@ -4,7 +4,14 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Divider, Skeleton, Table, Tag } from "antd";
+import {
+  DatePicker,
+  Divider,
+  Skeleton,
+  Table,
+  Tag,
+  Button as AntdButton,
+} from "antd";
 import Modal from "@/components/Modal";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
@@ -72,16 +79,13 @@ export default function Search() {
       return result;
     },
   });
-  console.log("result", result);
+
   const getStatusCode = () => {
     switch (status) {
-      case "all":
-      case "success":
-      case "confirmed":
-        return "success";
-      case "pending":
-        return "warning";
-      case "error":
+      case "ALL":
+      case "warning":
+        return "blue";
+      case "failed":
         return "error";
       default:
         return "error";
@@ -150,7 +154,19 @@ export default function Search() {
   return (
     <PageLayout title="Hone">
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter giftcard results by</p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <AntdButton type="text" onClick={() => router.push("/giftcards")}>
+              <img src="/icons/arrow-left.svg" />
+            </AntdButton>
+          </div>
+          <p className={styles.filterTitle}>Filter giftcard results by</p>
+        </div>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
             <div className={styles.dropdownContainer}>
@@ -316,9 +332,9 @@ export default function Search() {
             </div>
             <div className={styles.divider} style={{ marginTop: 5 }} />
             <div className={styles.totalContainer}>
-              <p>GHS {result?.data?.totalAmount}</p>
-              <p>GHS {result?.data?.totalFees}</p>
-              <p style={{ color: "#1570EF" }}>GHS {result?.data?.grandTotal}</p>
+              <p>USD {result?.data?.totalAmount}</p>
+              <p>USD {result?.data?.totalFees}</p>
+              <p style={{ color: "#1570EF" }}>USD {result?.data?.grandTotal}</p>
             </div>
           </div>
         ) : null}
