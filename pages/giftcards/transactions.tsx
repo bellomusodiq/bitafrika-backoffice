@@ -1,206 +1,132 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
-import styles from "@/pages/transactions/transactions.module.css";
-import NavigationStep from "@/components/NavigationStep";
-import Button from "@/components/Button";
-import { DatePicker, Skeleton, Table, Tag, message } from "antd";
+import styles from "@/pages/cards/cards-orders.module.css";
+import { Button, DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
-import formatDate from "@/utils/formatDate";
-import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
+import formatDate from "@/utils/formatDate";
 import Pagination from "@/components/Pagination";
-import Link from "next/link";
+import useCustomQuery from "@/hooks/useCustomQuery";
 
-const COUNTRY_MAP: { [k: string]: string } = {
-  GH: "Ghana",
-  CM: "Cameroon",
-  NG: "Nigeria",
-};
-
-export default function Search() {
-  const [messageApi, contextHolder] = message.useMessage();
+export default function Transactions() {
   const router = useRouter();
-  const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [loadingDetail, setLoadingDetail] = useState<boolean>(false);
-  const [data, setData] = useState<any>([]);
-  const [currentGiftcard, setCurrentGiftcard] = useState<any>({});
-  const [searchType, setSearchType] = useState<string>("Giftcards");
   const [statusType, setStatusType] = useState<string>("success");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
-  const [pageInfo, setPageInfo] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const GIFTCRARDS_COLUMNS = [
-    {
-      title: "TRANSACTIONS",
-      dataIndex: "transId",
-      key: "transId",
-      render: (_: any, { transId }: any) => (
-        <>
-          {transId.slice(0, 6)}...
-          {transId.slice(transId.length - 6)}
-        </>
-      ),
-    },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <Link href={`users/detail/${username}`} className={styles.username}>
-          {username}
-        </Link>
-      ),
-    },
-    {
-      title: "Card type",
-      dataIndex: "cardType",
-      key: "cardType",
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (_: any, { amount }: any) => <>${amount}</>,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "createdAt",
-      key: "createdAt",
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button onClick={action}>View</Button>
-          </div>
-        </div>
-      ),
-    },
-  ];
+  const [currentUser, setCurrentUser] = useState<any>({});
+  const [params, setParams] = useState<Record<string, string> | null>(null);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
-
-  const showModal = (giftcard: any) => {
-    setCurrentGiftcard(giftcard);
-    setOpenModal(true);
-  };
-
-  const getGiftCardsTransactionsDetail = (id: string) => {
-    setLoadingDetail(true);
-    axios
-      .post(
-        `${BASE_URL}/transactions/gift-card/${id}`,
-        {},
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+    queryKey: ["giftCardTransactions", params, currentPage],
+    enabled: !!params,
+    queryFn: async () => {
+      const result = await axios.post(
+        `${BASE_URL}/gift-cards/transactions`,
         {
-          headers: {
-            Authorization: auth.accessToken,
-          },
-        }
-      )
-      .then((res: any) => {
-        setLoadingDetail(false);
-        if (res.data.success) {
-          setCurrentGiftcard(res.data.data);
-          setOpenModal(true);
-        }
-      })
-      .catch((e) => {
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
-
-  const getGiftcardsTransactions = () => {
-    setLoading(true);
-    axios
-      .post(
-        `${BASE_URL}/gift-cards/transactions?status=${statusType}&startDate=${fromDate}&endDate=${toDate}&page=${currentPage}&pageSize=30`,
-        {
-          status: statusType,
-          startDate: fromDate,
-          endDate: toDate,
-          cardType: "",
+          status: params?.status,
+          startDate: params?.fromDate,
+          endDate: params?.toDate,
+          page: currentPage,
         },
         {
           headers: {
             Authorization: auth.accessToken,
           },
         }
-      )
-      .then((res) => {
-        setLoading(false);
-        if (res.data.success) {
-          setData(
-            res.data.data.transactions.map((item: any) => ({
-              ...item,
-              action: () => {
-                showModal(item);
-              },
-            }))
-          );
-          setPageInfo(res.data.data.pageInfo);
-        } else {
-          messageApi.error(res.data.message);
-        }
-      })
-      .catch((e) => {
-        if (e?.response?.status === 401) {
-          localStorage.removeItem("auth");
-          router.replace("/", "/");
-        }
-      });
-  };
+      );
+      return result;
+    },
+  });
+
+  const REQUESTS_COLUMNS = useMemo(() => {
+    return [
+      {
+        title: "Transaction ID",
+        dataIndex: "transId",
+        key: "transId",
+        render: (_: any, { transId }: any) => (
+          <>
+            {transId.slice(0, 6)}...
+            {transId.slice(transId.length - 6)}
+          </>
+        ),
+      },
+      {
+        title: "Username",
+        dataIndex: "username",
+        key: "username",
+        render: (_: any, { username }: any) => (
+          <p className={styles.username}>{username}</p>
+        ),
+      },
+      {
+        title: "Card type",
+        dataIndex: "cardType",
+        key: "cardType",
+      },
+      {
+        title: "Amount",
+        dataIndex: "amount",
+        key: "amount",
+        render: (_: any, { amount }: any) => <>${amount}</>,
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        render: (_: any, { status }: any) => (
+          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+        ),
+      },
+      {
+        title: "Date",
+        dataIndex: "createdAt",
+        key: "createdAt",
+      },
+      {
+        title: "Actions",
+        dataIndex: "action",
+        render: (_: any, { action }: any) => (
+          <div className={styles.actionButton}>
+            <Button onClick={action}>View</Button>
+          </div>
+        ),
+      },
+    ];
+  }, []);
 
   const onSearch = () => {
-    switch (searchType) {
-      case "Giftcards":
-        getGiftcardsTransactions();
-        break;
-      default:
-        setData([]);
-    }
+    setParams({
+      status: statusType,
+      fromDate,
+      toDate,
+    });
   };
 
-  const getColumns = () => {
-    switch (searchType) {
-      case "Giftcards":
-        return GIFTCRARDS_COLUMNS;
-    }
+  const showModal = (user: any) => {
+    setCurrentUser(user);
+    setOpenModal(true);
   };
 
-  useEffect(() => {
-    if (pageInfo) {
-      onSearch();
-    }
-  }, [currentPage]);
+  const isActiveData = () => {
+    let isActive = true;
+    if (params?.status !== statusType) isActive = false;
+    if (params?.fromDate !== fromDate) isActive = false;
+    if (params?.toDate !== toDate) isActive = false;
+    return isActive;
+  };
 
   return (
     <PageLayout title="Hone">
-      {contextHolder}
       <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
@@ -217,91 +143,94 @@ export default function Search() {
             <div className={styles.keyValue}>
               <p className={styles.key}>
                 User:{" "}
-                <span style={{ color: "black" }}>
-                  @{currentGiftcard?.username}
-                </span>
+                <span style={{ color: "black" }}>@{currentUser?.username}</span>
               </p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction ID</p>
-              <p className={styles.value}>{currentGiftcard?.transId}</p>
+              <p className={styles.value}>{currentUser?.transId}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction Status</p>
-              <div className={styles.value}>
-                <Tag
-                  color={
-                    currentGiftcard?.status === "success" ? "success" : "error"
-                  }
+              <Tag
+                color={status === "failed" ? "error" : "success"}
+                style={{ textTransform: "capitalize", width: "fit-content" }}
+              >
+                {currentUser?.status}
+              </Tag>
+              {/* <div className={styles.value}>
+                <div
+                  style={{
+                    padding: "4px 8px",
+                    borderRadius: 16,
+                    backgroundColor: "#EDFCF2",
+                    color: "#087443",
+                    textAlign: "center",
+                  }}
                 >
-                  {currentGiftcard?.status}
-                </Tag>
-              </div>
+                  <span style={{ fontSize: 12 }}>Approved</span>
+                </div>
+              </div> */}
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Card type</p>
-              <p className={styles.value}>
-                {currentGiftcard?.cardType} (${currentGiftcard?.amount})
-              </p>
+              <p className={styles.value}>{currentUser?.cardType}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Amount paid</p>
-              <p className={styles.value}>{currentGiftcard?.amount} USDT</p>
+              <p className={styles.value}>{currentUser?.amount} USDT</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Recipient email</p>
-              <p className={styles.value}>{currentGiftcard?.recipient}</p>
+              <p className={styles.value}>{currentUser?.recipient}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Note</p>
-              <p className={styles.value}>{currentGiftcard?.note}</p>
+              <p className={styles.value}>{currentUser?.note}</p>
             </div>
             <div className={styles.divider} />
             <div className={styles.keyValue}>
               <p className={styles.key}>Transaction date</p>
-              <p className={styles.value}>{currentGiftcard?.createdAt}</p>
+              <p className={styles.value}>{currentUser?.createdAt}</p>
             </div>
           </div>
         </>
       </Modal>
-
       <div className={styles.container}>
-        <p className={styles.filterTitle}>Filter results by</p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <Button type="text" onClick={router.back}>
+              <img src="/icons/arrow-left.svg" />
+            </Button>
+          </div>
+          <p className={styles.filterTitle}>
+            Filter giftcard transaction results by
+          </p>
+        </div>
         <div className={styles.searchContainer}>
           <div className={styles.searchCard}>
-            <div className={styles.dropdownContainer}>
-              <p className={styles.dropdownTitle}>Transaction type</p>
-              <Dropdown
-                value={searchType}
-                options={[{ title: "Giftcards", value: "Giftcards" }]}
-                onChange={(value) => {
-                  setSearchType(String(value));
-                  setData([]);
-                  setCurrentPage(1);
-                  setPageInfo(null);
-                }}
-              />
-            </div>
             <div className={styles.dropdownContainer}>
               <p className={styles.dropdownTitle}>Status</p>
               <Dropdown
                 value={statusType}
                 options={[
-                  { title: "All", value: "all" },
+                  { title: "All", value: "ALL" },
                   { title: "Successful", value: "success" },
-                  { title: "Pending", value: "pending" },
                   { title: "Failed", value: "failed" },
                 ]}
                 onChange={(value) => {
                   setStatusType(String(value));
-                  setData([]);
-                  setPageInfo(null);
                   setCurrentPage(1);
                 }}
               />
@@ -327,7 +256,7 @@ export default function Search() {
             >
               <div>
                 <Button
-                  disabled={loading}
+                  disabled={isLoading}
                   onClick={onSearch}
                   className={styles.searchButton}
                 >
@@ -337,12 +266,14 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {loading ? (
-          <Skeleton active />
-        ) : (
+
+        {isLoading ? (
+          <Skeleton active style={{ marginTop: 20 }} />
+        ) : result?.data && isActiveData() ? (
           <div className={styles.table} style={{ overflow: "hidden" }}>
             <p className={styles.resultText}>
-              {pageInfo?.totalCount} result found!
+              {result?.data.pageInfo.totalCount || result?.data.length} result
+              found!
             </p>
             <Table
               style={{
@@ -352,14 +283,20 @@ export default function Search() {
                 boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
                 overflow: "hidden",
               }}
-              dataSource={data}
-              columns={GIFTCRARDS_COLUMNS}
-              loading={loading}
+              dataSource={result?.data?.transactions.map((user: any) => ({
+                ...user,
+                action: () => showModal(user),
+              }))}
+              columns={REQUESTS_COLUMNS}
+              loading={isLoading}
               pagination={false}
             />
-            <Pagination pageInfo={pageInfo} setCurrentPage={setCurrentPage} />
+            <Pagination
+              pageInfo={result?.data.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
           </div>
-        )}
+        ) : null}
       </div>
     </PageLayout>
   );
