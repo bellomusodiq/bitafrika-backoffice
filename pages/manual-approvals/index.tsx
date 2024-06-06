@@ -3,7 +3,6 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
@@ -16,6 +15,15 @@ import { IAdmin, TManualApprovalFilter } from "@/types";
 import { getTableColumn } from "@/components/ManualApprovals";
 import ManualTopupModal from "@/components/ManualApprovals/ManualTopupModal";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import type { OTPProps } from "antd/es/input/OTP";
+import {
+  Skeleton,
+  Table,
+  Input as AntdInput,
+  Modal as AntdModal,
+  Button as AntdButton,
+} from "antd";
+import type { GetProp } from "antd";
 
 export default function Search() {
   const router = useRouter();
@@ -41,13 +49,19 @@ export default function Search() {
   const [mfaToken, setMfaToken] = useState<string>("");
   const [params, setParams] = useState<string>("");
   const [detailsId, setDetailsId] = useState<string | null>(null);
+  const [currRecord, setCurrRecord] = useState<any>({});
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const { isLoading, data: { data: result } = {} } = useCustomQuery({
+  const {
+    isLoading,
+    isFetching,
+    data: { data: result } = {},
+    refetch,
+  } = useCustomQuery({
     queryKey: ["approvals", params],
     enabled: params.length > 0,
     queryFn: async () => {
@@ -65,26 +79,26 @@ export default function Search() {
     },
   });
 
-  const { isLoading: isLoadingDetails, data: { data: details = {} } = {} } =
-    useCustomQuery({
-      queryKey: ["approvalDetails", detailsId],
-      enabled: !!detailsId,
-      queryFn: async () => {
-        const topUp = `${BASE_URL}/manual-approvals/top-up/view-awaiting-admin-approval-transaction/${detailsId}`;
-        const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/${detailsId}`;
-        const URL = params === "withdrawal" ? withdrawal : topUp;
-        const result = await axios.post(
-          URL,
-          {},
-          {
-            headers: {
-              Authorization: auth.accessToken,
-            },
-          }
-        );
-        return result;
-      },
-    });
+  // const { isLoading: isLoadingDetails, data: { data: details = {} } = {} } =
+  //   useCustomQuery({
+  //     queryKey: ["approvalDetails", detailsId],
+  //     enabled: !!detailsId,
+  //     queryFn: async () => {
+  //       const topUp = `${BASE_URL}/manual-approvals/top-up/view-awaiting-admin-approval-transaction/${detailsId}`;
+  //       const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/${detailsId}`;
+  //       const URL = params === "withdrawal" ? withdrawal : topUp;
+  //       const result = await axios.post(
+  //         URL,
+  //         {},
+  //         {
+  //           headers: {
+  //             Authorization: auth.accessToken,
+  //           },
+  //         }
+  //       );
+  //       return result;
+  //     },
+  //   });
   const formatData = useMemo(() => {
     const response = result?.data;
     if (Array.isArray(response)) {
@@ -103,6 +117,7 @@ export default function Search() {
               action: () => {
                 // fetchManualApprovalDetail(item.uniq);
                 setDetailsId(item.uniq);
+                setCurrRecord(item);
                 setOpenModal(true);
               },
             })),
@@ -137,19 +152,21 @@ export default function Search() {
   }, [result]);
 
   const markAsSuccess = (record: Record<string, string>) => {
+    console.log(record);
+    if (mfaToken.length === 0) return;
     let payload = {};
     const topUp = `${BASE_URL}/manual-approvals/top-up/approve-manual-top-up`;
     const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/mark-pending-withdrawal-success`;
     const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     if (filterBy === "top-up") {
       payload = {
-        uniqueId: record.uniqId,
+        uniqueId: record.uniq,
         transactionId: record.txid,
         mfaToken,
       };
     } else {
       payload = {
-        uniqueId: record.trxId,
+        id: record.id,
         mfaToken,
       };
     }
@@ -164,7 +181,9 @@ export default function Search() {
         setLoadingDetail(false);
         if (res.data.success) {
           setOpenModal(false);
+          setMfaToken("");
           toast.success(res.data.message);
+          refetch();
           // fetchManualApproval();
         } else {
           toast.error(res.data.message);
@@ -182,9 +201,10 @@ export default function Search() {
   };
 
   const declineManualApproval = (record: Record<string, string>) => {
+    if (mfaToken.length === 0) return;
     let payload = {};
     const topUp = `${BASE_URL}/manual-approvals/top-up/decline-manual-top-up`;
-    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/decline-pending-withdrawal/${record.trxId}`;
+    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/decline-pending-withdrawal/${record.uniq}`;
     const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     if (filterBy === "top-up") {
       payload = {
@@ -203,8 +223,9 @@ export default function Search() {
         setLoadingDetail(false);
         if (res.data.success) {
           setOpenModal(false);
+          setMfaToken("");
           toast.success(res.data.message);
-          // fetchManualApproval();
+          refetch();
         } else {
           toast.error(res.data.message);
         }
@@ -310,10 +331,15 @@ export default function Search() {
           </div>
         </div>
       </Modal>
-      <Modal
-        openModal={openModal}
-        onClose={() => setOpenModal(false)}
-        headerCenter={
+      <AntdModal
+        width="30%"
+        onCancel={() => {
+          setMfaToken("");
+          setOpenModal(false);
+        }}
+        footer={null}
+        open={openModal}
+        title={
           <div
             className={styles.modalHeader}
             style={{
@@ -328,180 +354,39 @@ export default function Search() {
             </div>
           </div>
         }
-        headerLeft={
-          <div className={styles.iconContainer}>
-            <img src="/icons/receipt-check.svg" />
-          </div>
-        }
       >
-        {isLoadingDetails ? (
-          <Skeleton active style={{ marginTop: 20 }} />
-        ) : (
-          <div className={styles.modalContainer} style={{ width: "100%" }}>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                User:{" "}
-                <span style={{ color: "black" }}>
-                  @{details?.data?.username}
-                </span>
-              </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Transaction ID:</p>
-              <p className={styles.value}>
-                {details?.data?.trxId || details?.data?.txid}
-              </p>
-            </div>
-            <div className={styles.divider} />
-            {filterBy === "withdrawal" ? (
-              <div className={styles.keyValue}>
-                <p className={styles.key}>Transaction type:</p>
-                <p className={styles.value}>
-                  Sell (
-                  <span style={{ textTransform: "capitalize" }}>
-                    {details?.data?.paymentAccount?.paymentMethod}
-                  </span>{" "}
-                  withdrawal)
-                </p>
-              </div>
-            ) : (
-              <div className={styles.keyValue}>
-                <p className={styles.key}>Transaction type:</p>
-                <p className={styles.value}>
-                  <span style={{ textTransform: "capitalize" }}>
-                    {details?.data?.methodName}
-                  </span>{" "}
-                  top-up
-                </p>
-              </div>
-            )}
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Sell amount:</p>
-              {filterBy === "withdrawal" ? (
-                <p className={styles.value}>
-                  {details?.data?.localCurrency} {details?.data?.rawAmount} (
-                  {details?.data?.cryptoAmount} {details?.data?.cryptoCurrency})
-                  -{" "}
-                  <span style={{ color: "#667085" }}>
-                    ${details?.data?.usdAmount}
-                  </span>
-                </p>
-              ) : (
-                <p className={styles.value}>
-                  <span style={{ color: "#98A2B3" }}>
-                    {details?.data?.currency}
-                  </span>{" "}
-                  {details?.data?.amount}
-                  <span style={{ color: "#667085" }}>
-                    {" "}
-                    ({details?.data?.crypto} {details?.data?.cryptoSymbol})
-                  </span>
-                </p>
-              )}
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Rate:</p>
-              <p className={styles.value}>
-                Sold @ {details?.data?.rate} (Crypto price - $
-                {details?.data?.cryptoPrice})
-              </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Fees:</p>
-              <p className={styles.value}>
-                $1.28{" "}
-                <span style={{ color: "#667085" }}>
-                  ({details?.data?.localCurrency || details?.data?.currency}{" "}
-                  {details?.data?.netFee})
-                </span>
-              </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Net payout Amount:</p>
-              <p className={styles.value}>
-                {details?.data?.localCurrency || details?.data?.currency}{" "}
-                {details?.data?.rawAmount || details?.data?.amount}
-              </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Status:</p>
-              <div className={styles.statusContainer}>
-                <div className={styles.statusIndicator} />{" "}
-                {details?.data?.status}
-              </div>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Amount:</p>
-              <p className={styles.value}>
-                ${details?.data?.usdAmount || details?.data?.usd}
-              </p>
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Payment method:</p>
-              {filterBy === "withdrawal" ? (
-                <div>
-                  <p className={styles.value} style={{ textAlign: "right" }}>
-                    <span style={{ color: "#667085" }}>Account:</span>{" "}
-                    {details?.data?.paymentAccount?.accountName}
-                  </p>
-                  <p className={styles.value} style={{ textAlign: "right" }}>
-                    <span style={{ color: "#667085" }}>Network:</span>{" "}
-                    {details?.data?.paymentAccount?.providerName}
-                  </p>
-                  <p className={styles.value} style={{ textAlign: "right" }}>
-                    <span style={{ color: "#667085" }}>Type:</span>{" "}
-                    {details?.data?.paymentAccount?.paymentMethod}
-                  </p>
-                </div>
-              ) : (
-                <div style={{ maxWidth: "200px" }}>
-                  <p className={styles.value} style={{ textAlign: "right" }}>
-                    {details?.data?.methodId}
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className={styles.divider} />
-            <div className={styles.keyValue}>
-              <p className={styles.key}>Transaction data:</p>
-              <p className={styles.value}>{details?.data?.date}</p>
-            </div>
-            <div className={styles.inputContainer}>
-              <p>MFA Token (For Approvals Only)</p>
-              <Input
-                value={mfaToken}
-                onChange={(e) => setMfaToken(e.target.value)}
-              />
-            </div>
-            <div style={{ marginBottom: 30 }} className={styles.modalFooter}>
-              <Button
-                onClick={() => declineManualApproval(details?.data)}
-                className={styles.modalButton}
-                color="white"
-              >
-                Decline
-              </Button>
-              <Button
-                onClick={() => markAsSuccess(details?.data)}
-                loading={loadingDetail}
-                disabled={loadingDetail}
-                className={styles.modalButton}
-              >
-                Mark as success
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
+        <div style={{ marginTop: 20 }}>
+          <p>MFA Token (For Approvals Only)</p>
+          <AntdInput.OTP
+            style={{ width: "100%", margin: "10px 0" }}
+            formatter={(str) => str.toUpperCase()}
+            size="large"
+            value={mfaToken}
+            onChange={(value) => setMfaToken(value)}
+          />
+        </div>
+        <div style={{ marginTop: 20 }} className={styles.modalFooter}>
+          <AntdButton
+            loading={loadingDetail}
+            disabled={loadingDetail}
+            onClick={() => declineManualApproval(currRecord)}
+          >
+            Decline
+          </AntdButton>
+          <AntdButton
+            onClick={() => markAsSuccess(currRecord)}
+            loading={loadingDetail}
+            disabled={loadingDetail}
+            type="primary"
+          >
+            Mark as success
+          </AntdButton>
+        </div>
+      </AntdModal>
+
+      {/* <AntdInput.otp />
+      
+      .OTP formatter={(str) => str.toUpperCase()} {...sharedProps} /> */}
       <NavigationStep hideButton />
       <div className={styles.container}>
         {/* <div
@@ -543,7 +428,7 @@ export default function Search() {
             </div>
           </div>
         </div>
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <Skeleton active style={{ margin: "20px 0" }} />
         ) : formatData && params === filterBy ? (
           <>

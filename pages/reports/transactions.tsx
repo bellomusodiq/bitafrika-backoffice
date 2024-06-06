@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Skeleton, Table } from "antd";
+import { DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -15,6 +15,7 @@ import formatDate from "@/utils/formatDate";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 import Link from "next/link";
+import { getStatusCode } from "@/utils/utils";
 
 const TOKEN_TO_COLOR: { [k: string]: string } = {
   USDT: "#008F39",
@@ -275,28 +276,7 @@ export default function Search() {
                     Date: {fromDate} — {toDate}
                   </p>
                   <p className={styles.date}>
-                    Status:{" "}
-                    <span
-                      style={{
-                        padding: "2px 12px 4px 12px",
-                        borderRadius: 16,
-                        backgroundColor:
-                          status === "success"
-                            ? "#EDFCF2"
-                            : status === "pending"
-                            ? "#f7900953"
-                            : "#FBEAE9",
-                        color:
-                          status === "success"
-                            ? "#087443"
-                            : status === "pending"
-                            ? "#F79009"
-                            : "#F04438",
-                        textAlign: "center",
-                      }}
-                    >
-                      <span style={{ fontSize: 12 }}>{status}</span>
-                    </span>
+                    Status: <Tag color={getStatusCode(status)}>{status}</Tag>
                   </p>
 
                   <h3 style={{ marginTop: 14 }} className={styles.header}>
@@ -386,10 +366,14 @@ export default function Search() {
                   </div>
                   <div className={styles.divider} style={{ marginTop: 5 }} />
                   <div className={styles.totalContainer}>
-                    <p>GHS {data?.totalAmount} ($100000.00)</p>
-                    <p>GHS {data?.totalFees} ($1000.00)</p>
+                    <p>
+                      GHS {data?.totalAmount} (${data?.totalUsdAmount})
+                    </p>
+                    <p>
+                      GHS {data?.totalFees} (${data?.totalUsdFees})
+                    </p>
                     <p style={{ color: "#1570EF" }}>
-                      GHS {data?.grandTotal} ($101000.00)
+                      GHS {data?.grandTotal} (${data?.grandUsdTotal})
                     </p>
                   </div>
                 </div>

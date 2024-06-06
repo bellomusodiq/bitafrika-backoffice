@@ -16,7 +16,8 @@ const CoinListing: React.FC<CoinListingProps> = ({
   const router = useRouter();
 
   return (
-    <StatsCard headerTitle={title} showRefresh refresh={refresh}>
+    // <StatsCard headerTitle={title} showRefresh refresh={refresh}>
+    <StatsCard headerTitle={title}>
       <div style={{ padding: loading ? "24px" : "0 24px" }}>
         {loading ? (
           <Skeleton active />

@@ -15,6 +15,7 @@ import Link from "next/link";
 import Pagination from "@/components/Pagination";
 import Loader from "@/components/Loader";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import { getStatusCode } from "@/utils/utils";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -62,15 +63,7 @@ const REQUESTS_COLUMNS = [
       // >
       //   <span style={{ fontSize: 12 }}>{status}</span>
       // </div>
-      <Tag
-        color={
-          status === "success" || status === "Card - Active"
-            ? "success"
-            : "warning"
-        }
-      >
-        {status}
-      </Tag>
+      <Tag color={getStatusCode(status)}>{status}</Tag>
     ),
   },
   {
@@ -311,7 +304,7 @@ export default function Search({ type }: { type: any }) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const { isLoading, data: result } = useCustomQuery({
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
     queryKey: ["userInfo", payload, search, currentPage],
     enabled: payload.length > 0 && search.length > 0,
     queryFn: async () => {
@@ -333,7 +326,11 @@ export default function Search({ type }: { type: any }) {
   });
 
   const formatData = useMemo(() => {
-    const temp = result?.data?.data?.data;
+    let temp = result?.data?.data;
+    if (searchType === "USERNAME") temp = result?.data?.cards;
+    if (searchType === "TRANSACTIONS") temp = result?.data.transactions;
+
+    console.log({ temp, pageInfo: result?.data?.pageInfo });
     if (Array.isArray(temp)) {
       const response = temp.map((item: any) => ({
         ...item,
@@ -341,7 +338,7 @@ export default function Search({ type }: { type: any }) {
       }));
       return {
         record: response,
-        pageInfo: result?.data?.data?.pageInfo || {},
+        pageInfo: result?.data?.pageInfo || {},
       };
     }
   }, [result]);
@@ -359,6 +356,8 @@ export default function Search({ type }: { type: any }) {
       case "Requests":
         return REQUESTS_COLUMNS;
       case "CARDS":
+        return CARDS_COLUMNS;
+      case "USERNAME":
         return CARDS_COLUMNS;
       case "Disputes":
         return DISPUTES_COLUMNS;
