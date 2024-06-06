@@ -47,7 +47,7 @@ export default function Search() {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const { isLoading, data: result } = useCustomQuery({
+  const { isLoading, data: { data: result } = {} } = useCustomQuery({
     queryKey: ["approvals", params],
     enabled: params.length > 0,
     queryFn: async () => {
@@ -86,12 +86,12 @@ export default function Search() {
       },
     });
   const formatData = useMemo(() => {
-    const response = result?.data?.data;
+    const response = result?.data;
     if (Array.isArray(response)) {
       switch (params) {
         case "withdrawal":
           return {
-            rercord: response.map((item: any) => ({
+            record: response.map((item: any) => ({
               ...item,
               transactionId: item.uniq,
               email: item.email,
@@ -106,7 +106,7 @@ export default function Search() {
                 setOpenModal(true);
               },
             })),
-            pageInfo: result?.data?.pageInfo,
+            pageInfo: result?.pageInfo,
           };
         case "top-up":
           return {
@@ -254,6 +254,7 @@ export default function Search() {
     setLoadingDetail(false);
     setParams("");
   };
+
   return (
     <PageLayout title="Hone">
       <ManualTopupModal
@@ -334,7 +335,7 @@ export default function Search() {
         }
       >
         {isLoadingDetails ? (
-          <Loader />
+          <Skeleton active style={{ marginTop: 20 }} />
         ) : (
           <div className={styles.modalContainer} style={{ width: "100%" }}>
             <div className={styles.divider} />
