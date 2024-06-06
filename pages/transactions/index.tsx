@@ -15,6 +15,7 @@ import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import { getStatusCode } from "@/utils/utils";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -53,69 +54,107 @@ export default function Search() {
       title: "Info",
       dataIndex: "info",
       key: "info",
-      render: (_: any, { uniqId }: any) => (
-        <p className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-          uniqId.length - 6
-        )}`}</p>
-      ),
-    },
-    {
-      title: "Asset",
-      dataIndex: "asset",
-      key: "asset",
-    },
-    {
-      title: "Amount (GHS)",
-      dataIndex: "total",
-      key: "total",
-    },
-    {
-      title: "Amount (USD)",
-      dataIndex: "usd",
-      key: "usd",
-      render: (_: any, { usd }: any) => <>${usd}</>,
-    },
-    {
-      title: "Amount (CRYPTO)",
-      dataIndex: "crypto",
-      key: "crypto",
-      render: (_: any, { crypto, asset }: any) => (
-        <>
-          {crypto} {asset}
-        </>
-      ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-      render: (_: any, { date }: any) => (
-        <span style={{ fontSize: 12 }}>{date}</span>
-      ),
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any, index: number) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
-          </div>
+      render: (
+        _: any,
+        {
+          uniqId,
+          date,
+          usd,
+          currency,
+          amount,
+          crypto,
+          cryptoSymbol,
+          status,
+        }: any
+      ) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          <span>{uniqId}</span>
+          <span>{date}</span>
+          <span>
+            CASHOUT () <Tag color={getStatusCode(status)}>{status}</Tag>
+          </span>
         </div>
       ),
     },
+    {
+      title: "Payment Details",
+      dataIndex: "info",
+      key: "info",
+      render: (_: any, { txid }: any) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          {/* <span>{uniqId}</span>
+          <span>{date}</span>
+          <span>
+            CASHOUT ()
+          </span> */}
+          <span style={{ color: "green" }}>{txid}</span>
+        </div>
+      ),
+    },
+    // {
+    //   title: "Asset",
+    //   dataIndex: "asset",
+    //   key: "asset",
+    // },
+    // {
+    //   title: "Amount (GHS)",
+    //   dataIndex: "total",
+    //   key: "total",
+    // },
+    // {
+    //   title: "Amount (USD)",
+    //   dataIndex: "usd",
+    //   key: "usd",
+    //   render: (_: any, { usd }: any) => <>${usd}</>,
+    // },
+    // {
+    //   title: "Amount (CRYPTO)",
+    //   dataIndex: "crypto",
+    //   key: "crypto",
+    //   render: (_: any, { crypto, asset }: any) => (
+    //     <>
+    //       {crypto} {asset}
+    //     </>
+    //   ),
+    // },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (_: any, { status }: any) => (
+    //     <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+    //   ),
+    // },
+    // {
+    //   title: "Date",
+    //   dataIndex: "date",
+    //   key: "date",
+    //   width: "20%",
+    //   render: (_: any, { date }: any) => (
+    //     <span style={{ fontSize: 12 }}>{date}</span>
+    //   ),
+    // },
+    // {
+    //   title: "Actions",
+    //   dataIndex: "action",
+    //   render: (_: any, { action }: any, index: number) => (
+    //     <div className={styles.actionButton}>
+    //       <div>
+    //         <Button loading={loadingIndex === index} onClick={action}>
+    //           View
+    //         </Button>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ];
+
   const BUY_COLUMN2 = [
     {
       title: "Username",
@@ -207,81 +246,139 @@ export default function Search() {
       ),
     },
     {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
-    {
-      title: "Asset",
-      dataIndex: "asset",
-      key: "asset",
-    },
-    {
-      title: "Amount (USD)",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Amount (GHS)",
-      dataIndex: "total",
-      key: "total",
-    },
-    {
-      title: "Fee",
-      dataIndex: "netFee",
-      key: "netFee",
-    },
-    {
-      title: "Status/Date",
-      dataIndex: "status",
-      key: "status",
-      width: "25%",
-      render: (_: any, { status, createdOn }: any) => (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
-          <p style={{ marginLeft: 5, fontSize: 12 }}>{createdOn}</p>
+      title: "Info",
+      dataIndex: "info",
+      key: "info",
+      render: (
+        _: any,
+        {
+          uniq,
+          createdOn,
+          usdAmount,
+          localCurrency,
+          rawAmount,
+          cryptoAmount,
+          cryptoCurrency,
+          netFee,
+        }: any
+      ) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          <span>{uniq}</span>
+          <span>Order Placed @ {createdOn}</span>
+          <span>
+            {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+            {usdAmount} with fee of {localCurrency} {netFee}
+          </span>
+          <span>Completed by</span>
         </div>
       ),
     },
-
     {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any, index: number) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
-          </div>
+      title: "Payment Details",
+      dataIndex: "paymentAccount",
+      key: "paymentAccount",
+      render: (
+        _: any,
+        {
+          uniq,
+          createdOn,
+          usdAmount,
+          localCurrency,
+          rawAmount,
+          cryptoAmount,
+          cryptoCurrency,
+          netFee,
+        }: any
+      ) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span>{uniq}</span>
+          <span>Order Placed @ {createdOn}</span>
+          <span>
+            {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+            {usdAmount} with fee of {localCurrency} {netFee}
+          </span>
+          <span>Completed by</span> */}
         </div>
       ),
     },
+    // {
+    //   title: "Transaction ID",
+    //   dataIndex: "transactionId",
+    //   key: "transactionId",
+    //   render: (_: any, { transactionId }: any) => (
+    //     <p className={styles.username}>{`${transactionId.slice(
+    //       0,
+    //       6
+    //     )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+    //   ),
+    // },
+    // {
+    //   title: "Asset",
+    //   dataIndex: "asset",
+    //   key: "asset",
+    // },
+    // {
+    //   title: "Amount (USD)",
+    //   dataIndex: "amount",
+    //   key: "amount",
+    // },
+    // {
+    //   title: "Amount (GHS)",
+    //   dataIndex: "total",
+    //   key: "total",
+    // },
+    // {
+    //   title: "Fee",
+    //   dataIndex: "netFee",
+    //   key: "netFee",
+    // },
+    // {
+    //   title: "Status/Date",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   width: "25%",
+    //   render: (_: any, { status, createdOn }: any) => (
+    //     <div
+    //       style={{
+    //         display: "flex",
+    //         flexDirection: "row",
+    //         alignItems: "center",
+    //       }}
+    //     >
+    //       <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+    //       <p style={{ marginLeft: 5, fontSize: 12 }}>{createdOn}</p>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   title: "Actions",
+    //   dataIndex: "action",
+    //   render: (_: any, { action }: any, index: number) => (
+    //     <div className={styles.actionButton}>
+    //       <div>
+    //         <Button loading={loadingIndex === index} onClick={action}>
+    //           View
+    //         </Button>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ];
 
   const RECEIVE_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "txid",
-      key: "txid",
-      render: (_: any, { txid }: any) => (
-        <p className={styles.username}>{`${txid?.slice(0, 6)}...${txid?.slice(
-          txid?.length - 6
-        )}`}</p>
-      ),
-    },
+    // {
+    //   title: "Transaction ID",
+    //   dataIndex: "txid",
+    //   key: "txid",
+    //   render: (_: any, { txid }: any) => (
+    //     <p className={styles.username}>{`${txid?.slice(0, 6)}...${txid?.slice(
+    //       txid?.length - 6
+    //     )}`}</p>
+    //   ),
+    // },
     {
       title: "Username",
       dataIndex: "username",
@@ -293,65 +390,100 @@ export default function Search() {
       ),
     },
     {
-      title: "Asset",
-      dataIndex: "asset",
-      key: "asset",
-    },
-    {
-      title: "Asset amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <Tag
-          color={
-            status === "success" || status === "confirmed" ? "success" : "error"
-          }
-        >
-          {status}
-        </Tag>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-      render: (_: any, { date }: any) => (
-        <span style={{ fontSize: 12 }}>{date}</span>
-      ),
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any, index: number) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
-          </div>
+      title: "Info",
+      dataIndex: "info",
+      key: "info",
+      render: (_: any, { txid, date }: any) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          <span>{txid}</span>
+          <span>{date}</span>
         </div>
       ),
     },
+    {
+      title: "Details",
+      dataIndex: "details",
+      key: "details",
+      render: (_: any, { status, cryptoValue, currency, usdAmount }: any) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          <span>
+            {cryptoValue} {currency} (USD {usdAmount})
+          </span>
+          <span>
+            <Tag color={status === "confirmed" ? "success" : "warning"}>
+              {status}
+            </Tag>{" "}
+            ()
+          </span>
+        </div>
+      ),
+    },
+    // {
+    //   title: "Asset",
+    //   dataIndex: "asset",
+    //   key: "asset",
+    // },
+    // {
+    //   title: "Asset amount",
+    //   dataIndex: "amount",
+    //   key: "amount",
+    // },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (_: any, { status }: any) => (
+    //     <Tag
+    //       color={
+    //         status === "success" || status === "confirmed" ? "success" : "error"
+    //       }
+    //     >
+    //       {status}
+    //     </Tag>
+    //   ),
+    // },
+    // {
+    //   title: "Date",
+    //   dataIndex: "date",
+    //   key: "date",
+    //   width: "20%",
+    //   render: (_: any, { date }: any) => (
+    //     <span style={{ fontSize: 12 }}>{date}</span>
+    //   ),
+    // },
+    // {
+    //   title: "Actions",
+    //   dataIndex: "action",
+    //   render: (_: any, { action }: any, index: number) => (
+    //     <div className={styles.actionButton}>
+    //       <div>
+    //         <Button loading={loadingIndex === index} onClick={action}>
+    //           View
+    //         </Button>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ];
 
   const WITHDRAWAL_COLUMN = [
-    {
-      title: "Transaction ID",
-      dataIndex: "transactionId",
-      key: "transactionId",
-      render: (_: any, { transactionId }: any) => (
-        <p className={styles.username}>{`${transactionId.slice(
-          0,
-          6
-        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
-      ),
-    },
+    // {
+    //   title: "Transaction ID",
+    //   dataIndex: "transactionId",
+    //   key: "transactionId",
+    //   render: (_: any, { transactionId }: any) => (
+    //     <p className={styles.username}>{`${transactionId.slice(
+    //       0,
+    //       6
+    //     )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+    //   ),
+    // },
     {
       title: "Username",
       dataIndex: "username",
@@ -363,51 +495,87 @@ export default function Search() {
       ),
     },
     {
-      title: "To",
-      dataIndex: "to",
-      key: "to",
-      render: (_: any, { to }: any) => <p className={styles.username}>{to}</p>,
-    },
-    {
-      title: "Asset",
-      dataIndex: "asset",
-      key: "asset",
-    },
-    {
-      title: "Asset amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (_: any, { status }: any) => (
-        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
-      ),
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-      width: "20%",
-      render: (_: any, { date }: any) => (
-        <span style={{ fontSize: 12 }}>{date}</span>
-      ),
-    },
-    {
-      title: "Actions",
-      dataIndex: "action",
-      render: (_: any, { action }: any, index: number) => (
-        <div className={styles.actionButton}>
-          <div>
-            <Button loading={loadingIndex === index} onClick={action}>
-              View
-            </Button>
-          </div>
+      title: "Info",
+      dataIndex: "info",
+      key: "info",
+      render: (_: any, { txid, recipient, date }: any) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          <span>{txid}</span>
+          <span>sent to {recipient} </span>
+          <span>{date}</span>
         </div>
       ),
     },
+    {
+      title: "Details",
+      dataIndex: "details",
+      key: "details",
+      render: (_: any, { status, cryptoValue, currency, usdAmount }: any) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+            uniqId.length - 6
+          )}`}</span> */}
+          <span>
+            {cryptoValue} {currency} (USD {usdAmount})
+          </span>
+          <span>
+            <Tag color={status === "success" ? "success" : "warning"}>
+              {status}
+            </Tag>{" "}
+            ()
+          </span>
+        </div>
+      ),
+    },
+    // {
+    //   title: "To",
+    //   dataIndex: "to",
+    //   key: "to",
+    //   render: (_: any, { to }: any) => <p className={styles.username}>{to}</p>,
+    // },
+    // {
+    //   title: "Asset",
+    //   dataIndex: "asset",
+    //   key: "asset",
+    // },
+    // {
+    //   title: "Asset amount",
+    //   dataIndex: "amount",
+    //   key: "amount",
+    // },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   key: "status",
+    //   render: (_: any, { status }: any) => (
+    //     <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+    //   ),
+    // },
+    // {
+    //   title: "Date",
+    //   dataIndex: "date",
+    //   key: "date",
+    //   width: "20%",
+    //   render: (_: any, { date }: any) => (
+    //     <span style={{ fontSize: 12 }}>{date}</span>
+    //   ),
+    // },
+    // {
+    //   title: "Actions",
+    //   dataIndex: "action",
+    //   render: (_: any, { action }: any, index: number) => (
+    //     <div className={styles.actionButton}>
+    //       <div>
+    //         <Button loading={loadingIndex === index} onClick={action}>
+    //           View
+    //         </Button>
+    //       </div>
+    //     </div>
+    //   ),
+    // },
   ];
 
   let auth: any = {};
@@ -542,6 +710,7 @@ export default function Search() {
             },
           }))
         );
+        setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
         if (e?.response?.status === 401) {
@@ -608,6 +777,7 @@ export default function Search() {
             },
           }))
         );
+        setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
         if (e?.response?.status === 401) {
@@ -676,6 +846,7 @@ export default function Search() {
             },
           }))
         );
+        setPageInfo(res.data.pageInfo);
       })
       .catch((e) => {
         if (e?.response?.status === 401) {

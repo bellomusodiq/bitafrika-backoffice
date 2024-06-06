@@ -192,6 +192,7 @@ export default function SiteSetting() {
                   className={styles.ratesContainer}
                 >
                   {siteSettings?.[currentTab]?.map((item: any, idx: number) => {
+                    console.log(item);
                     return (
                       <div
                         style={{ marginBottom: 20 }}
@@ -202,6 +203,7 @@ export default function SiteSetting() {
                         {item.editable ? (
                           item.valueType === "BOOL" ? (
                             <div className={styles.value}>
+                              <p>{item.name}</p>
                               <div className={styles.switchContainer}>
                                 <Toggle
                                   defaultValue={item.value}

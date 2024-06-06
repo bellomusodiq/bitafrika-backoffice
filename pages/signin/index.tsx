@@ -11,6 +11,7 @@ import { BASE_URL } from "../../CONFIG";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { Input as AntdInput } from "antd";
 
 const Signin: React.FC<NextPage> = () => {
   const router = useRouter();
@@ -163,8 +164,6 @@ const Signin: React.FC<NextPage> = () => {
     }
   };
 
-  console.log(loginRes);
-
   return (
     <div className={styles.container}>
       <Modal
@@ -173,7 +172,8 @@ const Signin: React.FC<NextPage> = () => {
             <img src="/icons/lock.svg" />
           </div>
         }
-        onClose={() => setShowModal(false)}
+        // onClose={() => setShowModal(false)}
+        onClose={() => {}}
         openModal={showModal}
       >
         <div className={styles.modalContainer}>
@@ -186,11 +186,25 @@ const Signin: React.FC<NextPage> = () => {
           {loginRes.dataURL && (
             <img src={loginRes.dataURL} className={styles.qrImage} />
           )}
-          <p className={styles.verificationText}>Verification code</p>
-          <Input
+          {/* <Input
             value={verificationCode}
             onChange={(e) => setVerificationCode(e.target.value)}
-          />
+          /> */}
+          <div
+            style={{
+              marginTop: 20,
+              width: "100%",
+            }}
+          >
+            <p className={styles.verificationText}>Verification code</p>
+            <AntdInput.OTP
+              style={{ width: "100%" }}
+              formatter={(str) => str.toUpperCase()}
+              size="large"
+              value={verificationCode}
+              onChange={(value) => setVerificationCode(value)}
+            />
+          </div>
           <div className={styles.footerContainer}>
             <Button className={styles.footerButton}>Cancel</Button>
             <Button

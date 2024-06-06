@@ -52,3 +52,7 @@ h5,
 h6 {
   font-family: "PP Telegraf Bold";
 }
+
+.ant-input-lg {
+  height: 50px !important;
+}

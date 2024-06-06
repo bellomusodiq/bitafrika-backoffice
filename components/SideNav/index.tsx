@@ -8,6 +8,7 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import { toast } from "react-toastify";
 import Button from "../Button";
+import { Avatar } from "antd";
 
 const SideNavItem: React.FC<{
   title: string;
@@ -72,9 +73,13 @@ const SideNavItem: React.FC<{
 
 const SideNav: React.FC = () => {
   const router = useRouter();
+  const auth = localStorage.getItem("auth");
+  let userData = null;
+  if (auth) {
+    userData = JSON.parse(auth);
+  }
 
   const signOut = () => {
-    const auth = localStorage.getItem("auth");
     if (auth) {
       const userData = JSON.parse(auth);
       axios
@@ -221,10 +226,11 @@ const SideNav: React.FC = () => {
       />
       <div className={styles.divider} />
       <div className={styles.profileContainer}>
-        <img src="/images/Avatar.png" className={styles.profileAvatar} />
+        <Avatar className={styles.profileAvatar} />
+        {/* <img src="/images/Avatar.png" className={styles.profileAvatar} /> */}
         <div className={styles.nameContainer}>
-          <p className={styles.name}>Emmanuel Nkrumah</p>
-          <p className={styles.email}>Emmanuel@Bitafrika.com</p>
+          <p className={styles.name}>{userData?.user.fullName}</p>
+          <p className={styles.email}>{userData?.user.username}</p>
         </div>
       </div>
       <div className={styles.logoutContainer}>

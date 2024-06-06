@@ -26,6 +26,7 @@ import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 import { UserOutlined } from "@ant-design/icons";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import { getStatusCode } from "@/utils/utils";
 
 const PaymentAccountsTable: React.FC<any> = ({ username, auth }) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -912,7 +913,12 @@ const UserDetails = ({ userId, userType }: IProps) => {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
-  const { isLoading, data: { data: result = {} } = {} } = useCustomQuery({
+  const {
+    isLoading,
+    isFetching,
+    refetch,
+    data: { data: result = {} } = {},
+  } = useCustomQuery({
     queryKey: ["userDetails", userId],
     enabled: userId.length > 0,
     queryFn: async () => {
@@ -976,6 +982,7 @@ const UserDetails = ({ userId, userType }: IProps) => {
   };
 
   const disableAccount = (isDisabled: boolean = true) => {
+    console.log("Disabling account", isDisabled);
     setIsDisableLoading(true);
     axios
       .post(
@@ -993,6 +1000,7 @@ const UserDetails = ({ userId, userType }: IProps) => {
       .then((res: any) => {
         setIsDisableLoading(false);
         if (res.data.success) {
+          refetch();
           messageApi.success({
             content: `Account successfully ${
               isDisabled ? "disabled" : "enabled"
@@ -1091,14 +1099,19 @@ const UserDetails = ({ userId, userType }: IProps) => {
           </div>
         </AntModal>
         <AntModal
-          title="Disable Account"
+          title={`${result?.data?.isActive ? "Disable" : "Enable"} Account"`}
           open={isDisableModal}
-          onOk={() => disableAccount(true)}
-          onCancel={() => cancelDisableAccount(true)}
+          onOk={() => disableAccount(result?.data?.isActive)}
+          // onCancel={() => cancelDisableAccount(true)}
+          onCancel={() => setIsDisableModal(false)}
           confirmLoading={isDisableLoading}
+          onClose={() => setIsDisableModal(false)}
         >
           <div style={{ paddingBottom: 20 }}>
-            <p>Are you sure you want to disable account?</p>
+            <p>
+              Are you sure you want to{" "}
+              {result?.data?.isActive ? "disable" : "enable"} account?
+            </p>
           </div>
         </AntModal>
         <AntModal
@@ -1133,7 +1146,7 @@ const UserDetails = ({ userId, userType }: IProps) => {
           <Divider style={{ marginTop: 16, marginBottom: 0 }} />
         </div>
 
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <Skeleton active style={{ margin: "20px" }} />
         ) : (
           <>
@@ -1149,11 +1162,11 @@ const UserDetails = ({ userId, userType }: IProps) => {
                 <div style={{ marginLeft: 10 }}>
                   <AntButton
                     size="large"
-                    className={styles.profileActionBtnsDanger}
-                    danger
+                    // className={styles.profileActionBtnsDanger}
+                    danger={result?.data.isActive}
                     onClick={() => setIsDisableModal(true)}
                   >
-                    Disable Account
+                    {result?.data.isActive ? "Disable" : "Enable"} Account
                   </AntButton>
                 </div>
                 <div style={{ marginLeft: 10 }}>
@@ -1231,13 +1244,15 @@ const UserDetails = ({ userId, userType }: IProps) => {
                         key: "KYC status:",
                         valueComponent: (
                           <Tag
-                            color={
-                              result?.data?.kycInfo?.status === "success"
-                                ? "success"
-                                : "error"
-                            }
+                            color={getStatusCode(
+                              result?.data?.kycStatus
+                                ? "Verified"
+                                : "Not Verified"
+                            )}
                           >
-                            {result?.data?.kycInfo?.status}
+                            {result?.data?.kycStatus
+                              ? "Verified"
+                              : "Not Verified"}
                           </Tag>
                         ),
                       },

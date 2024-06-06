@@ -112,7 +112,7 @@ const AssetsDetail = ({ id }: IProps) => {
           </Button>
           <h1>{id.toUpperCase()} balance </h1>
         </div>
-        <div style={{ display: "flex" }}>
+        {/* <div style={{ display: "flex" }}>
           <div style={{ marginRight: 16 }}>
             <Button
               color="white"
@@ -125,7 +125,7 @@ const AssetsDetail = ({ id }: IProps) => {
               Refresh
             </Button>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className={styles.assetsBody}>

@@ -146,7 +146,7 @@ export default function Home() {
               title="Available Coin balances"
               coins={COIN_LISTING}
               loading={coinStat.isLoading || coinStat.isFetching}
-              refresh={coinStat.refetch}
+              // refresh={coinStat.refetch}
             />
             <div className={styles.avaibleContainer}>
               <StatsCard headerTitle="Transaction Stats">

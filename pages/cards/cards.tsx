@@ -15,6 +15,7 @@ import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { GetServerSideProps } from "next";
+import { getStatusCode } from "@/utils/utils";
 
 const CARDS_COLUMNS = [
   {
@@ -53,12 +54,10 @@ const CARDS_COLUMNS = [
   },
   {
     title: "Status",
-    dataIndex: "sstatus",
+    dataIndex: "status",
     key: "status",
     render: (_: any, { status }: any) => (
-      <Tag color={status === "Card - Active" ? "success" : "warning"}>
-        {status}
-      </Tag>
+      <Tag color={getStatusCode(status)}>{status}</Tag>
     ),
   },
   {
