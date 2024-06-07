@@ -15,7 +15,6 @@ import { IAdmin, TManualApprovalFilter } from "@/types";
 import { getTableColumn } from "@/components/ManualApprovals";
 import ManualTopupModal from "@/components/ManualApprovals/ManualTopupModal";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import type { OTPProps } from "antd/es/input/OTP";
 import {
   Skeleton,
   Table,
@@ -23,7 +22,7 @@ import {
   Modal as AntdModal,
   Button as AntdButton,
 } from "antd";
-import type { GetProp } from "antd";
+import Pagination from "@/components/Pagination";
 
 export default function Search() {
   const router = useRouter();
@@ -44,12 +43,12 @@ export default function Search() {
   const [pin, setPin] = useState<string>("");
   const [data, setData] = useState<Record<string, string>[] | null>(null);
   const [detail, setDetail] = useState<Record<string, any>>({});
-  const [pagination, setPagination] = useState<any>({ pageNumber: 1 });
   const [filterBy, setFilterBy] = useState<TManualApprovalFilter>("withdrawal");
   const [mfaToken, setMfaToken] = useState<string>("");
   const [params, setParams] = useState<string>("");
   const [detailsId, setDetailsId] = useState<string | null>(null);
   const [currRecord, setCurrRecord] = useState<any>({});
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -62,11 +61,11 @@ export default function Search() {
     data: { data: result } = {},
     refetch,
   } = useCustomQuery({
-    queryKey: ["approvals", params],
+    queryKey: ["approvals", params, currentPage],
     enabled: params.length > 0,
     queryFn: async () => {
-      const topUp = `${BASE_URL}/manual-approvals/top-up/list-awaiting-admin-approval-transactions?page=${pagination.pageNumber}`;
-      const withdrawal = `${BASE_URL}/manual-approvals/${params}?page=${pagination.pageNumber}`;
+      const topUp = `${BASE_URL}/manual-approvals/top-up/list-awaiting-admin-approval-transactions?page=${currentPage}`;
+      const withdrawal = `${BASE_URL}/manual-approvals/${params}?page=${currentPage}`;
       const URL = params === "withdrawal" ? withdrawal : topUp;
       const result = await axios.post(
         URL,
@@ -99,6 +98,7 @@ export default function Search() {
   //       return result;
   //     },
   //   });
+
   const formatData = useMemo(() => {
     const response = result?.data;
     if (Array.isArray(response)) {
@@ -136,10 +136,11 @@ export default function Search() {
               // action: () => fetchManualApprovalDetail(item.txid),
               action: () => {
                 setDetailsId(item.txid);
+                setCurrRecord(item);
                 setOpenModal(true);
               },
             })),
-            pageInfo: result?.data?.pageInfo,
+            pageInfo: result?.pageInfo,
           };
         default:
           return {
@@ -152,7 +153,6 @@ export default function Search() {
   }, [result]);
 
   const markAsSuccess = (record: Record<string, string>) => {
-    console.log(record);
     if (mfaToken.length === 0) return;
     let payload = {};
     const topUp = `${BASE_URL}/manual-approvals/top-up/approve-manual-top-up`;
@@ -160,7 +160,7 @@ export default function Search() {
     const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     if (filterBy === "top-up") {
       payload = {
-        uniqueId: record.uniq,
+        uniqueId: record.uniqId,
         transactionId: record.txid,
         mfaToken,
       };
@@ -448,6 +448,11 @@ export default function Search() {
                   }}
                   dataSource={formatData.record}
                   columns={getTableColumn(filterBy, loadingDetail)}
+                  pagination={false}
+                />
+                <Pagination
+                  pageInfo={formatData?.pageInfo}
+                  setCurrentPage={setCurrentPage}
                 />
               </div>
             </div>

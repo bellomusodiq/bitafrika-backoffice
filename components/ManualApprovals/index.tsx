@@ -36,9 +36,9 @@ export const getTableColumn = (
           render: (_: any, { action }: any) => (
             <div className={styles.actionButton}>
               <div>
-                <Button disabled={isActive} onClick={action}>
-                  View
-                </Button>
+                <AntdButton disabled={isActive} onClick={action}>
+                  Mark as success
+                </AntdButton>
               </div>
             </div>
           ),
@@ -186,57 +186,111 @@ const topUp = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <p className={styles.username}>{username}</p>
+      <Link href={`/users/details/${username}`} className={styles.username}>
+        {username}
+      </Link>
     ),
   },
   {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <p className={styles.username}>{`${transactionId.slice(
-        0,
-        6
-      )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+    title: "Info",
+    dataIndex: "info",
+    key: "info",
+    render: (
+      _: any,
+      {
+        uniqId,
+        txid,
+        date,
+        usd,
+        currency,
+        amount,
+        crypto,
+        cryptoSymbol,
+        status,
+      }: any
+    ) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+          uniqId.length - 6
+        )}`}</span> */}
+        <span>{uniqId}</span>
+        <span>{date}</span>
+        <span>
+          CASHOUT () <Tag color={getStatusCode(status)}>{status}</Tag>
+        </span>
+      </div>
     ),
   },
   {
-    title: "Asset",
-    dataIndex: "asset",
-    key: "asset",
-  },
-  {
-    title: "Amount (GHS)",
-    dataIndex: "total",
-    key: "total",
-  },
-  {
-    title: "Amount (USD)",
-    dataIndex: "usd",
-    key: "usd",
-    render: (_: any, { usd }: any) => <>${usd}</>,
-  },
-  {
-    title: "Amount (CRYPTO)",
-    dataIndex: "crypto",
-    key: "crypto",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      // <div className={styles.statusContainer}>
-      //   <div className={styles.statusIndicator} /> {status}
-      // </div>
-
-      <Tag color={getStatusCode("success")}>{status}</Tag>
+    title: "Payment Details",
+    dataIndex: "info",
+    key: "info",
+    render: (_: any, { txid }: any) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+          uniqId.length - 6
+        )}`}</span> */}
+        {/* <span>{uniqId}</span>
+        <span>{date}</span>
+        <span>
+          CASHOUT ()
+        </span> */}
+        <span style={{ color: "green", maxWidth: "400px" }}>{txid}</span>
+      </div>
     ),
   },
-  {
-    title: "Date",
-    dataIndex: "date",
-    key: "date",
-    width: "20%",
-  },
+  // {
+  //   title: "Username",
+  //   dataIndex: "username",
+  //   key: "username",
+  //   render: (_: any, { username }: any) => (
+  //     <p className={styles.username}>{username}</p>
+  //   ),
+  // },
+  // {
+  //   title: "Transaction ID",
+  //   dataIndex: "transactionId",
+  //   key: "transactionId",
+  //   render: (_: any, { transactionId }: any) => (
+  //     <p className={styles.username}>{`${transactionId.slice(
+  //       0,
+  //       6
+  //     )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+  //   ),
+  // },
+  // {
+  //   title: "Asset",
+  //   dataIndex: "asset",
+  //   key: "asset",
+  // },
+  // {
+  //   title: "Amount (GHS)",
+  //   dataIndex: "total",
+  //   key: "total",
+  // },
+  // {
+  //   title: "Amount (USD)",
+  //   dataIndex: "usd",
+  //   key: "usd",
+  //   render: (_: any, { usd }: any) => <>${usd}</>,
+  // },
+  // {
+  //   title: "Amount (CRYPTO)",
+  //   dataIndex: "crypto",
+  //   key: "crypto",
+  // },
+  // {
+  //   title: "Status",
+  //   dataIndex: "status",
+  //   key: "status",
+  //   render: (_: any, { status }: any) => (
+  //     <Tag color={getStatusCode("success")}>{status}</Tag>
+  //   ),
+  // },
+  // {
+  //   title: "Date",
+  //   dataIndex: "date",
+  //   key: "date",
+  //   width: "20%",
+  // },
 ];
