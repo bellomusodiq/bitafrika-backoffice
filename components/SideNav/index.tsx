@@ -73,20 +73,19 @@ const SideNavItem: React.FC<{
 
 const SideNav: React.FC = () => {
   const router = useRouter();
-  const auth = localStorage.getItem("auth");
-  let userData = null;
-  if (auth) {
-    userData = JSON.parse(auth);
+
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
   const signOut = () => {
     if (auth) {
-      const userData = JSON.parse(auth);
       axios
         .post(
           `${BASE_URL}/logout`,
           {},
-          { headers: { Authorization: userData.accessToken } }
+          { headers: { Authorization: auth.accessToken } }
         )
         .then(() => {
           localStorage.removeItem("auth");
@@ -225,14 +224,16 @@ const SideNav: React.FC = () => {
         icon="/icons/site-settings.svg"
       />
       <div className={styles.divider} />
-      <div className={styles.profileContainer}>
-        <Avatar className={styles.profileAvatar} />
-        {/* <img src="/images/Avatar.png" className={styles.profileAvatar} /> */}
-        <div className={styles.nameContainer}>
-          <p className={styles.name}>{userData?.user.fullName}</p>
-          <p className={styles.email}>{userData?.user.username}</p>
+      {auth?.user && (
+        <div className={styles.profileContainer}>
+          <Avatar className={styles.profileAvatar} />
+          {/* <img src="/images/Avatar.png" className={styles.profileAvatar} /> */}
+          <div className={styles.nameContainer}>
+            <p className={styles.name}>{auth?.user.fullName}</p>
+            <p className={styles.email}>{auth?.user.username}</p>
+          </div>
         </div>
-      </div>
+      )}
       <div className={styles.logoutContainer}>
         <Button onClick={signOut} color="white">
           Log Out
