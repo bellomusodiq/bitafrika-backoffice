@@ -177,7 +177,7 @@ export default function Search({ statusType, from, to }: IProps) {
                         dayjs(fromDate, "YYYY-MM-DD"),
                         dayjs(toDate, "YYYY-MM-DD"),
                       ]
-                    : null
+                    : undefined
                 }
                 style={{ height: 48 }}
               />
