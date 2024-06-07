@@ -14,6 +14,7 @@ import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { getStatusCode } from "@/utils/utils";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -79,73 +80,125 @@ const MOMO_TOPUP_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <Link className={styles.username} href={`/users/details/${username}`}>
+      <Link href={`/users/details/${username}`} className={styles.username}>
         {username}
       </Link>
     ),
   },
   {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <>
-        {transactionId.slice(0, 6)}...
-        {transactionId.slice(transactionId.length - 6)}
-      </>
-    ),
-  },
-  {
-    title: "Asset",
-    dataIndex: "cryptoSymbol",
-    key: "cryptoSymbol",
-  },
-  {
-    title: "Amount (GHS)",
-    dataIndex: "amount",
-    key: "amount",
-    render: (_: any, { amount }: any) => <>GHS {amount}</>,
-  },
-  {
-    title: "Rate",
-    dataIndex: "rate",
-    key: "rate",
-  },
-  {
-    title: "Amount (USD)",
-    dataIndex: "amountUsd",
-    key: "amountUsd",
-    render: (_: any, { amountUsd }: any) => <>${amountUsd}</>,
-  },
-  {
-    title: "Amount (CRYPTO)",
-    dataIndex: "crypto",
-    key: "crypto",
-    render: (_: any, { crypto, cryptoSymbol }: any) => (
-      <>
-        {crypto} {cryptoSymbol}
-      </>
-    ),
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
-    ),
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
+    title: "Info",
+    dataIndex: "info",
+    key: "info",
+    render: (
+      _: any,
+      {
+        uniqId,
+        date,
+        methodId,
+
+        status,
+      }: any
+    ) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <span>{uniqId}</span>
+        <span>{date}</span>
+        <span>
+          CASHOUT ({methodId}) <Tag color={getStatusCode(status)}>{status}</Tag>
+        </span>
       </div>
     ),
   },
+  {
+    title: "Payment Details",
+    dataIndex: "info",
+    key: "info",
+    render: (
+      _: any,
+      { txid, currency, crypto, cryptoSymbol, amount, rate, usd }: any
+    ) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <span style={{ color: "green" }}>{txid}</span>
+        <span>
+          {amount} {currency} ({crypto} {cryptoSymbol})
+        </span>
+        <span>
+          - Bought @ {rate} (${usd})
+        </span>
+      </div>
+    ),
+  },
+  // {
+  //   title: "Username",
+  //   dataIndex: "username",
+  //   key: "username",
+  //   render: (_: any, { username }: any) => (
+  //     <Link className={styles.username} href={`/users/details/${username}`}>
+  //       {username}
+  //     </Link>
+  //   ),
+  // },
+  // {
+  //   title: "Transaction ID",
+  //   dataIndex: "transactionId",
+  //   key: "transactionId",
+  //   render: (_: any, { transactionId }: any) => (
+  //     <>
+  //       {transactionId.slice(0, 6)}...
+  //       {transactionId.slice(transactionId.length - 6)}
+  //     </>
+  //   ),
+  // },
+  // {
+  //   title: "Asset",
+  //   dataIndex: "cryptoSymbol",
+  //   key: "cryptoSymbol",
+  // },
+  // {
+  //   title: "Amount (GHS)",
+  //   dataIndex: "amount",
+  //   key: "amount",
+  //   render: (_: any, { amount }: any) => <>GHS {amount}</>,
+  // },
+  // {
+  //   title: "Rate",
+  //   dataIndex: "rate",
+  //   key: "rate",
+  // },
+  // {
+  //   title: "Amount (USD)",
+  //   dataIndex: "amountUsd",
+  //   key: "amountUsd",
+  //   render: (_: any, { amountUsd }: any) => <>${amountUsd}</>,
+  // },
+  // {
+  //   title: "Amount (CRYPTO)",
+  //   dataIndex: "crypto",
+  //   key: "crypto",
+  //   render: (_: any, { crypto, cryptoSymbol }: any) => (
+  //     <>
+  //       {crypto} {cryptoSymbol}
+  //     </>
+  //   ),
+  // },
+  // {
+  //   title: "Status",
+  //   dataIndex: "status",
+  //   key: "status",
+  //   render: (_: any, { status }: any) => (
+  //     <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
+  //   ),
+  // },
+  // {
+  //   title: "Actions",
+  //   dataIndex: "action",
+  //   render: (_: any, { action }: any) => (
+  //     <div className={styles.actionButton}>
+  //       <div>
+  //         <Button onClick={action}>View</Button>
+  //       </div>
+  //     </div>
+  //   ),
+  // },
 ];
 
 const MOMO_WITHDRWAL_COLUMNS = [
@@ -154,63 +207,121 @@ const MOMO_WITHDRWAL_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <Link className={styles.username} href={`/users/details/${username}`}>
+      <Link href={`/users/details/${username}`} className={styles.username}>
         {username}
       </Link>
     ),
   },
   {
-    title: "Transaction ID",
-    dataIndex: "transactionId",
-    key: "transactionId",
-    render: (_: any, { transactionId }: any) => (
-      <>
-        {transactionId.slice(0, 6)}...
-        {transactionId.slice(transactionId.length - 6)}
-      </>
-    ),
-  },
-  {
-    title: "Asset",
-    dataIndex: "cryptoCurrency",
-    key: "cryptoCurrency",
-  },
-  {
-    title: "Amount (GHS)",
-    dataIndex: "amount",
-    key: "amount",
-    render: (_: any, { amount }: any) => <>{amount} GHS</>,
-  },
-  {
-    title: "Amount (USD)",
-    dataIndex: "amountUSD",
-    key: "amountUSD",
-    render: (_: any, { amountUSD }: any) => <>${amountUSD}</>,
-  },
-  {
-    title: "Amount (CRYPTO)",
-    dataIndex: "topupAmount",
-    key: "topupAmount",
-  },
-  {
-    title: "status",
-    dataIndex: "status",
-    key: "status",
-    render: (_: any, { status }: any) => (
-      <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
-    ),
-  },
-  {
-    title: "Actions",
-    dataIndex: "action",
-    render: (_: any, { action }: any) => (
-      <div className={styles.actionButton}>
-        <div>
-          <Button onClick={action}>View</Button>
-        </div>
+    title: "Info",
+    dataIndex: "info",
+    key: "info",
+    render: (
+      _: any,
+      {
+        uniq,
+        createdOn,
+        usdAmount,
+        localCurrency,
+        rawAmount,
+        cryptoAmount,
+        cryptoCurrency,
+        netFee,
+      }: any
+    ) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <span>{uniq}</span>
+        <span>Order Placed @ {createdOn}</span>
+        <span>
+          {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+          {usdAmount} with fee of {localCurrency} {netFee}
+        </span>
+        <span>Completed by</span>
       </div>
     ),
   },
+  {
+    title: "Payment Details",
+    dataIndex: "paymentAccount",
+    key: "paymentAccount",
+    render: (_: any, { paymentMethod, paymenthodMethodId }: any) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {/* <span>{uniq}</span>
+        <span>Order Placed @ {createdOn}</span>
+        <span>
+          {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+          {usdAmount} with fee of {localCurrency} {netFee}
+        </span>
+        <span>Completed by</span> */}
+        <span>
+          {paymentMethod}
+          {/* {paymenthodMethodId} */}
+        </span>
+      </div>
+    ),
+  },
+  // {
+  //   title: "Username",
+  //   dataIndex: "username",
+  //   key: "username",
+  //   render: (_: any, { username }: any) => (
+  //     <Link className={styles.username} href={`/users/details/${username}`}>
+  //       {username}
+  //     </Link>
+  //   ),
+  // },
+  // {
+  //   title: "Transaction ID",
+  //   dataIndex: "transactionId",
+  //   key: "transactionId",
+  //   render: (_: any, { transactionId }: any) => (
+  //     <>
+  //       {transactionId.slice(0, 6)}...
+  //       {transactionId.slice(transactionId.length - 6)}
+  //     </>
+  //   ),
+  // },
+  // {
+  //   title: "Asset",
+  //   dataIndex: "cryptoCurrency",
+  //   key: "cryptoCurrency",
+  // },
+  // {
+  //   title: "Amount (GHS)",
+  //   dataIndex: "amount",
+  //   key: "amount",
+  //   render: (_: any, { amount }: any) => <>{amount} GHS</>,
+  // },
+  // {
+  //   title: "Amount (USD)",
+  //   dataIndex: "amountUSD",
+  //   key: "amountUSD",
+  //   render: (_: any, { amountUSD }: any) => <>${amountUSD}</>,
+  // },
+  // {
+  //   title: "Amount (CRYPTO)",
+  //   dataIndex: "topupAmount",
+  //   key: "topupAmount",
+  // },
+  // {
+  //   title: "status",
+  //   dataIndex: "status",
+  //   key: "status",
+  //   render: (_: any, { status }: any) => (
+  //     <Tag color={status === "success" ? "success" : "warning"}>{status}</Tag>
+  //   ),
+  // },
+  // {
+  //   title: "Actions",
+  //   dataIndex: "action",
+  //   render: (_: any, { action }: any) => (
+  //     <div className={styles.actionButton}>
+  //       <div>
+  //         <Button onClick={action}>View</Button>
+  //       </div>
+  //     </div>
+  //   ),
+  // },
 ];
 
 const CRYPTO_TRANSACTIONS_COLUMNS = [

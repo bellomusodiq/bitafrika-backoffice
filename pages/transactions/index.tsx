@@ -60,11 +60,11 @@ export default function Search() {
           uniqId,
           date,
           usd,
-          currency,
-          amount,
+
           crypto,
           cryptoSymbol,
           status,
+          methodId,
         }: any
       ) => (
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -74,7 +74,8 @@ export default function Search() {
           <span>{uniqId}</span>
           <span>{date}</span>
           <span>
-            CASHOUT () <Tag color={getStatusCode(status)}>{status}</Tag>
+            CASHOUT ({methodId}){" "}
+            <Tag color={getStatusCode(status)}>{status}</Tag>
           </span>
         </div>
       ),
@@ -83,17 +84,18 @@ export default function Search() {
       title: "Payment Details",
       dataIndex: "info",
       key: "info",
-      render: (_: any, { txid }: any) => (
+      render: (
+        _: any,
+        { txid, currency, crypto, cryptoSymbol, amount, rate, usd }: any
+      ) => (
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          {/* <span>{uniqId}</span>
-          <span>{date}</span>
-          <span>
-            CASHOUT ()
-          </span> */}
           <span style={{ color: "green" }}>{txid}</span>
+          <span>
+            {amount} {currency} ({crypto} {cryptoSymbol})
+          </span>
+          <span>
+            - Bought @ {rate} (${usd})
+          </span>
         </div>
       ),
     },
@@ -280,19 +282,7 @@ export default function Search() {
       title: "Payment Details",
       dataIndex: "paymentAccount",
       key: "paymentAccount",
-      render: (
-        _: any,
-        {
-          uniq,
-          createdOn,
-          usdAmount,
-          localCurrency,
-          rawAmount,
-          cryptoAmount,
-          cryptoCurrency,
-          netFee,
-        }: any
-      ) => (
+      render: (_: any, { paymentMethod, paymenthodMethodId }: any) => (
         <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {/* <span>{uniq}</span>
           <span>Order Placed @ {createdOn}</span>
@@ -301,6 +291,10 @@ export default function Search() {
             {usdAmount} with fee of {localCurrency} {netFee}
           </span>
           <span>Completed by</span> */}
+          <span>
+            {paymentMethod}
+            {/* {paymenthodMethodId} */}
+          </span>
         </div>
       ),
     },
