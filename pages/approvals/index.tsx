@@ -117,6 +117,7 @@ export default function Search() {
 
   const {
     isLoading,
+    isFetching,
     refetch,
     data: { data: result } = {},
   } = useCustomQuery({
@@ -159,7 +160,7 @@ export default function Search() {
         setLoading(false);
         if (res.data.success) {
           refetch();
-          setOpenCodeModal(true);
+          setOpenCodeModal(false);
           toast.success(res.data.message);
         } else {
           toast.error(res.data.message);
@@ -479,7 +480,7 @@ export default function Search() {
       <div className={styles.container}>
         <h3 className={styles.header}>Authorizations</h3>
         <p className={styles.subHeader}></p>
-        {isLoading ? (
+        {isLoading || isFetching ? (
           <Skeleton active style={{ marginTop: 20 }} />
         ) : (
           <>
