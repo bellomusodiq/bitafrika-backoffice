@@ -411,8 +411,8 @@ export default function Search() {
               <Dropdown
                 value={filterBy}
                 options={[
-                  { title: "Withdrawal", value: "withdrawal" },
-                  { title: "Top up", value: "top-up" },
+                  { title: "Sell Order", value: "withdrawal" },
+                  { title: "Buy Order", value: "top-up" },
                 ]}
                 onChange={(value) => {
                   setFilterBy(value as typeof filterBy);
