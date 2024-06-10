@@ -64,16 +64,16 @@ export default function Search() {
     queryKey: ["approvals", params, currentPage],
     enabled: params.length > 0,
     queryFn: async () => {
-      const topUp = `${BASE_URL}/manual-approvals/top-up/list-awaiting-admin-approval-transactions?page=${currentPage}`;
-      const withdrawal = `${BASE_URL}/manual-approvals/${params}?page=${currentPage}`;
+      const topUp = `${BASE_URL}/manual-approvals/top-up/list-awaiting-admin-approval-transactions`;
+      const withdrawal = `${BASE_URL}/manual-approvals/${params}`;
       const URL = params === "withdrawal" ? withdrawal : topUp;
-      const result = await axios.post(
-        URL,
-        {},
-        {
-          headers: { Authorization: auth.accessToken },
-        }
-      );
+      const payload =
+        params === "withdrawal"
+          ? { page: currentPage, coin: "all" }
+          : { page: currentPage };
+      const result = await axios.post(URL, payload, {
+        headers: { Authorization: auth.accessToken },
+      });
       return result;
     },
   });
