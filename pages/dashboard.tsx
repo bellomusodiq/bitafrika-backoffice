@@ -164,11 +164,13 @@ export default function Home() {
                               value:
                                 currencyStat.data?.data?.data?.totalBuy
                                   ?.todayTotal + 0.000001,
+                              color: "#0088FE",
                             },
                             {
                               value:
                                 currencyStat.data?.data?.data?.totalBuy
                                   ?.monthTotal + 0.000001,
+                              color: "#00C49F",
                             },
                           ]}
                         />
@@ -200,11 +202,13 @@ export default function Home() {
                               value:
                                 currencyStat.data?.data?.data?.totalBuy
                                   ?.todayTotal + 0.000001,
+                              color: "#0088FE",
                             },
                             {
                               value:
                                 currencyStat.data?.data?.data?.totalBuy
                                   ?.monthTotal + 0.000001,
+                              color: "#00C49F",
                             },
                           ]}
                         />

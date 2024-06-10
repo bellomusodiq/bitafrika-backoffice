@@ -133,7 +133,7 @@ export default function Search() {
     setLoadingDetails(true);
     axios
       .post(
-        `${BASE_URL}/reports/user/balance/${user.username}?page=${currentPage}`,
+        `${BASE_URL}/reports/user/balance/${user.username}`,
         {},
         {
           headers: {
@@ -164,7 +164,7 @@ export default function Search() {
     setLoadingDetails(true);
     axios
       .post(
-        `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}&page=${currentPage}`,
+        `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -173,8 +173,8 @@ export default function Search() {
         }
       )
       .then((res) => {
-        setLoadingDetails(false);
         setLoadingIndex(null);
+        setLoadingDetails(false);
         setOpenModal(res.data);
       })
       .catch((e) => {
@@ -205,8 +205,8 @@ export default function Search() {
       )
       .then((res) => {
         setLoadingIndex(null);
-        setOpenModal(res.data);
         setLoadingDetails(false);
+        setOpenModal(res.data);
       })
       .catch((e) => {
         if (e?.response?.status === 401) {
@@ -364,268 +364,289 @@ export default function Search() {
 
   return (
     <PageLayout title="Hone">
-      <Modal
-        openModal={openModal && searchType === "Balance"}
-        onClose={() => setOpenModal(null)}
-        headerLeft={<img src="/icons/assets-dark.svg" />}
-        headerCenter={<p>Assets breakdown</p>}
-      >
-        {loadingDetails ? (
-          <Skeleton active />
-        ) : (
-          <div className={styles.modalContainer}>
-            <div className={styles.divider} />
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <div className={styles.keyValue}>
-                <p className={styles.key}>
-                  User:{" "}
-                  <span style={{ color: "#1570EF" }}>
-                    @{currentUser.username}
-                  </span>
-                </p>
-              </div>
-              <div className={styles.keyValue}>
-                <p className={styles.key}>
-                  Total balance:{" "}
-                  <span style={{ color: "black" }}>
-                    ${openModal?.totalUsdAmount}
-                  </span>
-                </p>
-              </div>
-            </div>
-            <div className={styles.assetPieContainer}>
-              <p>Assets</p>
-              <div style={{ width: 160, height: 160 }}>
-                <CustomPieChart
-                  data={openModal?.data?.map((item: any) => ({
-                    name: item.name,
-                    value: item.percentage,
-                  }))}
-                />
-              </div>
-            </div>
-            <div className={styles.divider} />
-            {openModal?.data?.map((asset: any) => (
+      {openModal && searchType === "Balance" && (
+        <Modal
+          openModal={openModal && searchType === "Balance"}
+          onClose={() => setOpenModal(null)}
+          headerLeft={<img src="/icons/assets-dark.svg" />}
+          headerCenter={<p>Assets breakdown</p>}
+        >
+          {loadingDetails ? (
+            <Skeleton active />
+          ) : (
+            <div className={styles.modalContainer}>
+              <div className={styles.divider} />
               <div
-                key={asset.name}
-                className={styles.keyValue}
-                style={{ marginBottom: 24 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
               >
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>
+                    User:{" "}
+                    <span style={{ color: "#1570EF" }}>
+                      @{currentUser.username}
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>
+                    Total balance:{" "}
+                    <span style={{ color: "black" }}>
+                      ${openModal?.totalUsdAmount}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div className={styles.assetPieContainer}>
+                <p>Assets</p>
+                <div style={{ width: 160, height: 160 }}>
+                  <CustomPieChart
+                    data={openModal?.data?.map((item: any) => ({
+                      name: item.name,
+                      value: item.percentage,
+                    }))}
+                  />
+                </div>
+              </div>
+              <div className={styles.divider} />
+              {openModal?.data?.map((asset: any) => (
                 <div
-                  className={styles.key}
-                  style={{ display: "flex", alignItems: "center" }}
+                  key={asset.name}
+                  className={styles.keyValue}
+                  style={{ marginBottom: 24 }}
                 >
                   <div
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 4,
-                      backgroundColor: "#9BB0FD",
-                      marginRight: 8,
-                      fontSize: 14,
-                      lineHeight: 20,
-                      color: "#101828",
-                    }}
+                    className={styles.key}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: "#9BB0FD",
+                        marginRight: 8,
+                        fontSize: 14,
+                        lineHeight: 20,
+                        color: "#101828",
+                      }}
+                    />
+                    {asset.name} ({asset.percentage * 100}%)
+                  </div>
+                  <div className={styles.value}>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        color: "#101828",
+                        textAlign: "right",
+                      }}
+                    >
+                      {asset.cryptoBalance} {asset.coin}
+                    </p>
+                    <p
+                      style={{
+                        fontSize: 14,
+                        color: "#667085",
+                        textAlign: "right",
+                      }}
+                    >
+                      ~${asset.usd}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Modal>
+      )}
+      {openModal && searchType === "Buy" && (
+        <Modal
+          openModal={openModal && searchType === "Buy"}
+          onClose={() => setOpenModal(null)}
+          headerLeft={<img src="/icons/assets-dark.svg" />}
+          headerCenter={<p>Order breakdown</p>}
+        >
+          {loadingDetails ? (
+            <Skeleton active />
+          ) : (
+            <div className={styles.modalContainer}>
+              <div className={styles.divider} />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>
+                    User:{" "}
+                    <span style={{ color: "#1570EF" }}>
+                      @{currentUser.username}
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>
+                    No of buy orders:{" "}
+                    <span style={{ color: "black" }}>MISSING</span>
+                  </p>
+                </div>
+              </div>
+              <div className={styles.assetPieContainer}>
+                <p>Assets</p>
+                <div style={{ width: 160, height: 160 }}>
+                  <CustomPieChart
+                    data={openModal?.data?.map((item: any) => ({
+                      name: item.name,
+                      value: item.totalUSD,
+                    }))}
                   />
-                  {asset.name} ({asset.percentage * 100}%)
-                </div>
-                <div className={styles.value}>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: "#101828",
-                      textAlign: "right",
-                    }}
-                  >
-                    {asset.cryptoBalance} {asset.coin}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: "#667085",
-                      textAlign: "right",
-                    }}
-                  >
-                    ~${asset.usd}
-                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </Modal>
-      <Modal
-        openModal={openModal && searchType === "Buy"}
-        onClose={() => setOpenModal(null)}
-        headerLeft={<img src="/icons/assets-dark.svg" />}
-        headerCenter={<p>Order breakdown</p>}
-      >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                User:{" "}
-                <span style={{ color: "#1570EF" }}>
-                  @{currentUser.username}
-                </span>
-              </p>
-            </div>
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                No of buy orders:{" "}
-                <span style={{ color: "black" }}>MISSING</span>
-              </p>
-            </div>
-          </div>
-          <div className={styles.assetPieContainer}>
-            <p>Assets</p>
-            <div style={{ width: 160, height: 160 }}>
-              <CustomPieChart
-                data={openModal?.data?.map((item: any) => ({
-                  name: item.name,
-                  value: item.totalUSD,
-                }))}
-              />
-            </div>
-          </div>
-          <div className={styles.divider} />
-          {openModal?.data?.map((asset: any) => (
-            <div
-              key={asset.coin}
-              className={styles.keyValue}
-              style={{ marginBottom: 24 }}
-            >
-              <div
-                className={styles.key}
-                style={{ display: "flex", alignItems: "center" }}
-              >
+              <div className={styles.divider} />
+              {openModal?.data?.map((asset: any) => (
                 <div
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: "#9BB0FD",
-                    marginRight: 8,
-                    fontSize: 14,
-                    lineHeight: 20,
-                    color: "#101828",
-                  }}
-                />
-                {asset.coin}
-              </div>
-              <div className={styles.value}>
-                <p style={{ fontSize: 14, color: "#101828" }}>MISSING orders</p>
-              </div>
-              <div className={styles.value}>
-                <p style={{ fontSize: 14, color: "#667085" }}>
-                  {asset.totalCrypto} {asset.coin}
-                </p>
-              </div>
-              <div className={styles.value}>
-                <p style={{ fontSize: 14, color: "#101828" }}>
-                  ~${asset.totalUSD}
-                </p>
-              </div>
+                  key={asset.coin}
+                  className={styles.keyValue}
+                  style={{ marginBottom: 24 }}
+                >
+                  <div
+                    className={styles.key}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: "#9BB0FD",
+                        marginRight: 8,
+                        fontSize: 14,
+                        lineHeight: 20,
+                        color: "#101828",
+                      }}
+                    />
+                    {asset.coin}
+                  </div>
+                  <div className={styles.value}>
+                    <p style={{ fontSize: 14, color: "#101828" }}>
+                      MISSING orders
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <p style={{ fontSize: 14, color: "#667085" }}>
+                      {asset.totalCrypto} {asset.coin}
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <p style={{ fontSize: 14, color: "#101828" }}>
+                      ~${asset.totalUSD}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Modal>
-      <Modal
-        openModal={openModal && searchType === "Sell"}
-        onClose={() => setOpenModal(null)}
-        headerLeft={<img src="/icons/assets-dark.svg" />}
-        headerCenter={<p>Order breakdown</p>}
-      >
-        <div className={styles.modalContainer}>
-          <div className={styles.divider} />
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                User:{" "}
-                <span style={{ color: "#1570EF" }}>
-                  @{currentUser.username}
-                </span>
-              </p>
-            </div>
-            <div className={styles.keyValue}>
-              <p className={styles.key}>
-                No of sell orders:{" "}
-                <span style={{ color: "black" }}>MISSING</span>
-              </p>
-            </div>
-          </div>
-          <div className={styles.assetPieContainer}>
-            <p>Assets</p>
-            <div style={{ width: 160, height: 160 }}>
-              <CustomPieChart
-                data={openModal?.data?.map((item: any) => ({
-                  name: item.name,
-                  value: item.totalUSD,
-                }))}
-              />
-            </div>
-          </div>
-          <div className={styles.divider} />
-          {openModal?.data?.map((asset: any) => (
-            <div
-              key={asset.coin}
-              className={styles.keyValue}
-              style={{ marginBottom: 24 }}
-            >
+          )}
+        </Modal>
+      )}
+      {openModal && searchType === "Sell" && (
+        <Modal
+          openModal={openModal && searchType === "Sell"}
+          onClose={() => setOpenModal(null)}
+          headerLeft={<img src="/icons/assets-dark.svg" />}
+          headerCenter={<p>Order breakdown</p>}
+        >
+          {loadingDetails ? (
+            <Skeleton active />
+          ) : (
+            <div className={styles.modalContainer}>
+              <div className={styles.divider} />
               <div
-                className={styles.key}
-                style={{ display: "flex", alignItems: "center" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
               >
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>
+                    User:{" "}
+                    <span style={{ color: "#1570EF" }}>
+                      @{currentUser.username}
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.keyValue}>
+                  <p className={styles.key}>
+                    No of sell orders:{" "}
+                    <span style={{ color: "black" }}>
+                      {openModal?.data?.totals?.numberOfOrders}
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <div className={styles.assetPieContainer}>
+                <p>Assets</p>
+                <div style={{ width: 160, height: 160 }}>
+                  <CustomPieChart
+                    data={openModal?.data?.orders.map((item: any) => ({
+                      name: item.name,
+                      value: item.totalUSD,
+                    }))}
+                  />
+                </div>
+              </div>
+              <div className={styles.divider} />
+              {openModal?.data?.orders.map((asset: any) => (
                 <div
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 4,
-                    backgroundColor: "#9BB0FD",
-                    marginRight: 8,
-                    fontSize: 14,
-                    lineHeight: 20,
-                    color: "#101828",
-                  }}
-                />
-                {asset.coin}
-              </div>
-              <div className={styles.value}>
-                <p style={{ fontSize: 14, color: "#101828" }}>MISSING orders</p>
-              </div>
-              <div className={styles.value}>
-                <p style={{ fontSize: 14, color: "#667085" }}>
-                  {asset.totalCrypto} {asset.coin}
-                </p>
-              </div>
-              <div className={styles.value}>
-                <p style={{ fontSize: 14, color: "#101828" }}>
-                  ~${asset.totalUSD}
-                </p>
-              </div>
+                  key={asset.coin}
+                  className={styles.keyValue}
+                  style={{ marginBottom: 24 }}
+                >
+                  <div
+                    className={styles.key}
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        backgroundColor: "#9BB0FD",
+                        marginRight: 8,
+                        fontSize: 14,
+                        lineHeight: 20,
+                        color: "#101828",
+                      }}
+                    />
+                    {asset.coin}
+                  </div>
+                  <div className={styles.value}>
+                    <p style={{ fontSize: 14, color: "#101828" }}>
+                      {asset.count} orders
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <p style={{ fontSize: 14, color: "#667085" }}>
+                      {asset.totalCrypto} {asset.coin}
+                    </p>
+                  </div>
+                  <div className={styles.value}>
+                    <p style={{ fontSize: 14, color: "#101828" }}>
+                      ~${asset.totalUSD}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Modal>
+          )}
+        </Modal>
+      )}
+
       <div className={styles.container}>
         <p className={styles.filterTitle}>Filter user reports by</p>
         <div className={styles.searchContainer}>

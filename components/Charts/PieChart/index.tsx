@@ -8,9 +8,6 @@ import {
   Legend,
 } from "recharts";
 
-// const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-const COLORS = ["#0088FE", "#00C49F"];
-
 const CustomPieChart: React.FC<any> = ({ data }) => {
   function getRandomColor() {
     // Generate random numbers for red, green, and blue values (0-255)
@@ -21,9 +18,6 @@ const CustomPieChart: React.FC<any> = ({ data }) => {
     // Convert values to hex string (optional)
     return `rgb(${r}, ${g}, ${b})`; // Or  "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   }
-
-  const random = Math.floor(Math.random() * COLORS.length);
-  console.log(random, COLORS[random]);
 
   return (
     <ResponsiveContainer>
@@ -36,16 +30,14 @@ const CustomPieChart: React.FC<any> = ({ data }) => {
           //   label={renderCustomizedLabel}
           outerRadius={"100%"}
           innerRadius={"50%"}
-          // fill={getRandomColor()}
-          fill={COLORS[random]}
+          fill={getRandomColor()}
           dataKey="value"
         >
           {data?.map((entry: any, index: number) => (
             <Cell
               key={`cell-${index}`}
-              // fill={entry.color || getRandomColor()}
+              fill={entry.color || getRandomColor()}
               // fill={"rgb(0,0,255)"}
-              fill={COLORS[random]}
             />
           ))}
         </Pie>

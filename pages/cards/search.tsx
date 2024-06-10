@@ -330,7 +330,6 @@ export default function Search({ type }: { type: any }) {
     if (searchType === "USERNAME") temp = result?.data?.cards;
     if (searchType === "TRANSACTIONS") temp = result?.data.transactions;
 
-    console.log({ temp, pageInfo: result?.data?.pageInfo });
     if (Array.isArray(temp)) {
       const response = temp.map((item: any) => ({
         ...item,

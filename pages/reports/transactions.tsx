@@ -385,8 +385,8 @@ export default function Search() {
                     Date: {fromDate} — {toDate}
                   </p>
                   <p className={styles.date}>
-                    Status:{" "}
-                    <span
+                    Status: <Tag color={getStatusCode(status)}>{status}</Tag>
+                    {/* <span
                       style={{
                         padding: "2px 12px 4px 12px",
                         borderRadius: 16,
@@ -406,100 +406,121 @@ export default function Search() {
                       }}
                     >
                       <span style={{ fontSize: 12 }}>{status}</span>
-                    </span>
+                    </span> */}
                   </p>
-
-                  <p className={styles.header}>Sell orders</p>
-                  {data?.orders?.length === 0 && <p>No report found</p>}
-                  <div className={styles.ordersContainer}>
-                    <div style={{ flex: 1 }}>
-                      {data?.orders
-                        ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                        ?.map((order: any) => (
-                          <div className={styles.order} key={order.coin}>
-                            <div
-                              className={styles.orderIcon}
-                              style={{
-                                backgroundColor: TOKEN_TO_COLOR[order.coin],
-                              }}
-                            />
-                            <p className={styles.orderText}>
-                              <span>{order.coin}</span>{" "}
-                              <span> {order.count} orders</span>
-                              <span className={styles.grey}>
-                                {order.usdTotal} USD
-                              </span>
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                    <div
-                      style={{
-                        width: "50%",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div style={{ width: 200, height: 200 }}>
-                        <CustomPieChart
-                          data={data?.orders
-                            ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                            ?.map((order: any) => ({
-                              value: order.usdTotal,
-                              color: TOKEN_TO_COLOR[order.coin],
-                            }))}
-                        />
-                      </div>
-                      <div className={styles.pieIndicators}>
-                        {data?.orders
-                          ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                          ?.map((order: any) => (
-                            <div
-                              key={order.coin}
-                              className={styles.pieIndicator}
-                            >
-                              <div
-                                style={{
-                                  backgroundColor: TOKEN_TO_COLOR[order.coin],
-                                }}
-                              />{" "}
-                              {(
-                                (order.amountTotal * 100) /
-                                (data.totalAmount + 0.000001)
-                              ).toFixed(2)}
-                              %
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className={styles.divider}
-                    style={{ margin: "24px 0" }}
-                  />
-                  <div className={styles.totalHeader}>
-                    <p>Total sell orders: {data.totalCount}</p>
-                    <Link
-                      href={`/orders?type=sell&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
-                    >
-                      View orders
-                    </Link>
-                  </div>
-                  <div className={styles.footerHeaderContainer}>
-                    <p>TOTAL AMOUNT</p>
-                    <p>TOTAL FEES</p>
-                    <p>GRAND TOTAL</p>
-                  </div>
-                  <div className={styles.divider} style={{ marginTop: 5 }} />
-                  <div className={styles.totalContainer}>
-                    <p>GHS {data.totalAmount} ($10,000.00)</p>
-                    <p>GHS {data.totalFees} ($1,000.00)</p>
-                    <p style={{ color: "#1570EF" }}>
-                      GHS {data.grandTotal} ($11,000.00)
+                  {data?.orders && data?.orders.length === 0 ? (
+                    <p style={{ marginTop: 20 }} className={styles.header}>
+                      No Record found
                     </p>
-                  </div>
+                  ) : (
+                    <>
+                      <p className={styles.header}>Sell orders</p>
+                      <div className={styles.ordersContainer}>
+                        <div style={{ flex: 1 }}>
+                          {data?.orders
+                            ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
+                            ?.map((order: any) => (
+                              <div className={styles.order} key={order.coin}>
+                                <div
+                                  className={styles.orderIcon}
+                                  style={{
+                                    backgroundColor: TOKEN_TO_COLOR[order.coin],
+                                  }}
+                                />
+                                <p className={styles.orderText}>
+                                  <span>{order.coin}</span>{" "}
+                                  <span> {order.count} orders</span>
+                                  <span className={styles.grey}>
+                                    {order.usdTotal} USD
+                                  </span>
+                                </p>
+                              </div>
+                            ))}
+                        </div>
+                        <div
+                          style={{
+                            width: "50%",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div style={{ width: 200, height: 200 }}>
+                            <CustomPieChart
+                              data={data?.orders
+                                ?.sort(
+                                  (a: any, b: any) => b.usdTotal - a.usdTotal
+                                )
+                                ?.map((order: any) => ({
+                                  value: order.usdTotal,
+                                  color: TOKEN_TO_COLOR[order.coin],
+                                }))}
+                            />
+                          </div>
+                          <div className={styles.pieIndicators}>
+                            {data?.orders
+                              ?.sort(
+                                (a: any, b: any) => b.usdTotal - a.usdTotal
+                              )
+                              ?.map((order: any) => (
+                                <div
+                                  key={order.coin}
+                                  className={styles.pieIndicator}
+                                >
+                                  <div
+                                    style={{
+                                      backgroundColor:
+                                        TOKEN_TO_COLOR[order.coin],
+                                    }}
+                                  />{" "}
+                                  {(
+                                    (order.amountTotal * 100) /
+                                    (data.totalAmount + 0.000001)
+                                  ).toFixed(2)}
+                                  %
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        className={styles.divider}
+                        style={{ margin: "24px 0" }}
+                      />
+                      <div className={styles.totalHeader}>
+                        <p>Total sell orders: {data.totalCount}</p>
+                        <Link
+                          href={`/orders?type=sell&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                        >
+                          View orders
+                        </Link>
+                      </div>
+                      <div className={styles.footerHeaderContainer}>
+                        <p>TOTAL AMOUNT</p>
+                        <p>TOTAL FEES</p>
+                        <p>GRAND TOTAL</p>
+                      </div>
+                      <div
+                        className={styles.divider}
+                        style={{ marginTop: 5 }}
+                      />
+                      <div className={styles.totalContainer}>
+                        <p>
+                          GHS {data?.totalAmount} ($
+                          {data?.totalUsdAmount})
+                        </p>
+                        <p>
+                          GHS {data?.totalFees} ($
+                          {data?.totalUsdFees})
+                        </p>
+                        <p style={{ color: "#1570EF" }}>
+                          GHS {data?.grandTotal} ($
+                          {data?.grandUsdTotal})
+                        </p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
               {data && searchType === "Buy and Sell" && (
@@ -512,8 +533,8 @@ export default function Search() {
                       Date: {fromDate} — {toDate}
                     </p>
                     <p className={styles.date}>
-                      Status:{" "}
-                      <span
+                      Status: <Tag color={getStatusCode(status)}>{status}</Tag>
+                      {/* <span
                         style={{
                           padding: "2px 12px 4px 12px",
                           borderRadius: 16,
@@ -533,136 +554,24 @@ export default function Search() {
                         }}
                       >
                         <span style={{ fontSize: 12 }}>{status}</span>
-                      </span>
+                      </span> */}
                     </p>
-
-                    <div className={styles.buySellOrders}>
-                      <div
-                        className={styles.ordersContainer2}
-                        style={{ paddingRight: 48 }}
-                      >
-                        <p className={styles.header}>Buy orders</p>
-                        {data?.buy?.orders?.length === 0 && (
-                          <p>No report found</p>
-                        )}
-                        <div style={{ flex: 1 }}>
-                          {data?.buy?.orders
-                            ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                            ?.map((order: any) => (
-                              <div
-                                key={order.coin}
-                                className={styles.buySellOrdersChild}
-                              >
-                                <div className={styles.order}>
-                                  <div
-                                    className={styles.orderIcon}
-                                    style={{
-                                      backgroundColor:
-                                        TOKEN_TO_COLOR[order.coin],
-                                    }}
-                                  />
-                                  <p className={styles.orderText}>
-                                    <span>{order.coin}</span>{" "}
-                                    <span>{order.count} orders</span>{" "}
-                                    <span className={styles.grey}>
-                                      {order.usdTotal} USD
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          <div
-                            style={{
-                              width: "50%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <div style={{ width: 200, height: 200 }}>
-                              <CustomPieChart
-                                data={data?.buy?.orders
-                                  ?.sort(
-                                    (a: any, b: any) => b.usdTotal - a.usdTotal
-                                  )
-                                  ?.map((order: any) => ({
-                                    value: order.usdTotal,
-                                    color: TOKEN_TO_COLOR[order.coin],
-                                  }))}
-                              />
-                            </div>
-                            <div className={styles.pieIndicators}>
-                              {data?.buy?.orders
-                                ?.sort(
-                                  (a: any, b: any) => b.usdTotal - a.usdTotal
-                                )
-                                ?.map((order: any) => (
-                                  <div
-                                    key={order.coin}
-                                    className={styles.pieIndicator}
-                                  >
-                                    <div
-                                      style={{
-                                        backgroundColor:
-                                          TOKEN_TO_COLOR[order.coin],
-                                      }}
-                                    />{" "}
-                                    {(
-                                      (order.usdTotal * 100) /
-                                      buyTotalAmount
-                                    ).toFixed(2)}
-                                    %
-                                  </div>
-                                ))}
-                            </div>
-                          </div>
-                        </div>
+                    {data?.orders && data?.orders.length === 0 ? (
+                      <p style={{ marginTop: 20 }} className={styles.header}>
+                        No Record found
+                      </p>
+                    ) : (
+                      <div className={styles.buySellOrders}>
                         <div
-                          className={styles.divider}
-                          style={{ margin: "24px 0" }}
-                        />
-                        <div className={styles.totalHeader}>
-                          <p>Total buy orders: {data?.buy?.totalCount}</p>
-                          <Link
-                            href={`/orders?type=buy&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
-                          >
-                            View orders
-                          </Link>
-                        </div>
-                        <div className={styles.footerHeaderContainer}>
-                          <p>TOTAL AMOUNT</p>
-                          <p>TOTAL FEES</p>
-                          <p>GRAND TOTAL</p>
-                        </div>
-                        <div
-                          className={styles.divider}
-                          style={{ marginTop: 5 }}
-                        />
-                        <div className={styles.totalContainer}>
-                          <p style={{ fontSize: 14 }}>
-                            GHS {data?.buy?.totalAmount} ($10,000)
-                          </p>
-                          <p style={{ fontSize: 14 }}>
-                            GHS {data?.buy?.totalFees} ($100)
-                          </p>
-                          <p style={{ color: "#1570EF", fontSize: 14 }}>
-                            GHS {data?.buy?.grandTotal} ($10,100)
-                          </p>
-                        </div>
-                      </div>
-                      <div className={styles.verticalDivider} />
-                      <div
-                        className={styles.ordersContainer2}
-                        style={{ paddingLeft: 48 }}
-                      >
-                        <p className={styles.header}>Sell orders</p>
-                        {data?.sell?.orders?.length === 0 && (
-                          <p>No report found</p>
-                        )}
-                        <div style={{ flex: 1 }}>
-                          <div className={styles.buySellOrdersChild}>
-                            {data?.sell?.orders
+                          className={styles.ordersContainer2}
+                          style={{ paddingRight: 48 }}
+                        >
+                          <p className={styles.header}>Buy orders</p>
+                          {data?.buy?.orders?.length === 0 && (
+                            <p>No report found</p>
+                          )}
+                          <div style={{ flex: 1 }}>
+                            {data?.buy?.orders
                               ?.sort(
                                 (a: any, b: any) => b.usdTotal - a.usdTotal
                               )
@@ -689,29 +598,101 @@ export default function Search() {
                                   </div>
                                 </div>
                               ))}
-                          </div>
-                          <div
-                            style={{
-                              width: "50%",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                          >
-                            <div style={{ width: 200, height: 200 }}>
-                              <CustomPieChart
-                                data={data?.sell?.orders
+                            <div
+                              style={{
+                                width: "50%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <div style={{ width: 200, height: 200 }}>
+                                <CustomPieChart
+                                  data={data?.buy?.orders
+                                    ?.sort(
+                                      (a: any, b: any) =>
+                                        b.usdTotal - a.usdTotal
+                                    )
+                                    ?.map((order: any) => ({
+                                      value: order.usdTotal,
+                                      color: TOKEN_TO_COLOR[order.coin],
+                                    }))}
+                                />
+                              </div>
+                              <div className={styles.pieIndicators}>
+                                {data?.buy?.orders
                                   ?.sort(
                                     (a: any, b: any) => b.usdTotal - a.usdTotal
                                   )
-                                  ?.map((order: any) => ({
-                                    value: order.usdTotal,
-                                    color: TOKEN_TO_COLOR[order.coin],
-                                  }))}
-                              />
+                                  ?.map((order: any) => (
+                                    <div
+                                      key={order.coin}
+                                      className={styles.pieIndicator}
+                                    >
+                                      <div
+                                        style={{
+                                          backgroundColor:
+                                            TOKEN_TO_COLOR[order.coin],
+                                        }}
+                                      />{" "}
+                                      {(
+                                        (order.usdTotal * 100) /
+                                        buyTotalAmount
+                                      ).toFixed(2)}
+                                      %
+                                    </div>
+                                  ))}
+                              </div>
                             </div>
-                            <div className={styles.pieIndicators}>
+                          </div>
+                          <div
+                            className={styles.divider}
+                            style={{ margin: "24px 0" }}
+                          />
+                          <div className={styles.totalHeader}>
+                            <p>Total buy orders: {data?.buy?.totalCount}</p>
+                            <Link
+                              href={`/orders?type=buy&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                            >
+                              View orders
+                            </Link>
+                          </div>
+                          <div className={styles.footerHeaderContainer}>
+                            <p>TOTAL AMOUNT</p>
+                            <p>TOTAL FEES</p>
+                            <p>GRAND TOTAL</p>
+                          </div>
+                          <div
+                            className={styles.divider}
+                            style={{ marginTop: 5 }}
+                          />
+                          <div className={styles.totalContainer}>
+                            <p style={{ fontSize: 14 }}>
+                              GHS {data?.buy?.totalAmount} ($
+                              {data?.buy?.totalUsdAmount})
+                            </p>
+                            <p style={{ fontSize: 14 }}>
+                              GHS {data?.buy?.totalFees} ($
+                              {data?.buy?.totalUsdFees})
+                            </p>
+                            <p style={{ color: "#1570EF", fontSize: 14 }}>
+                              GHS {data?.buy?.grandTotal} ($
+                              {data?.buy?.grandUsdTotal})
+                            </p>
+                          </div>
+                        </div>
+                        <div className={styles.verticalDivider} />
+                        <div
+                          className={styles.ordersContainer2}
+                          style={{ paddingLeft: 48 }}
+                        >
+                          <p className={styles.header}>Sell orders</p>
+                          {data?.sell?.orders?.length === 0 && (
+                            <p>No report found</p>
+                          )}
+                          <div style={{ flex: 1 }}>
+                            <div className={styles.buySellOrdersChild}>
                               {data?.sell?.orders
                                 ?.sort(
                                   (a: any, b: any) => b.usdTotal - a.usdTotal
@@ -719,94 +700,153 @@ export default function Search() {
                                 ?.map((order: any) => (
                                   <div
                                     key={order.coin}
-                                    className={styles.pieIndicator}
+                                    className={styles.buySellOrdersChild}
                                   >
-                                    <div
-                                      style={{
-                                        backgroundColor:
-                                          TOKEN_TO_COLOR[order.coin],
-                                      }}
-                                    />{" "}
-                                    {(
-                                      (order.usdTotal * 100) /
-                                      sellTotalAmount
-                                    ).toFixed(2)}
-                                    %
+                                    <div className={styles.order}>
+                                      <div
+                                        className={styles.orderIcon}
+                                        style={{
+                                          backgroundColor:
+                                            TOKEN_TO_COLOR[order.coin],
+                                        }}
+                                      />
+                                      <p className={styles.orderText}>
+                                        <span>{order.coin}</span>{" "}
+                                        <span>{order.count} orders</span>{" "}
+                                        <span className={styles.grey}>
+                                          {order.usdTotal} USD
+                                        </span>
+                                      </p>
+                                    </div>
                                   </div>
                                 ))}
                             </div>
+                            <div
+                              style={{
+                                width: "50%",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <div style={{ width: 200, height: 200 }}>
+                                <CustomPieChart
+                                  data={data?.sell?.orders
+                                    ?.sort(
+                                      (a: any, b: any) =>
+                                        b.usdTotal - a.usdTotal
+                                    )
+                                    ?.map((order: any) => ({
+                                      value: order.usdTotal,
+                                      color: TOKEN_TO_COLOR[order.coin],
+                                    }))}
+                                />
+                              </div>
+                              <div className={styles.pieIndicators}>
+                                {data?.sell?.orders
+                                  ?.sort(
+                                    (a: any, b: any) => b.usdTotal - a.usdTotal
+                                  )
+                                  ?.map((order: any) => (
+                                    <div
+                                      key={order.coin}
+                                      className={styles.pieIndicator}
+                                    >
+                                      <div
+                                        style={{
+                                          backgroundColor:
+                                            TOKEN_TO_COLOR[order.coin],
+                                        }}
+                                      />{" "}
+                                      {(
+                                        (order.usdTotal * 100) /
+                                        sellTotalAmount
+                                      ).toFixed(2)}
+                                      %
+                                    </div>
+                                  ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            className={styles.divider}
+                            style={{ margin: "24px 0" }}
+                          />
+                          <div className={styles.totalHeader2}>
+                            <p>Total sell orders: {data?.sell?.totalCount}</p>
+                            <Link
+                              href={`/orders?type=sell&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
+                            >
+                              View orders
+                            </Link>
+                          </div>
+                          <div className={styles.footerHeaderContainer2}>
+                            <p>TOTAL AMOUNT</p>
+                            <p>TOTAL FEES</p>
+                            <p>GRAND TOTAL</p>
+                          </div>
+                          <div
+                            className={styles.divider}
+                            style={{ marginTop: 5 }}
+                          />
+                          <div className={styles.totalContainer}>
+                            <p style={{ fontSize: 14 }}>
+                              GHS {data?.sell?.totalAmount} ($
+                              {data?.sell?.totalUsdAmount})
+                            </p>
+                            <p style={{ fontSize: 14 }}>
+                              GHS {data?.sell?.totalFees} ($
+                              {data?.sell?.totalUsdFees})
+                            </p>
+                            <p style={{ fontSize: 14, color: "#1570EF" }}>
+                              GHS {data?.sell?.grandTotal} ($
+                              {data?.sell?.grandUsdTotal})
+                            </p>
                           </div>
                         </div>
-                        <div
-                          className={styles.divider}
-                          style={{ margin: "24px 0" }}
-                        />
-                        <div className={styles.totalHeader2}>
-                          <p>Total sell orders: {data?.sell?.totalCount}</p>
-                          <Link
-                            href={`/orders?type=sell&fromDate=${fromDate}&toDate=${toDate}&status=${status}`}
-                          >
-                            View orders
-                          </Link>
-                        </div>
-                        <div className={styles.footerHeaderContainer2}>
-                          <p>TOTAL AMOUNT</p>
-                          <p>TOTAL FEES</p>
-                          <p>GRAND TOTAL</p>
-                        </div>
-                        <div
-                          className={styles.divider}
-                          style={{ marginTop: 5 }}
-                        />
-                        <div className={styles.totalContainer}>
-                          <p style={{ fontSize: 14 }}>
-                            GHS {data?.sell?.totalAmount} ($10,000)
-                          </p>
-                          <p style={{ fontSize: 14 }}>
-                            GHS {data?.sell?.totalFees} ($100)
-                          </p>
-                          <p style={{ fontSize: 14, color: "#1570EF" }}>
-                            GHS {data?.sell?.grandTotal} ($10,100)
-                          </p>
+                      </div>
+                    )}
+                  </div>
+                  {data?.orders && data?.orders.length > 0 && (
+                    <div className={styles.bodyContainer}>
+                      <div className={styles.totalProfitHeader}>
+                        <p>
+                          Total profit{" "}
+                          <span>(Buy grand total - Sell grand total)</span>
+                        </p>
+                        <div className={styles.downloadButton}>
+                          <Button>Download report</Button>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className={styles.bodyContainer}>
-                    <div className={styles.totalProfitHeader}>
-                      <p>
-                        Total profit{" "}
-                        <span>(Buy grand total - Sell grand total)</span>
+                      <p className={styles.profitText}>
+                        {data?.buy?.grandTotal} - {data?.sell?.grandTotal} ={" "}
+                        <span style={{ color: "#1570EF" }}>
+                          {data?.buy?.grandTotal - data?.sell?.grandTotal}
+                        </span>
                       </p>
-                      <div className={styles.downloadButton}>
-                        <Button>Download report</Button>
-                      </div>
+                      <div className={styles.divider} />
+                      <p className={styles.profitBreakdown}>
+                        Total profit breakdown
+                      </p>
+                      <p className={styles.fees}>
+                        Fees:{" "}
+                        <span>
+                          {data?.buy?.totalFees - data?.buy?.totalFees}
+                        </span>
+                      </p>
+                      <p className={styles.fees}>
+                        Rate difference:{" "}
+                        <span>
+                          {data?.buy?.grandTotal - data?.sell?.grandTotal} -{" "}
+                          {data?.buy?.totalFees - data?.buy?.totalFees} ={" "}
+                          {data?.buy?.grandTotal -
+                            data?.sell?.grandTotal -
+                            (data?.buy?.totalFees - data?.buy?.totalFees)}{" "}
+                        </span>
+                      </p>
                     </div>
-                    <p className={styles.profitText}>
-                      {data?.buy?.grandTotal} - {data?.sell?.grandTotal} ={" "}
-                      <span style={{ color: "#1570EF" }}>
-                        {data?.buy?.grandTotal - data?.sell?.grandTotal}
-                      </span>
-                    </p>
-                    <div className={styles.divider} />
-                    <p className={styles.profitBreakdown}>
-                      Total profit breakdown
-                    </p>
-                    <p className={styles.fees}>
-                      Fees:{" "}
-                      <span>{data?.buy?.totalFees - data?.buy?.totalFees}</span>
-                    </p>
-                    <p className={styles.fees}>
-                      Rate difference:{" "}
-                      <span>
-                        {data?.buy?.grandTotal - data?.sell?.grandTotal} -{" "}
-                        {data?.buy?.totalFees - data?.buy?.totalFees} ={" "}
-                        {data?.buy?.grandTotal -
-                          data?.sell?.grandTotal -
-                          (data?.buy?.totalFees - data?.buy?.totalFees)}{" "}
-                      </span>
-                    </p>
-                  </div>
+                  )}
                 </>
               )}
               {data && searchType === "Send" && (
@@ -816,8 +856,8 @@ export default function Search() {
                     Date: {fromDate} — {toDate}
                   </p>
                   <p className={styles.date}>
-                    Status:{" "}
-                    <span
+                    Status: <Tag color={getStatusCode(status)}>{status}</Tag>
+                    {/* <span
                       style={{
                         padding: "2px 12px 4px 12px",
                         borderRadius: 16,
@@ -837,86 +877,99 @@ export default function Search() {
                       }}
                     >
                       <span style={{ fontSize: 12 }}>{status}</span>
-                    </span>
+                    </span> */}
                   </p>
 
-                  <p className={styles.header}>Send transactions</p>
-                  <div className={styles.ordersContainer}>
-                    <div style={{ flex: 1 }}>
-                      {data?.orders
-                        ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                        ?.map((order: any) => (
-                          <div className={styles.order} key={order.coin}>
-                            <div
-                              className={styles.orderIcon}
-                              style={{
-                                backgroundColor: TOKEN_TO_COLOR[order.coin],
-                              }}
-                            />
-                            <p className={styles.orderText1}>
-                              <span>{order.coin}</span>{" "}
-                              <span>{order.count} trnx</span>{" "}
-                              <span className={styles.grey}>
-                                {" "}
-                                {order.cryptoTotal} {order.coin}
-                              </span>{" "}
-                              <span className={styles.grey}>
-                                {order.usdTotal} USD
-                              </span>
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                    <div
-                      style={{
-                        width: "50%",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div style={{ width: 200, height: 200 }}>
-                        <CustomPieChart
-                          data={data?.orders
+                  {data?.orders && data?.orders.length === 0 ? (
+                    <p style={{ marginTop: 20 }} className={styles.header}>
+                      No Record found
+                    </p>
+                  ) : (
+                    <>
+                      <p className={styles.header}>Send transactions</p>
+                      <div className={styles.ordersContainer}>
+                        <div style={{ flex: 1 }}>
+                          {data?.orders
                             ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                            ?.map((order: any) => ({
-                              value: order.usdTotal,
-                              color: TOKEN_TO_COLOR[order.coin],
-                            }))}
-                        />
+                            ?.map((order: any) => (
+                              <div className={styles.order} key={order.coin}>
+                                <div
+                                  className={styles.orderIcon}
+                                  style={{
+                                    backgroundColor: TOKEN_TO_COLOR[order.coin],
+                                  }}
+                                />
+                                <p className={styles.orderText1}>
+                                  <span>{order.coin}</span>{" "}
+                                  <span>{order.count} trnx</span>{" "}
+                                  <span className={styles.grey}>
+                                    {" "}
+                                    {order.cryptoTotal} {order.coin}
+                                  </span>{" "}
+                                  <span className={styles.grey}>
+                                    {order.usdTotal} USD
+                                  </span>
+                                </p>
+                              </div>
+                            ))}
+                        </div>
+                        <div
+                          style={{
+                            width: "50%",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div style={{ width: 200, height: 200 }}>
+                            <CustomPieChart
+                              data={data?.orders
+                                ?.sort(
+                                  (a: any, b: any) => b.usdTotal - a.usdTotal
+                                )
+                                ?.map((order: any) => ({
+                                  value: order.usdTotal,
+                                  color: TOKEN_TO_COLOR[order.coin],
+                                }))}
+                            />
+                          </div>
+                          <div className={styles.pieIndicators}>
+                            {data?.orders
+                              ?.sort(
+                                (a: any, b: any) => b.usdTotal - a.usdTotal
+                              )
+                              ?.map((order: any) => (
+                                <div
+                                  key={order.coin}
+                                  className={styles.pieIndicator}
+                                >
+                                  <div
+                                    style={{
+                                      backgroundColor:
+                                        TOKEN_TO_COLOR[order.coin],
+                                    }}
+                                  />{" "}
+                                  {(
+                                    (order.amountTotal * 100) /
+                                    (data.totalAmount + 0.000001)
+                                  ).toFixed(2)}
+                                  %
+                                </div>
+                              ))}
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.pieIndicators}>
-                        {data?.orders
-                          ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                          ?.map((order: any) => (
-                            <div
-                              key={order.coin}
-                              className={styles.pieIndicator}
-                            >
-                              <div
-                                style={{
-                                  backgroundColor: TOKEN_TO_COLOR[order.coin],
-                                }}
-                              />{" "}
-                              {(
-                                (order.amountTotal * 100) /
-                                (data.totalAmount + 0.000001)
-                              ).toFixed(2)}
-                              %
-                            </div>
-                          ))}
+                      <div
+                        className={styles.divider}
+                        style={{ margin: "24px 0" }}
+                      />
+                      <div className={styles.totalHeader}>
+                        <p>Total send transactions: {data.totalCount}</p>
+                        <a href="#">View transactions</a>
                       </div>
-                    </div>
-                  </div>
-                  <div
-                    className={styles.divider}
-                    style={{ margin: "24px 0" }}
-                  />
-                  <div className={styles.totalHeader}>
-                    <p>Total send transactions: {data.totalCount}</p>
-                    <a href="#">View transactions</a>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
               {data && searchType === "Receive" && (
@@ -926,8 +979,8 @@ export default function Search() {
                     Date: {fromDate} — {toDate}
                   </p>
                   <p className={styles.date}>
-                    Status:{" "}
-                    <span
+                    Status: <Tag color={getStatusCode(status)}>{status}</Tag>
+                    {/* <span
                       style={{
                         padding: "2px 12px 4px 12px",
                         borderRadius: 16,
@@ -947,86 +1000,99 @@ export default function Search() {
                       }}
                     >
                       <span style={{ fontSize: 12 }}>{status}</span>
-                    </span>
+                    </span> */}
                   </p>
 
-                  <p className={styles.header}>Received transactions</p>
-                  <div className={styles.ordersContainer}>
-                    <div style={{ flex: 1 }}>
-                      {data?.orders
-                        ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                        ?.map((order: any) => (
-                          <div className={styles.order} key={order.coin}>
-                            <div
-                              className={styles.orderIcon}
-                              style={{
-                                backgroundColor: TOKEN_TO_COLOR[order.coin],
-                              }}
-                            />
-                            <p className={styles.orderText1}>
-                              <span>{order.coin}</span>{" "}
-                              <span>{order.cryptoTotal} trnx</span>{" "}
-                              <span className={styles.grey}>
-                                {" "}
-                                {order.cryptoTotal} {order.coin}
-                              </span>{" "}
-                              <span className={styles.grey}>
-                                {order.usdTotal} USD
-                              </span>
-                            </p>
-                          </div>
-                        ))}
-                    </div>
-                    <div
-                      style={{
-                        width: "50%",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <div style={{ width: 200, height: 200 }}>
-                        <CustomPieChart
-                          data={data?.orders
+                  {data?.orders && data?.orders.length === 0 ? (
+                    <p style={{ marginTop: 20 }} className={styles.header}>
+                      No Record found
+                    </p>
+                  ) : (
+                    <>
+                      <p className={styles.header}>Received transactions</p>
+                      <div className={styles.ordersContainer}>
+                        <div style={{ flex: 1 }}>
+                          {data?.orders
                             ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                            ?.map((order: any) => ({
-                              value: order.usdTotal,
-                              color: TOKEN_TO_COLOR[order.coin],
-                            }))}
-                        />
+                            ?.map((order: any) => (
+                              <div className={styles.order} key={order.coin}>
+                                <div
+                                  className={styles.orderIcon}
+                                  style={{
+                                    backgroundColor: TOKEN_TO_COLOR[order.coin],
+                                  }}
+                                />
+                                <p className={styles.orderText1}>
+                                  <span>{order.coin}</span>{" "}
+                                  <span>{order.cryptoTotal} trnx</span>{" "}
+                                  <span className={styles.grey}>
+                                    {" "}
+                                    {order.cryptoTotal} {order.coin}
+                                  </span>{" "}
+                                  <span className={styles.grey}>
+                                    {order.usdTotal} USD
+                                  </span>
+                                </p>
+                              </div>
+                            ))}
+                        </div>
+                        <div
+                          style={{
+                            width: "50%",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div style={{ width: 200, height: 200 }}>
+                            <CustomPieChart
+                              data={data?.orders
+                                ?.sort(
+                                  (a: any, b: any) => b.usdTotal - a.usdTotal
+                                )
+                                ?.map((order: any) => ({
+                                  value: order.usdTotal,
+                                  color: TOKEN_TO_COLOR[order.coin],
+                                }))}
+                            />
+                          </div>
+                          <div className={styles.pieIndicators}>
+                            {data?.orders
+                              ?.sort(
+                                (a: any, b: any) => b.usdTotal - a.usdTotal
+                              )
+                              ?.map((order: any) => (
+                                <div
+                                  key={order.coin}
+                                  className={styles.pieIndicator}
+                                >
+                                  <div
+                                    style={{
+                                      backgroundColor:
+                                        TOKEN_TO_COLOR[order.coin],
+                                    }}
+                                  />{" "}
+                                  {(
+                                    (order.amountTotal * 100) /
+                                    (data.totalAmount + 0.000001)
+                                  ).toFixed(2)}
+                                  %
+                                </div>
+                              ))}
+                          </div>
+                        </div>
                       </div>
-                      <div className={styles.pieIndicators}>
-                        {data?.orders
-                          ?.sort((a: any, b: any) => b.usdTotal - a.usdTotal)
-                          ?.map((order: any) => (
-                            <div
-                              key={order.coin}
-                              className={styles.pieIndicator}
-                            >
-                              <div
-                                style={{
-                                  backgroundColor: TOKEN_TO_COLOR[order.coin],
-                                }}
-                              />{" "}
-                              {(
-                                (order.amountTotal * 100) /
-                                (data.totalAmount + 0.000001)
-                              ).toFixed(2)}
-                              %
-                            </div>
-                          ))}
+                      <div
+                        className={styles.divider}
+                        style={{ margin: "24px 0" }}
+                      />
+                      <div className={styles.totalHeader}>
+                        <p>Total recived transactions: {data.totalCount}</p>
+                        <a href="#">View transactions</a>
                       </div>
-                    </div>
-                  </div>
-                  <div
-                    className={styles.divider}
-                    style={{ margin: "24px 0" }}
-                  />
-                  <div className={styles.totalHeader}>
-                    <p>Total recived transactions: {data.totalCount}</p>
-                    <a href="#">View transactions</a>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
             </>

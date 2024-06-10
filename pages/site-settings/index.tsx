@@ -4,7 +4,8 @@ import styles from "@/pages/site-settings/site-settings.module.css";
 import Button from "@/components/Button";
 import { Skeleton } from "antd";
 import Modal from "@/components/Modal";
-import Input from "@/components/Input/Input";
+// import Input from "@/components/Input/Input";
+import { Input as AntdInput, Button as AntdButton } from "antd";
 import Dropdown from "@/components/Dropdown";
 import Toggle from "@/components/Toggle";
 import axios from "axios";
@@ -120,6 +121,11 @@ export default function SiteSetting() {
       });
   };
 
+  const items = [
+    "Sending Crypto Status for Ethereum",
+    "Percentage Fee for Withdrawals",
+  ];
+
   return (
     <PageLayout title="Site Settings">
       <Modal openModal={openModal} onClose={() => setOpenModal(false)}>
@@ -192,18 +198,22 @@ export default function SiteSetting() {
                   className={styles.ratesContainer}
                 >
                   {siteSettings?.[currentTab]?.map((item: any, idx: number) => {
-                    console.log(item);
                     return (
                       <div
                         style={{ marginBottom: 20 }}
                         className={styles.ratesInputContainer}
                         key={idx}
                       >
-                        <p>{item.title}</p>
+                        <div>
+                          <p>{item.title}</p>
+                          {item.title === items[0] ||
+                            (item.title === items[1] && (
+                              <p style={{ marginTop: 5 }}>{item.name}</p>
+                            ))}
+                        </div>
                         {item.editable ? (
                           item.valueType === "BOOL" ? (
                             <div className={styles.value}>
-                              <p>{item.name}</p>
                               <div className={styles.switchContainer}>
                                 <Toggle
                                   defaultValue={item.value}
@@ -214,15 +224,29 @@ export default function SiteSetting() {
                               </div>
                             </div>
                           ) : (
-                            <Input
-                              // leftIcon={<div className={styles.leftIcon}>$</div>}
-                              value={item.value}
-                              onChange={(e) =>
-                                handleChange(item.name, e.target.value)
-                              }
-                              onUpdate={() => updateFields(item)}
-                              loading={loadingKey === currentTab}
-                            />
+                            <div
+                              style={{
+                                width: "50%",
+                                display: "flex",
+                                gap: 5,
+                              }}
+                            >
+                              <AntdInput
+                                // leftIcon={<div className={styles.leftIcon}>$</div>}
+                                size="middle"
+                                value={item.value}
+                                onChange={(e) =>
+                                  handleChange(item.name, e.target.value)
+                                }
+                              />
+                              <AntdButton
+                                type="primary"
+                                loading={loadingKey === currentTab}
+                                onClick={() => updateFields(item)}
+                              >
+                                Update
+                              </AntdButton>
+                            </div>
                           )
                         ) : item.valueType === "BOOL" ? (
                           <div className={styles.value}>
@@ -237,14 +261,17 @@ export default function SiteSetting() {
                             </div>
                           </div>
                         ) : (
-                          <Input
-                            // leftIcon={<div className={styles.leftIcon}>$</div>}
-                            value={item.value}
-                            disabled
-                            onChange={(e) =>
-                              handleChange(item.name, e.target.value)
-                            }
-                          />
+                          <div style={{ width: "50%" }}>
+                            <AntdInput
+                              // leftIcon={<div className={styles.leftIcon}>$</div>}
+                              size="middle"
+                              value={item.value}
+                              disabled
+                              onChange={(e) =>
+                                handleChange(item.name, e.target.value)
+                              }
+                            />
+                          </div>
                         )}
                       </div>
                     );
