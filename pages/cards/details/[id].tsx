@@ -85,6 +85,9 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [amount, setAmount] = useState<string>("");
   const [deleteConfirmation, setDeleteConfirmation] = useState<string>("");
+  const [requestId, setRequestId] = useState<string>("");
+  const [otp, setOtp] = useState<string>("");
+  const [reason, setReason] = useState<string>("");
 
   let auth: any = {};
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
@@ -109,6 +112,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       return result;
     },
   });
+
   const {
     isLoading: isLoadingTransaction,
     data: { data: cardTransactions = {} } = {},
@@ -171,6 +175,9 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         {
           cardId: router.query.id,
           activated: false,
+          otp,
+          requestId,
+          reason,
         },
         {
           headers: {
@@ -180,8 +187,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       )
       .then((res: any) => {
         setLoadingUpdate(false);
-        setOpenModal(null);
         if (res.data.success) {
+          onClose();
           toast.success(res.data.message);
         } else {
           toast.error(res.data.message);
@@ -203,6 +210,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         {
           cardId: router.query.id,
           amount: Number(amount),
+          otp,
+          requestId,
         },
         {
           headers: {
@@ -212,9 +221,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       )
       .then((res: any) => {
         setLoadingUpdate(false);
-        setOpenModal(null);
-        setAmount("");
         if (res.data.success) {
+          onClose();
           toast.success(res.data.message);
         } else {
           toast.error(res.data.message);
@@ -236,6 +244,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         {
           cardId: router.query.id,
           amount: Number(amount),
+          otp,
+          requestId,
         },
         {
           headers: {
@@ -245,9 +255,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       )
       .then((res: any) => {
         setLoadingUpdate(false);
-        setOpenModal(null);
-        setAmount("");
         if (res.data.success) {
+          onClose();
           toast.success(res.data.message);
         } else {
           toast.error(res.data.message);
@@ -268,6 +277,9 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         `${BASE_URL}/virtual-cards/terminate`,
         {
           cardId: router.query.id,
+          otp,
+          requestId,
+          reason,
         },
         {
           headers: {
@@ -277,8 +289,8 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       )
       .then((res: any) => {
         setLoadingUpdate(false);
-        setOpenModal(null);
         if (res.data.success) {
+          onClose();
           toast.success(res.data.message);
         } else {
           toast.error(res.data.message);
@@ -291,6 +303,49 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         }
       });
   };
+
+  const sendOtp = (action: string) => {
+    setLoadingUpdate(true);
+    axios
+      .post(
+        `${BASE_URL}/virtual-cards/action-otp`,
+        {
+          cardId: router.query.id,
+          action,
+          value: amount.length > 0 ? amount : null,
+        },
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoadingUpdate(false);
+        if (res.data.success) {
+          setRequestId(res.data.data.requestId);
+          toast.success(res.data.message);
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((e) => {
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
+  };
+
+  const onClose = () => {
+    setAmount("");
+    setRequestId("");
+    setReason("");
+    setOtp("");
+    setOpenModal(null);
+  };
+
+  console.log("onClose", { amount, reason, otp });
 
   // useEffect(() => {
   //   getCardDetails();
@@ -317,7 +372,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
     <PageLayout title="Home">
       <Modal
         openModal={openModal === "terminate"}
-        onClose={() => setOpenModal(null)}
+        onClose={onClose}
         customStyles={{ width: "30%" }}
         headerLeft={<>Terminate card</>}
       >
@@ -330,20 +385,31 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           <div className={styles.labelContainer}>
             <p className={styles.label}>Reason</p>
           </div>
-          <Input placeholder="Enter reason for termination" />
+          <Input
+            placeholder="Enter reason for termination"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
           <div className={styles.labelContainer}>
-            <p className={styles.label}>Enter the keyword</p>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
+
             {/* <p className={styles.info}>delete-0223</p> */}
-            <AntdButton size="small">Send OTP</AntdButton>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => sendOtp("TERMINATE")}
+            >
+              Send OTP
+            </AntdButton>
           </div>
           <Input
             placeholder=""
-            value={deleteConfirmation}
-            onChange={(e) => setDeleteConfirmation(e.target.value)}
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
           />
           <div className={styles.modalFooter2}>
             <Button
-              onClick={() => setOpenModal(null)}
+              onClick={() => onClose()}
               className={styles.modalButton}
               color="white"
             >
@@ -351,8 +417,11 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             </Button>
             <Button
               loading={loadingUpdate}
-              onClick={terminateCard}
-              disabled={deleteConfirmation !== "delete-0223"}
+              onClick={() => {
+                if (reason.length > 0 && otp.length > 0) {
+                  terminateCard();
+                }
+              }}
               className={styles.modalButton}
             >
               Terminate
@@ -362,7 +431,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       </Modal>
       <Modal
         openModal={openModal === "withdraw"}
-        onClose={() => setOpenModal(null)}
+        onClose={onClose}
         customStyles={{ width: "30%" }}
         headerLeft={<>Withdraw user balance</>}
       >
@@ -374,6 +443,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             leftIcon={<div className={styles.leftIcon}>$</div>}
             placeholder="0.00"
             type="number"
+            value={amount}
             onChange={(e) => setAmount(e.target.value)}
           />
           <div className={styles.labelContainer}>
@@ -381,17 +451,30 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             {/* <p style={{ cursor: "pointer" }} className={styles.info}>
               Send OTP
             </p> */}
-            <AntdButton size="small">Send OTP</AntdButton>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => {
+                if (amount.length === 0) {
+                  toast.error("Input is required!");
+                } else {
+                  sendOtp("WITHDRAW");
+                }
+              }}
+            >
+              Send OTP
+            </AntdButton>
           </div>
-          <Input
-            placeholder=""
-            // value={amount}
-            // onChange={(e: any) => setAmount(e.target.value)}
-          />
+          <Input value={otp} onChange={(e) => setOtp(e.target.value)} />
+
           <div className={styles.modalFooter2}>
             <Button
               loading={loadingUpdate}
-              onClick={withdrawCard}
+              onClick={() => {
+                if (amount.length > 0 && otp.length > 0) {
+                  withdrawCard();
+                }
+              }}
               className={styles.modalButtonFull}
             >
               Withdrawal
@@ -401,7 +484,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       </Modal>
       <Modal
         openModal={openModal === "freeze"}
-        onClose={() => setOpenModal(null)}
+        onClose={onClose}
         customStyles={{ width: "30%" }}
         headerLeft={<>Freeze card</>}
       >
@@ -409,17 +492,35 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           <div className={styles.labelContainer}>
             <p className={styles.label}>Reason</p>
           </div>
-          <Input placeholder="Enter reason for freezing card" />
+          <Input
+            placeholder="Enter reason for freezing card"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
           <div className={styles.labelContainer}>
-            <p className={styles.label}>Enter the keyword</p>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
             {/* <p className={styles.info}>freeze-0223</p> */}
-            <AntdButton size="small">Send OTP</AntdButton>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => sendOtp("FREEZE")}
+            >
+              Send OTP
+            </AntdButton>
           </div>
-          <Input placeholder="" />
+          <Input
+            placeholder=""
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
           <div className={styles.modalFooter2}>
             <Button
               loading={loadingUpdate}
-              onClick={freezeCard}
+              onClick={() => {
+                if (reason.length > 0 && otp.length > 0) {
+                  freezeCard();
+                }
+              }}
               className={styles.modalButtonFull}
             >
               Freeze card
@@ -429,7 +530,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
       </Modal>
       <Modal
         openModal={openModal === "topup"}
-        onClose={() => setOpenModal(null)}
+        onClose={onClose}
         customStyles={{ width: "30%" }}
         headerLeft={<>Top up user balance</>}
       >
@@ -445,13 +546,29 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter otp code (Telegram)</p>
-            <AntdButton size="small">Send OTP</AntdButton>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => {
+                if (amount.length === 0) {
+                  toast.error("Input is required!");
+                } else {
+                  sendOtp("topUp");
+                }
+              }}
+            >
+              Send OTP
+            </AntdButton>
           </div>
-          <Input placeholder="" />
+          <Input value={otp} onChange={(e) => setOtp(e.target.value)} />
           <div className={styles.modalFooter2}>
             <Button
               loading={loadingUpdate}
-              onClick={topUpCard}
+              onClick={() => {
+                if (amount.length > 0 && otp.length > 0) {
+                  topUpCard();
+                }
+              }}
               className={styles.modalButtonFull}
             >
               Top up

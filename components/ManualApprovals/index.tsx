@@ -138,9 +138,6 @@ const withdrawal = [
       }: any
     ) => (
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-          uniqId.length - 6
-        )}`}</span> */}
         <span>{uniq}</span>
         <span>Order Placed @ {createdOn}</span>
         <span>
@@ -154,27 +151,14 @@ const withdrawal = [
     title: "Payment Details",
     dataIndex: "paymentAccount",
     key: "paymentAccount",
-    render: (
-      _: any,
-      {
-        uniq,
-        createdOn,
-        usdAmount,
-        localCurrency,
-        rawAmount,
-        cryptoAmount,
-        cryptoCurrency,
-        netFee,
-      }: any
-    ) => (
+    render: (_: any, { localCurrency, rawAmount, paymentAccount }: any) => (
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* <span>{uniq}</span>
-        <span>Order Placed @ {createdOn}</span>
+        <span>Account: {paymentAccount.name}</span>
+        <span>Network: {paymentAccount.provider}</span>
+        <span>Phone Number: {paymentAccount.number}</span>
         <span>
-          {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
-          {usdAmount} with fee of {localCurrency} {netFee}
+          {localCurrency} {rawAmount}
         </span>
-        <span>Completed by</span> */}
       </div>
     ),
   },
@@ -207,6 +191,7 @@ const topUp = [
         crypto,
         cryptoSymbol,
         status,
+        paymentAccount,
       }: any
     ) => (
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -216,7 +201,8 @@ const topUp = [
         <span>{uniqId}</span>
         <span>{date}</span>
         <span>
-          CASHOUT () <Tag color={getStatusCode(status)}>{status}</Tag>
+          CASHOUT ({paymentAccount.number}) - {paymentAccount.name}{" "}
+          <Tag color={getStatusCode(status)}>{status}</Tag>
         </span>
       </div>
     ),
@@ -225,7 +211,10 @@ const topUp = [
     title: "Payment Details",
     dataIndex: "info",
     key: "info",
-    render: (_: any, { txid }: any) => (
+    render: (
+      _: any,
+      { txid, currency, amount, crypto, cryptoSymbol, rate, usd }: any
+    ) => (
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
           uniqId.length - 6
@@ -235,6 +224,12 @@ const topUp = [
         <span>
           CASHOUT ()
         </span> */}
+        <span>
+          {amount} {currency} ({crypto} {cryptoSymbol} )
+        </span>
+        <span>
+          - Bought @ {rate} (${usd})
+        </span>
         <span style={{ color: "green", maxWidth: "400px" }}>{txid}</span>
       </div>
     ),

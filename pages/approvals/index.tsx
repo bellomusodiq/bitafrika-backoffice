@@ -4,15 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/approvals/approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import {
-  Checkbox,
-  DatePicker,
-  Divider,
-  Pagination,
-  Skeleton,
-  Space,
-  Table,
-} from "antd";
+import { Checkbox, DatePicker, Divider, Skeleton, Space, Table } from "antd";
 import Modal from "@/components/Modal";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
@@ -22,6 +14,7 @@ import useCustomQuery from "@/hooks/useCustomQuery";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Pagination from "@/components/Pagination";
 
 const columns: any = [
   {
@@ -103,6 +96,7 @@ export default function Search() {
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [openCodeModal, setOpenCodeModal] = useState<boolean>(false);
   const [openRejectModal, setOpenRejectModal] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [approvalType, setApprovalType] = useState<any>({
     type: "",
     amount: "",
@@ -126,7 +120,7 @@ export default function Search() {
     queryFn: async () => {
       const result = await axios.post(
         `${BASE_URL}/authorizations`,
-        {},
+        { page: currentPage },
         {
           headers: {
             Authorization: auth.accessToken,
@@ -483,7 +477,10 @@ export default function Search() {
         {isLoading || isFetching ? (
           <Skeleton active style={{ marginTop: 20 }} />
         ) : (
-          <>
+          <div className={styles.table} style={{ overflow: "hidden" }}>
+            <p className={styles.resultText}>
+              {result?.pageInfo?.totalCount || 0} result found!
+            </p>
             <Table
               style={{
                 fontFamily: "PP Telegraf",
@@ -526,11 +523,15 @@ export default function Search() {
               columns={columns}
               pagination={false}
             />
+            <Pagination
+              pageInfo={result?.pageInfo}
+              setCurrentPage={setCurrentPage}
+            />
             {/* <Pagination
           pageInfo={result?.data?.pageInfo}
           setCurrentPage={setCurrentPage}
         /> */}
-          </>
+          </div>
         )}
       </div>
     </PageLayout>
