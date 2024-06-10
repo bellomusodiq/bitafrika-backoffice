@@ -982,7 +982,6 @@ const UserDetails = ({ userId, userType }: IProps) => {
   };
 
   const disableAccount = (isDisabled: boolean = true) => {
-    console.log("Disabling account", isDisabled);
     setIsDisableLoading(true);
     axios
       .post(

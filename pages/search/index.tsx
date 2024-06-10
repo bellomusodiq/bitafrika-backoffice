@@ -604,8 +604,6 @@ export default function Search() {
     }
   };
 
-  console.log(currentUser);
-
   return (
     <PageLayout title="Hone">
       <Modal

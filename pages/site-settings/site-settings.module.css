@@ -340,13 +340,18 @@
   margin-right: 8px;
 }
 .ratesContainer {
-  display: flex;
+  /* display: flex; */
   justify-content: space-between;
   width: 100%;
   margin-bottom: 30px;
 }
 .ratesInputContainer {
-  width: 45%;
+  /* width: 45%; */
+  /* width: 100%; */
+  display: flex;
+  gap: 20;
+  justify-content: space-between;
+  align-items: center;
 }
 .leftIcon {
   display: flex;

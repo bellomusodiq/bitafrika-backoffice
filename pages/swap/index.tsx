@@ -48,7 +48,6 @@ const Cards: NextPage = () => {
         return result;
       },
     });
-  console.log("res", balance);
 
   return (
     <PageLayout>

@@ -47,7 +47,6 @@ export default function SwapOrders({ status, from, to }: IProps) {
       return result;
     },
   });
-  console.log({ result });
 
   const { isLoading: isLoadingDetails, data: { data: details } = {} } =
     useCustomQuery({

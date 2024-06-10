@@ -345,8 +345,6 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
     setOpenModal(null);
   };
 
-  console.log("onClose", { amount, reason, otp });
-
   // useEffect(() => {
   //   getCardDetails();
   // }, [router.query]);
