@@ -79,8 +79,6 @@ export default function Search() {
   };
 
   const updateFields = (field: string, value?: any) => {
-    console.log("value", value);
-
     let newValue: any = value;
     if (value === undefined) {
       newValue = getSettingsValue(field);

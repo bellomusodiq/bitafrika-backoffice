@@ -164,7 +164,7 @@ export default function Search() {
     setLoadingDetails(true);
     axios
       .post(
-        `${BASE_URL}/reports/users/buy/${user.username}?from=${fromDate}&to=${toDate}`,
+        `${BASE_URL}/reports/user/buy/${user.username}?from=${fromDate}&to=${toDate}`,
         {},
         {
           headers: {
@@ -492,7 +492,10 @@ export default function Search() {
                 <div className={styles.keyValue}>
                   <p className={styles.key}>
                     No of buy orders:{" "}
-                    <span style={{ color: "black" }}>MISSING</span>
+                    <span style={{ color: "black" }}>
+                      {" "}
+                      {openModal?.data?.totals?.numberOfOrders}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -500,7 +503,7 @@ export default function Search() {
                 <p>Assets</p>
                 <div style={{ width: 160, height: 160 }}>
                   <CustomPieChart
-                    data={openModal?.data?.map((item: any) => ({
+                    data={openModal?.data?.orders?.map((item: any) => ({
                       name: item.name,
                       value: item.totalUSD,
                     }))}
@@ -508,7 +511,7 @@ export default function Search() {
                 </div>
               </div>
               <div className={styles.divider} />
-              {openModal?.data?.map((asset: any) => (
+              {openModal?.data?.orders?.map((asset: any) => (
                 <div
                   key={asset.coin}
                   className={styles.keyValue}
@@ -534,7 +537,7 @@ export default function Search() {
                   </div>
                   <div className={styles.value}>
                     <p style={{ fontSize: 14, color: "#101828" }}>
-                      MISSING orders
+                      {asset.count} orders
                     </p>
                   </div>
                   <div className={styles.value}>
