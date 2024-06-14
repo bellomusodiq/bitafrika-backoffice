@@ -5,16 +5,16 @@ import Button from "@/components/Button";
 import { Skeleton } from "antd";
 import Modal from "@/components/Modal";
 // import Input from "@/components/Input/Input";
-import { Input as AntdInput, Button as AntdButton } from "antd";
+import { Input as AntdInput, Button as AntdButton, message } from "antd";
 import Dropdown from "@/components/Dropdown";
 import Toggle from "@/components/Toggle";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import useCustomQuery from "@/hooks/useCustomQuery";
 
 export default function SiteSetting() {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const [currentTab, setCurrentTab] = useState<string>("");
   const [siteSettings, setSiteSettings] = useState<any>({});
@@ -107,10 +107,13 @@ export default function SiteSetting() {
       .then((res: any) => {
         setLoadingKey("");
         if (res.data.success) {
-          toast.success(`${item.title} updated sucessfully`);
+          messageApi.success({
+            content: `${item.title} updated sucessfully`,
+            duration: 5,
+          });
           refetch();
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -128,6 +131,7 @@ export default function SiteSetting() {
 
   return (
     <PageLayout title="Site Settings">
+      {contextHolder}
       <Modal openModal={openModal} onClose={() => setOpenModal(false)}>
         <div className={styles.modalContainer}>
           <p className={styles.modalHeader}>Manual account Top-Up</p>

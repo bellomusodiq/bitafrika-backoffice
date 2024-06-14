@@ -1,7 +1,8 @@
-export const getStatusCode = (status: string) => {
+export const getStatusCode = (status: string = "") => {
   switch (status.toLowerCase()) {
     case "all":
     case "confirmed":
+    case "approved":
     case "success":
     case "verified":
     case "card - active":

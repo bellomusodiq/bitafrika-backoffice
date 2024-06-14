@@ -6,9 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
-import { toast } from "react-toastify";
 import Button from "../Button";
-import { Avatar } from "antd";
+import { Avatar, message } from "antd";
 
 const SideNavItem: React.FC<{
   title: string;
@@ -72,6 +71,7 @@ const SideNavItem: React.FC<{
 };
 
 const SideNav: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
 
   let auth: any = {};
@@ -96,22 +96,14 @@ const SideNav: React.FC = () => {
             localStorage.removeItem("auth");
             router.replace("/", "/");
           }
-          toast.error(res.data.message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+          messageApi.error({ content: res.data.message, duration: 5 });
         });
     }
   };
 
   return (
     <nav className={styles.sideNavContainer}>
+      {contextHolder}
       <div className={styles.logoContainer}>
         <Image
           alt=""

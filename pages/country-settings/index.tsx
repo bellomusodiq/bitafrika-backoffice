@@ -18,8 +18,6 @@ import Dropdown from "@/components/Dropdown";
 import Toggle from "@/components/Toggle";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
-import Loader from "@/components/Loader";
-import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import type { TableProps } from "antd";
 
@@ -92,9 +90,12 @@ export default function Search() {
       .then((res: any) => {
         setBasicInfoLoading(false);
         if (!res.data.success) {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         } else {
-          toast.success("data updated sucessfully ");
+          messageApi.success({
+            content: "data updated sucessfully ",
+            duration: 5,
+          });
         }
       })
       .catch((e) => {
@@ -103,7 +104,10 @@ export default function Search() {
           router.replace("/", "/");
         }
         setBasicInfoLoading(false);
-        toast.error("Something went wrong! Try again");
+        messageApi.error({
+          content: "Something went wrong! Try again",
+          duration: 5,
+        });
       });
   };
 
@@ -129,9 +133,12 @@ export default function Search() {
       .then((res: any) => {
         setBasicInfoLoading(false);
         if (!res.data.success) {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         } else {
-          toast.success("data updated sucessfully ");
+          messageApi.success({
+            content: "data updated sucessfully ",
+            duration: 5,
+          });
         }
       })
       .catch((e) => {
@@ -140,7 +147,10 @@ export default function Search() {
           router.replace("/", "/");
         }
         setBasicInfoLoading(false);
-        toast.error("Something went wrong! Try again");
+        messageApi.error({
+          content: "Something went wrong! Try again",
+          duration: 5,
+        });
       });
   };
 
@@ -180,7 +190,10 @@ export default function Search() {
           router.replace("/", "/");
         }
         setBasicInfoLoading(false);
-        toast.error("Something went wrong! Try again");
+        messageApi.error({
+          content: "Something went wrong! Try again",
+          duration: 5,
+        });
       });
   };
 

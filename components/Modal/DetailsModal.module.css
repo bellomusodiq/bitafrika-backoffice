@@ -1,0 +1,14 @@
+.header {
+  border-bottom: 1px solid #eaecf0 !important;
+  padding-bottom: 10px !important;
+}
+
+.content {
+  border-radius: 12px !important;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/giftcards/cards-orders.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Table } from "antd";
+import { DatePicker, Skeleton, Table } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -69,33 +69,6 @@ const GIFTCRARDS_COLUMNS = [
   },
 ];
 
-const GIFTCRARDS_DATA = [
-  {
-    name: "Google play store",
-    sku: "234234423",
-    country: "US",
-    currency: "USD",
-    status: "Enabled",
-    category: "Games",
-  },
-  {
-    name: "Itunes",
-    sku: "234234423",
-    country: "US",
-    currency: "USD",
-    status: "Enabled",
-    category: "Entertainment",
-  },
-  {
-    name: "Steam card",
-    sku: "234234423",
-    country: "US",
-    currency: "USD",
-    status: "Disabled",
-    category: "Games",
-  },
-];
-
 export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
@@ -105,9 +78,39 @@ export default function Search() {
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
+  // const [pageInfo, setPageInfo] = useState<any>(null);
 
-  const onSearch = () => {
-    setData(GIFTCRARDS_DATA);
+  let auth: any = {};
+  if (typeof window !== "undefined" && localStorage.getItem("auth")) {
+    auth = JSON.parse(localStorage.getItem("auth") || "");
+  }
+
+  const getTransactions = () => {
+    setLoading(true);
+    axios
+      .post(
+        `${BASE_URL}/gift-cards/all`,
+        {},
+        {
+          headers: {
+            Authorization: auth.accessToken,
+          },
+        }
+      )
+      .then((res: any) => {
+        setLoading(false);
+        if (res.data.success) {
+          setData(res.data.data);
+          // setPageInfo(res.data.data.pageInfo);
+        }
+      })
+      .catch((e) => {
+        setLoading(false);
+        if (e?.response?.status === 401) {
+          localStorage.removeItem("auth");
+          router.replace("/", "/");
+        }
+      });
   };
 
   const showModal = (user: any) => {
@@ -115,12 +118,12 @@ export default function Search() {
     setOpenModal(true);
   };
 
-  const getColumns = () => {
-    return GIFTCRARDS_COLUMNS;
-  };
+  useEffect(() => {
+    getTransactions();
+  }, []);
 
   return (
-    <PageLayout title="Hone">
+    <PageLayout title="Home">
       <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
@@ -314,24 +317,29 @@ export default function Search() {
           </div>
         </div>
 
-        <div className={styles.table} style={{ overflow: "hidden" }}>
-          <p className={styles.resultText}>{data.length} result found!</p>
-          <Table
-            style={{
-              fontFamily: "PP Telegraf",
-              border: "1px solid var(--Gray-200, #EAECF0)",
-              borderRadius: 12,
-              boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
-              overflow: "hidden",
-            }}
-            dataSource={GIFTCRARDS_DATA.map((user: any) => ({
-              ...user,
-              action: () => showModal(user),
-            }))}
-            columns={GIFTCRARDS_COLUMNS}
-            loading={loading}
-          />
-        </div>
+        {loading ? (
+          <Skeleton active style={{ margin: "30px 0" }} />
+        ) : (
+          <div className={styles.table} style={{ overflow: "hidden" }}>
+            <p className={styles.resultText}>{data?.length} result found!</p>
+            <Table
+              style={{
+                fontFamily: "PP Telegraf",
+                border: "1px solid var(--Gray-200, #EAECF0)",
+                borderRadius: 12,
+                boxShadow: "0px 7px 37px -24px rgba(0, 0, 0, 0.09)",
+                overflow: "hidden",
+              }}
+              dataSource={data?.map((item: any) => ({
+                ...item,
+                action: () => showModal(item),
+              }))}
+              columns={GIFTCRARDS_COLUMNS}
+              loading={loading}
+              pagination={false}
+            />
+          </div>
+        )}
       </div>
     </PageLayout>
   );

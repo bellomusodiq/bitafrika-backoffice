@@ -6,7 +6,6 @@ import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
-import { toast } from "react-toastify";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import Loader from "@/components/Loader";
@@ -21,10 +20,13 @@ import {
   Input as AntdInput,
   Modal as AntdModal,
   Button as AntdButton,
+  message,
 } from "antd";
 import Pagination from "@/components/Pagination";
 
 export default function Search() {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const router = useRouter();
   const code1 = useRef(null);
   const code2 = useRef(null);
@@ -153,15 +155,15 @@ export default function Search() {
   }, [result]);
 
   const markAsSuccess = (record: Record<string, string>) => {
-    if (mfaToken.length === 0) return;
+    if (filterBy === "top-up" && mfaToken.length === 0) return;
     let payload = {};
     const topUp = `${BASE_URL}/manual-approvals/top-up/approve-manual-top-up`;
     const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/mark-pending-withdrawal-success`;
     const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     if (filterBy === "top-up") {
       payload = {
-        uniqueId: record.uniqId,
-        transactionId: record.txid,
+        id: record.uniqId,
+        // transactionId: record.txid,
         mfaToken,
       };
     } else {
@@ -182,11 +184,12 @@ export default function Search() {
         if (res.data.success) {
           setOpenModal(false);
           setMfaToken("");
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
+
           refetch();
           // fetchManualApproval();
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -195,21 +198,28 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         } else {
-          toast.error("Something went wrong, please try again");
+          messageApi.error({
+            content: "Something went wrong, please try again",
+            duration: 5,
+          });
         }
       });
   };
 
   const declineManualApproval = (record: Record<string, string>) => {
-    if (mfaToken.length === 0) return;
+    // if (mfaToken.length === 0) return;
     let payload = {};
     const topUp = `${BASE_URL}/manual-approvals/top-up/decline-manual-top-up`;
-    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/decline-pending-withdrawal/${record.uniq}`;
+    const withdrawal = `${BASE_URL}/manual-approvals/withdrawal/decline-pending-withdrawal`;
     const URL = filterBy === "withdrawal" ? withdrawal : topUp;
     if (filterBy === "top-up") {
       payload = {
-        uniqueId: record.uniqId,
-        transactionId: record.txid,
+        id: record.id,
+        // transactionId: record.txid,
+      };
+    } else {
+      payload = {
+        id: record.id,
       };
     }
     setLoadingDetail(true);
@@ -224,10 +234,10 @@ export default function Search() {
         if (res.data.success) {
           setOpenModal(false);
           setMfaToken("");
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
           refetch();
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -236,7 +246,10 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         } else {
-          toast.error("Something went wrong, please try again");
+          messageApi.error({
+            content: "Something went wrong, please try again",
+            duration: 5,
+          });
         }
       });
   };
@@ -277,7 +290,8 @@ export default function Search() {
   };
 
   return (
-    <PageLayout title="Hone">
+    <PageLayout title="Home">
+      {contextHolder}
       <ManualTopupModal
         open={openAddModal}
         setOpen={setOpenAddModal}
@@ -355,16 +369,18 @@ export default function Search() {
           </div>
         }
       >
-        <div style={{ marginTop: 20 }}>
-          <p>MFA Token (For Approvals Only)</p>
-          <AntdInput.OTP
-            style={{ width: "100%", margin: "10px 0" }}
-            formatter={(str) => str.toUpperCase()}
-            size="large"
-            value={mfaToken}
-            onChange={(value) => setMfaToken(value)}
-          />
-        </div>
+        {filterBy === "top-up" && (
+          <div style={{ marginTop: 20 }}>
+            <p>MFA Token (For Approvals Only)</p>
+            <AntdInput.OTP
+              style={{ width: "100%", margin: "10px 0" }}
+              formatter={(str) => str.toUpperCase()}
+              size="large"
+              value={mfaToken}
+              onChange={(value) => setMfaToken(value)}
+            />
+          </div>
+        )}
         <div style={{ marginTop: 20 }} className={styles.modalFooter}>
           <AntdButton
             loading={loadingDetail}

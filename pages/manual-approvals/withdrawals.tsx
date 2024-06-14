@@ -4,12 +4,11 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/manual-approvals/manual-approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Checkbox, DatePicker, Divider, Space, Table } from "antd";
+import { Checkbox, DatePicker, Divider, Space, Table, message } from "antd";
 import Modal from "@/components/Modal";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
-import { toast } from "react-toastify";
 
 const columns: any = [
   {
@@ -63,6 +62,7 @@ const columns: any = [
 ];
 
 export default function Search() {
+  const [messageApi, contextHolder] = message.useMessage();
   const code1 = useRef(null);
   const code2 = useRef(null);
   const code3 = useRef(null);
@@ -91,16 +91,7 @@ export default function Search() {
       },
       date: "Thur 18 Jan, 2023",
       onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
+        messageApi.success({ content: "Copied to clipboard", duration: 5 }),
       action: () => setOpenModal(true),
     },
     {
@@ -114,16 +105,7 @@ export default function Search() {
       },
       date: "Thur 18 Jan, 2023",
       onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
+        messageApi.success({ content: "Copied to clipboard", duration: 5 }),
       action: () => setOpenModal(true),
     },
     {
@@ -137,16 +119,7 @@ export default function Search() {
       },
       date: "Thur 18 Jan, 2023",
       onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
+        messageApi.success({ content: "Copied to clipboard", duration: 5 }),
       action: () => setOpenModal(true),
     },
     {
@@ -160,16 +133,7 @@ export default function Search() {
       },
       date: "Thur 18 Jan, 2023",
       onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
+        messageApi.success({ content: "Copied to clipboard", duration: 5 }),
       action: () => setOpenModal(true),
     },
     {
@@ -183,16 +147,7 @@ export default function Search() {
       },
       date: "Thur 18 Jan, 2023",
       onCopy: () =>
-        toast("Copied to clipboard", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        }),
+        messageApi.success({ content: "Copied to clipboard", duration: 5 }),
       action: () => setOpenModal(true),
     },
   ];
@@ -223,7 +178,8 @@ export default function Search() {
   };
 
   return (
-    <PageLayout title="Hone">
+    <PageLayout title="Home">
+      {contextHolder}
       <Modal openModal={openModal} onClose={() => setOpenModal(false)}>
         <div className={styles.modalContainer}>
           <p className={styles.modalHeader}>Transaction details</p>
@@ -396,8 +352,12 @@ export default function Search() {
         </div>
 
         <div className={styles.searchContainer}>
-          <div className={styles.table} style={{overflow: "hidden"}}>
-            <Table style={{fontFamily: "PP Telegraf"}} dataSource={dataSource} columns={columns} />
+          <div className={styles.table} style={{ overflow: "hidden" }}>
+            <Table
+              style={{ fontFamily: "PP Telegraf" }}
+              dataSource={dataSource}
+              columns={columns}
+            />
           </div>
         </div>
       </div>

@@ -2,11 +2,12 @@ import React from "react";
 import Button from "../Button";
 import styles from "./Header.module.css";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
+import { message } from "antd";
 
 const Header: React.FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
 
   const signOut = () => {
@@ -28,21 +29,13 @@ const Header: React.FC = () => {
             localStorage.removeItem("auth");
             router.replace("/", "/");
           }
-          toast.error(res.data.message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+          messageApi.error({ content: res.data.message, duration: 5 });
         });
     }
   };
   return (
     <nav className={styles.headerContainer}>
+      {contextHolder}
       <div className={styles.headerLeft}>
         <span className={styles.text}>Welcome, Emmanuel</span>
         <div className={styles.divider} style={{ margin: "0 16px" }} />

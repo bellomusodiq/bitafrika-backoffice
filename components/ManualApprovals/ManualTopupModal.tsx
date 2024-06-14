@@ -8,7 +8,7 @@ import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
 import { IAdmin } from "@/types";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
+import { message } from "antd";
 
 interface IProps {
   open: boolean;
@@ -17,6 +17,7 @@ interface IProps {
 }
 
 export default function ManualTopupModal({ open, setOpen, admin }: IProps) {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState({ crypto: [], momo: [] });
@@ -68,7 +69,7 @@ export default function ManualTopupModal({ open, setOpen, admin }: IProps) {
         });
       })
       .catch(() => {
-        toast.error("Please try again!");
+        messageApi.error({ content: "Please try again!", duration: 5 });
       });
   };
 
@@ -103,13 +104,13 @@ export default function ManualTopupModal({ open, setOpen, admin }: IProps) {
       }
       setLoading(false);
       if (response?.data?.success) {
-        toast.success(response.data.message);
+        messageApi.success({ content: response.data.message, duration: 5 });
         setOpen(false);
         resetField();
       } else {
         const message =
           response?.data?.message || "Something went wrong, please try again";
-        toast.error(message);
+        messageApi.error({ content: message, duration: 5 });
       }
     }
   };
@@ -130,76 +131,79 @@ export default function ManualTopupModal({ open, setOpen, admin }: IProps) {
         setOpen(false);
       }}
     >
-      <div className={styles.modalContainer}>
-        <p className={styles.modalHeader}>Manual account Top-Up</p>
-        <div className={styles.inputContainer}>
-          <p>Transaction ID</p>
-          <Input
-            value={transactionId || ""}
-            onChange={(e) => setTransactionId(e.target.value)}
-          />
-        </div>
-        <div className={styles.inputContainer}>
-          <p>Amount</p>
-          <Input
-            value={amount || ""}
-            onChange={(e) => setAmount(e.target.value)}
-          />
-        </div>
-        <div className={styles.inputContainer}>
-          <p>Crypo Asset</p>
-          <Dropdown
-            value={cryptoSymbol || ""}
-            options={[
-              { title: "Please select", value: "" },
-              ...data.crypto.map((i: any) => ({
-                title: i.symbol,
-                value: i.symbol,
-              })),
-            ]}
-            onChange={(value) => {
-              setCryptoSymbol(value as string);
-            }}
-          />
-        </div>
-        <div className={styles.inputContainer}>
-          <p>Momo Account</p>
-          <Dropdown
-            value={paymentMethodId || ""}
-            options={[
-              { title: "Please select", value: "" },
-              ...data.momo.map((i: any) => ({
-                title: i.phoneNumber,
-                value: i.id,
-              })),
-            ]}
-            onChange={(value) => {
-              setPaymentMethodId(value as string);
-            }}
-          />
-        </div>
+      <>
+        {contextHolder}
+        <div className={styles.modalContainer}>
+          <p className={styles.modalHeader}>Manual account Top-Up</p>
+          <div className={styles.inputContainer}>
+            <p>Transaction ID</p>
+            <Input
+              value={transactionId || ""}
+              onChange={(e) => setTransactionId(e.target.value)}
+            />
+          </div>
+          <div className={styles.inputContainer}>
+            <p>Amount</p>
+            <Input
+              value={amount || ""}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+          <div className={styles.inputContainer}>
+            <p>Crypo Asset</p>
+            <Dropdown
+              value={cryptoSymbol || ""}
+              options={[
+                { title: "Please select", value: "" },
+                ...data.crypto.map((i: any) => ({
+                  title: i.symbol,
+                  value: i.symbol,
+                })),
+              ]}
+              onChange={(value) => {
+                setCryptoSymbol(value as string);
+              }}
+            />
+          </div>
+          <div className={styles.inputContainer}>
+            <p>Momo Account</p>
+            <Dropdown
+              value={paymentMethodId || ""}
+              options={[
+                { title: "Please select", value: "" },
+                ...data.momo.map((i: any) => ({
+                  title: i.phoneNumber,
+                  value: i.id,
+                })),
+              ]}
+              onChange={(value) => {
+                setPaymentMethodId(value as string);
+              }}
+            />
+          </div>
 
-        <div className={styles.modalFooter}>
-          <Button
-            onClick={() => {
-              resetField();
-              setOpen(false);
-            }}
-            className={styles.modalButton}
-            color="white"
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-          <Button
-            loading={loading}
-            onClick={onSubmit}
-            className={styles.modalButton}
-          >
-            Add to queue
-          </Button>
+          <div className={styles.modalFooter}>
+            <Button
+              onClick={() => {
+                resetField();
+                setOpen(false);
+              }}
+              className={styles.modalButton}
+              color="white"
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={loading}
+              onClick={onSubmit}
+              className={styles.modalButton}
+            >
+              Add to queue
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     </Modal>
   );
 }

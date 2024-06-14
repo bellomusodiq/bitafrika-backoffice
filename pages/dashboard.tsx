@@ -67,13 +67,13 @@ export default function Home() {
     }
 
     if (coinStat && !coinStat.data?.data?.success) {
-      toast.error(!coinStat.data?.data.message);
+      toast.error(coinStat.data?.data.message);
     }
     if (currencyStat && !currencyStat.data?.data?.success) {
-      toast.error(!currencyStat.data?.data.message);
+      toast.error(currencyStat.data?.data.message);
     }
     if (userStat && !userStat.data?.data?.success) {
-      toast.error(!userStat.data?.data.message);
+      toast.error(userStat.data?.data.message);
     }
     if (coinStat.error || currencyStat.error || userStat.error) {
       const msg = "Something went wrong, please try again";

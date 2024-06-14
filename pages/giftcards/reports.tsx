@@ -20,7 +20,6 @@ import axios from "axios";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 import useCustomQuery from "@/hooks/useCustomQuery";

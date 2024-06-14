@@ -13,6 +13,9 @@ import Dropdown from "@/components/Dropdown";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
+import { getStatusCode } from "@/utils/utils";
 
 const TRANSACTIONS_COLUMNS = [
   {
@@ -21,22 +24,12 @@ const TRANSACTIONS_COLUMNS = [
     key: "id",
   },
   {
-    title: "Username",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
     title: "Merchant",
-    dataIndex: "merchantName",
-    key: "merchantName",
+    dataIndex: "merchant",
+    key: "merchant",
     render: (_: any, { merchantName }: any) => (
       <p className={styles.username}>{merchantName}</p>
     ),
-  },
-  {
-    title: "Card",
-    dataIndex: "maskPan",
-    key: "maskPan",
   },
   {
     title: "Amount",
@@ -66,8 +59,8 @@ const TRANSACTIONS_COLUMNS = [
   },
   {
     title: "Date",
-    dataIndex: "transactionTime",
-    key: "transactionTime",
+    dataIndex: "createdAt",
+    key: "createdAt",
   },
   {
     title: "Actions",
@@ -80,71 +73,137 @@ const TRANSACTIONS_COLUMNS = [
       </div>
     ),
   },
+  // {
+  //   title: "Transaction ID",
+  //   dataIndex: "id",
+  //   key: "id",
+  // },
+  // {
+  //   title: "Username",
+  //   dataIndex: "username",
+  //   key: "username",
+  // },
+  // {
+  //   title: "Merchant",
+  //   dataIndex: "merchantName",
+  //   key: "merchantName",
+  //   render: (_: any, { merchantName }: any) => (
+  //     <p className={styles.username}>{merchantName}</p>
+  //   ),
+  // },
+  // {
+  //   title: "Card",
+  //   dataIndex: "maskPan",
+  //   key: "maskPan",
+  // },
+  // {
+  //   title: "Amount",
+  //   dataIndex: "transactionAmount",
+  //   key: "transactionAmount",
+  //   render: (_: any, { transactionAmount }: any) => <>${transactionAmount}</>,
+  // },
+  // {
+  //   title: "Type",
+  //   dataIndex: "transactionType",
+  //   key: "transactionType",
+  // },
+  // {
+  //   title: "Description",
+  //   dataIndex: "description",
+  //   key: "description",
+  // },
+  // {
+  //   title: "Status",
+  //   dataIndex: "transactionStatus",
+  //   key: "transactionStatus",
+  //   render: (_: any, { transactionStatus }: any) => (
+  //     <Tag color={transactionStatus === "Approved" ? "success" : "warning"}>
+  //       {transactionStatus}
+  //     </Tag>
+  //   ),
+  // },
+  // {
+  //   title: "Date",
+  //   dataIndex: "transactionTime",
+  //   key: "transactionTime",
+  // },
+  // {
+  //   title: "Actions",
+  //   dataIndex: "action",
+  //   render: (_: any, { action }: any) => (
+  //     <div className={styles.actionButton}>
+  //       <div>
+  //         <Button onClick={action}>View</Button>
+  //       </div>
+  //     </div>
+  //   ),
+  // },
 ];
 
-const TRANSACTIONS_DATA = [
-  {
-    transactionId: "#12366...9934",
-    username: "@samuel12345",
-    amount: "$40.90",
-    merchant: "Ubereats",
-    total: "$40.90",
-    status: "Successful",
-    date: "Thur 12 Dec 2023",
-  },
-  {
-    transactionId: "#12366...9934",
-    username: "@samuel12345",
-    amount: "$40.90",
-    merchant: "Ubereats",
-    total: "$40.90",
-    status: "Successful",
-    date: "Thur 12 Dec 2023",
-  },
-  {
-    transactionId: "#12366...9934",
-    username: "@samuel12345",
-    amount: "$40.90",
-    merchant: "Ubereats",
-    total: "$40.90",
-    status: "Successful",
-    date: "Thur 12 Dec 2023",
-  },
-  {
-    transactionId: "#12366...9934",
-    username: "@samuel12345",
-    amount: "$40.90",
-    merchant: "Ubereats",
-    total: "$40.90",
-    status: "Successful",
-    date: "Thur 12 Dec 2023",
-  },
-  {
-    transactionId: "#12366...9934",
-    username: "@samuel12345",
-    amount: "$40.90",
-    merchant: "Ubereats",
-    total: "$40.90",
-    status: "Successful",
-    date: "Thur 12 Dec 2023",
-  },
-  {
-    transactionId: "#12366...9934",
-    username: "@samuel12345",
-    amount: "$40.90",
-    merchant: "Ubereats",
-    total: "$40.90",
-    status: "Successful",
-    date: "Thur 12 Dec 2023",
-  },
-];
+// const TRANSACTIONS_DATA = [
+//   {
+//     transactionId: "#12366...9934",
+//     username: "@samuel12345",
+//     amount: "$40.90",
+//     merchant: "Ubereats",
+//     total: "$40.90",
+//     status: "Successful",
+//     date: "Thur 12 Dec 2023",
+//   },
+//   {
+//     transactionId: "#12366...9934",
+//     username: "@samuel12345",
+//     amount: "$40.90",
+//     merchant: "Ubereats",
+//     total: "$40.90",
+//     status: "Successful",
+//     date: "Thur 12 Dec 2023",
+//   },
+//   {
+//     transactionId: "#12366...9934",
+//     username: "@samuel12345",
+//     amount: "$40.90",
+//     merchant: "Ubereats",
+//     total: "$40.90",
+//     status: "Successful",
+//     date: "Thur 12 Dec 2023",
+//   },
+//   {
+//     transactionId: "#12366...9934",
+//     username: "@samuel12345",
+//     amount: "$40.90",
+//     merchant: "Ubereats",
+//     total: "$40.90",
+//     status: "Successful",
+//     date: "Thur 12 Dec 2023",
+//   },
+//   {
+//     transactionId: "#12366...9934",
+//     username: "@samuel12345",
+//     amount: "$40.90",
+//     merchant: "Ubereats",
+//     total: "$40.90",
+//     status: "Successful",
+//     date: "Thur 12 Dec 2023",
+//   },
+//   {
+//     transactionId: "#12366...9934",
+//     username: "@samuel12345",
+//     amount: "$40.90",
+//     merchant: "Ubereats",
+//     total: "$40.90",
+//     status: "Successful",
+//     date: "Thur 12 Dec 2023",
+//   },
+// ];
 
 export default function Search() {
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>(TRANSACTIONS_DATA);
+  // const [data, setData] = useState<any>(TRANSACTIONS_DATA);
+  const [data, setData] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>({});
   const [searchType, setSearchType] = useState<string>("Buy");
   const [pageInfo, setPageInfo] = useState<any>(null);
@@ -196,10 +255,83 @@ export default function Search() {
   useEffect(() => {
     getTransactions();
   }, [currentPage]);
-
   return (
-    <PageLayout title="Hone">
-      <Modal
+    <PageLayout title="Home">
+      <AntdModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.id}
+              </p>
+              <Tag color="warning">Card Transactions</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Biller/Merchant</p>
+              <p className={modalStyles.values}>{currentUser?.merchantName}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>
+                {currentUser.transactionAmount} USD
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.transactionTime}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Masked pan</p>
+              <p className={modalStyles.label}>{currentUser.maskPan}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>City/Country</p>
+              <p className={modalStyles.label}>
+                {currentUser.merchantCity} • {currentUser.merchantCountry}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentUser?.transactionStatus)}>
+                {currentUser?.transactionStatus}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent2}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Transaction type</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  {currentUser?.transactionType}
+                </p>
+              </div>
+            </div>
+            <div className={modalStyles.antModalRightContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Description</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.description}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -292,7 +424,7 @@ export default function Search() {
             </div>
           </div>
         </>
-      </Modal>
+      </Modal> */}
       <div className={styles.container}>
         <div
           style={{
