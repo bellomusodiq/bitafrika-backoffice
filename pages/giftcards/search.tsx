@@ -14,6 +14,9 @@ import { useRouter } from "next/router";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import Link from "next/link";
 import Pagination from "@/components/Pagination";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
+import { getStatusCode } from "@/utils/utils";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -152,8 +155,66 @@ export default function Search({ type }: { type: string }) {
   };
 
   return (
-    <PageLayout title="Hone">
-      <Modal
+    <PageLayout title="Home">
+      <AntdModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentGiftcard?.transId}
+              </p>
+              <Tag color="warning">Giftcard transaction</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Card name</p>
+              <p className={modalStyles.values}>{currentGiftcard?.cardType}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentGiftcard.amount} USD</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Fee</p>
+              <p className={modalStyles.values}> USD</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>{currentGiftcard?.createdAt}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Recipient email</p>
+              <p className={modalStyles.label}>{currentGiftcard.recipient}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentGiftcard?.status)}>
+                {currentGiftcard?.status}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent2}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Note</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentGiftcard?.note}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "TRANSACTIONS"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -221,7 +282,7 @@ export default function Search({ type }: { type: string }) {
             </div>
           </div>
         </>
-      </Modal>
+      </Modal> */}
 
       <div className={styles.container}>
         <div

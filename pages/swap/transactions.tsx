@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/cards-orders.module.css";
-import { Button, DatePicker, Skeleton, Table, Tag } from "antd";
+import { Button, DatePicker, Skeleton, Table, Tag, message } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -11,9 +11,9 @@ import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import Pagination from "@/components/Pagination";
 import useCustomQuery from "@/hooks/useCustomQuery";
-import { toast } from "react-toastify";
 
 export default function Transactions() {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [statusType, setStatusType] = useState<string>("success");
@@ -188,7 +188,8 @@ export default function Transactions() {
   };
 
   return (
-    <PageLayout title="Hone">
+    <PageLayout title="Swap">
+      {contextHolder}
       <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
@@ -358,15 +359,9 @@ export default function Transactions() {
                 },
                 onCopy: () => {
                   navigator.clipboard.writeText(item.uniqId);
-                  toast("Copied to clipboard", {
-                    position: "top-center",
-                    autoClose: 500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "colored",
+                  messageApi.success({
+                    content: "Copied to clipboard",
+                    duration: 5,
                   });
                 },
               }))}

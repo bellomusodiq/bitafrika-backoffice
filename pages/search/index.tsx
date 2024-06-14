@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/search/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Skeleton, Table, Tag } from "antd";
+import { Skeleton, Table, Tag, message } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -12,9 +12,10 @@ import getToken from "@/utils/getToken";
 import Dropdown from "@/components/Dropdown";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import Link from "next/link";
 import { getStatusCode } from "@/utils/utils";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
 
 const COUNTRY_MAP: { [k: string]: string } = {
   GH: "Ghana",
@@ -80,53 +81,123 @@ const MOMO_TOPUP_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <Link href={`/users/details/${username}`} className={styles.username}>
-        {username}
-      </Link>
+      <p className={styles.username}>{username}</p>
     ),
   },
   {
-    title: "Info",
-    dataIndex: "info",
-    key: "info",
-    render: (
-      _: any,
-      {
-        uniqId,
-        date,
-        methodId,
+    title: "Transaction ID",
+    dataIndex: "uniqId",
+    key: "uniqId",
+    render: (_: any, { uniqId }: any) => (
+      <p className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+        uniqId.length - 6
+      )}`}</p>
+    ),
+  },
+  {
+    title: "Asset",
+    dataIndex: "cryptoSymbol",
+    key: "cryptoSymbol",
+  },
+  {
+    title: "Amount (GHS)",
+    dataIndex: "amount",
+    key: "amount",
+  },
+  {
+    title: "Amount (USD)",
+    dataIndex: "usd",
+    key: "usd",
+    render: (_: any, { usd }: any) => <>${usd}</>,
+  },
+  {
+    title: "Amount (CRYPTO)",
+    dataIndex: "crypto",
+    key: "crypto",
+    render: (_: any, { crypto, asset }: any) => (
+      <>
+        {crypto} {asset}
+      </>
+    ),
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (_: any, { status }: any) => (
+      <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+    ),
+  },
+  {
+    title: "Date",
+    dataIndex: "date",
+    key: "date",
+    width: "20%",
+    render: (_: any, { date }: any) => (
+      <span style={{ fontSize: 12 }}>{date}</span>
+    ),
+  },
+  {
+    title: "Actions",
+    dataIndex: "action",
+    render: (_: any, { action }: any) => (
+      <div className={styles.actionButton}>
+        <Button onClick={action}>View</Button>
+      </div>
+    ),
+  },
+  // {
+  //   title: "Username",
+  //   dataIndex: "username",
+  //   key: "username",
+  //   render: (_: any, { username }: any) => (
+  //     <Link href={`/users/details/${username}`} className={styles.username}>
+  //       {username}
+  //     </Link>
+  //   ),
+  // },
+  // {
+  //   title: "Info",
+  //   dataIndex: "info",
+  //   key: "info",
+  //   render: (
+  //     _: any,
+  //     {
+  //       uniqId,
+  //       date,
+  //       methodId,
 
-        status,
-      }: any
-    ) => (
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span>{uniqId}</span>
-        <span>{date}</span>
-        <span>
-          CASHOUT ({methodId}) <Tag color={getStatusCode(status)}>{status}</Tag>
-        </span>
-      </div>
-    ),
-  },
-  {
-    title: "Payment Details",
-    dataIndex: "info",
-    key: "info",
-    render: (
-      _: any,
-      { txid, currency, crypto, cryptoSymbol, amount, rate, usd }: any
-    ) => (
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span style={{ color: "green" }}>{txid}</span>
-        <span>
-          {amount} {currency} ({crypto} {cryptoSymbol})
-        </span>
-        <span>
-          - Bought @ {rate} (${usd})
-        </span>
-      </div>
-    ),
-  },
+  //       status,
+  //     }: any
+  //   ) => (
+  //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+  //       <span>{uniqId}</span>
+  //       <span>{date}</span>
+  //       <span>
+  //         CASHOUT ({methodId}) <Tag color={getStatusCode(status)}>{status}</Tag>
+  //       </span>
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   title: "Payment Details",
+  //   dataIndex: "info",
+  //   key: "info",
+  //   render: (
+  //     _: any,
+  //     { txid, currency, crypto, cryptoSymbol, amount, rate, usd }: any
+  //   ) => (
+  //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+  //       <span style={{ color: "green" }}>{txid}</span>
+  //       <span>
+  //         {amount} {currency} ({crypto} {cryptoSymbol})
+  //       </span>
+  //       <span>
+  //         - Bought @ {rate} (${usd})
+  //       </span>
+  //     </div>
+  //   ),
+  // },
   // {
   //   title: "Username",
   //   dataIndex: "username",
@@ -207,59 +278,128 @@ const MOMO_WITHDRWAL_COLUMNS = [
     dataIndex: "username",
     key: "username",
     render: (_: any, { username }: any) => (
-      <Link href={`/users/details/${username}`} className={styles.username}>
-        {username}
-      </Link>
+      <p className={styles.username}>{username}</p>
     ),
   },
   {
-    title: "Info",
-    dataIndex: "info",
-    key: "info",
-    render: (
-      _: any,
-      {
-        uniq,
-        createdOn,
-        usdAmount,
-        localCurrency,
-        rawAmount,
-        cryptoAmount,
-        cryptoCurrency,
-        netFee,
-      }: any
-    ) => (
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <span>{uniq}</span>
-        <span>Order Placed @ {createdOn}</span>
-        <span>
-          {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
-          {usdAmount} with fee of {localCurrency} {netFee}
-        </span>
-        <span>Completed by</span>
+    title: "Transaction ID",
+    dataIndex: "transactionId",
+    key: "transactionId",
+    render: (_: any, { transactionId }: any) => (
+      <p className={styles.username}>{`${transactionId.slice(
+        0,
+        6
+      )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+    ),
+  },
+  {
+    title: "Asset",
+    dataIndex: "cryptoCurrency",
+    key: "cryptoCurrency",
+  },
+  {
+    title: "Amount (USD)",
+    dataIndex: "amountUSD",
+    key: "amountUSD",
+  },
+  {
+    title: "Amount (GHS)",
+    dataIndex: "amount",
+    key: "amount",
+  },
+  {
+    title: "Fee",
+    dataIndex: "netFee",
+    key: "netFee",
+  },
+  {
+    title: "Status/Date",
+    dataIndex: "status",
+    key: "status",
+    width: "25%",
+    render: (_: any, { status, createdOn }: any) => (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        {/* <div className={styles.statusContainer}>
+          <div className={styles.statusIndicator} /> {status}
+        </div> */}
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+        <p style={{ marginLeft: 5 }}>{createdOn}</p>
       </div>
     ),
   },
   {
-    title: "Payment Details",
-    dataIndex: "paymentAccount",
-    key: "paymentAccount",
-    render: (_: any, { paymentMethod, paymenthodMethodId }: any) => (
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        {/* <span>{uniq}</span>
-        <span>Order Placed @ {createdOn}</span>
-        <span>
-          {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
-          {usdAmount} with fee of {localCurrency} {netFee}
-        </span>
-        <span>Completed by</span> */}
-        <span>
-          {paymentMethod}
-          {/* {paymenthodMethodId} */}
-        </span>
+    title: "Actions",
+    dataIndex: "action",
+    render: (_: any, { action }: any, index: number) => (
+      <div className={styles.actionButton}>
+        <Button onClick={action}>View</Button>
       </div>
     ),
   },
+  // {
+  //   title: "Username",
+  //   dataIndex: "username",
+  //   key: "username",
+  //   render: (_: any, { username }: any) => (
+  //     <Link href={`/users/details/${username}`} className={styles.username}>
+  //       {username}
+  //     </Link>
+  //   ),
+  // },
+  // {
+  //   title: "Info",
+  //   dataIndex: "info",
+  //   key: "info",
+  //   render: (
+  //     _: any,
+  //     {
+  //       uniq,
+  //       createdOn,
+  //       usdAmount,
+  //       localCurrency,
+  //       rawAmount,
+  //       cryptoAmount,
+  //       cryptoCurrency,
+  //       netFee,
+  //     }: any
+  //   ) => (
+  //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+  //       <span>{uniq}</span>
+  //       <span>Order Placed @ {createdOn}</span>
+  //       <span>
+  //         {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+  //         {usdAmount} with fee of {localCurrency} {netFee}
+  //       </span>
+  //       <span>Completed by</span>
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   title: "Payment Details",
+  //   dataIndex: "paymentAccount",
+  //   key: "paymentAccount",
+  //   render: (_: any, { paymentMethod, paymenthodMethodId }: any) => (
+  //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+  //       {/* <span>{uniq}</span>
+  //       <span>Order Placed @ {createdOn}</span>
+  //       <span>
+  //         {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+  //         {usdAmount} with fee of {localCurrency} {netFee}
+  //       </span>
+  //       <span>Completed by</span> */}
+  //       <span>
+  //         {paymentMethod}
+  //         {/* {paymenthodMethodId} */}
+  //       </span>
+  //     </div>
+  //   ),
+  // },
   // {
   //   title: "Username",
   //   dataIndex: "username",
@@ -393,6 +533,7 @@ const CRYPTO_TRANSACTIONS_COLUMNS = [
 ];
 
 export default function Search() {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -430,7 +571,7 @@ export default function Search() {
             }))
           );
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((err) => {
@@ -439,7 +580,7 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoading(false);
-        toast.error(err.response.data.message);
+        messageApi.error({ content: err.response.data.message, duration: 5 });
       });
   };
 
@@ -476,7 +617,7 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoading(false);
-        toast.error(err.response.data.message);
+        messageApi.error({ content: err.response.data.message, duration: 5 });
       });
   };
 
@@ -515,7 +656,7 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoading(false);
-        toast.error(err.response.data.message);
+        messageApi.error({ content: err.response.data.message, duration: 5 });
       });
   };
 
@@ -550,7 +691,7 @@ export default function Search() {
           router.replace("/", "/");
         }
         setLoading(false);
-        toast.error(err.response.data.message);
+        messageApi.error({ content: err.response.data.message, duration: 5 });
       });
   };
 
@@ -605,8 +746,91 @@ export default function Search() {
   };
 
   return (
-    <PageLayout title="Hone">
-      <Modal
+    <PageLayout title="Home">
+      {contextHolder}
+      <AntdModal
+        width={"650px"}
+        open={openModal && searchType === "Crypto transactions"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.txid}
+              </p>
+              <Tag color="warning" style={{ textTransform: "capitalize" }}>
+                {currentUser?.type}
+              </Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.cryptoValue} {currentUser.currency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usdAmount} USD</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+            {currentUser?.recipient && (
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Network fees</p>
+                <p className={modalStyles.label}>
+                  {currentUser.fee} {currentUser.feeSymbol}
+                </p>
+              </div>
+            )}
+
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Confirmations</p>
+              <p className={modalStyles.label}>{currentUser?.confirmations}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentUser?.status)}>
+                {currentUser?.status}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              {currentUser?.recipient && (
+                <>
+                  <div className={modalStyles.item}>
+                    <p className={modalStyles.label}>Recipient address</p>
+                  </div>
+                  <div className={modalStyles.item}>
+                    <p className={modalStyles.values}>
+                      {currentUser?.recipient}
+                    </p>
+                  </div>
+                </>
+              )}
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Blockchain Tx Hash</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.txid}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Crypto transactions"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -680,8 +904,102 @@ export default function Search() {
             <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </Modal> */}
+      <AntdModal
+        open={openModal && searchType === "Momo withdrawal"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.uniq}
+              </p>
+              <Tag color="warning">Sell (Momo withdrawal)</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.cryptoAmount} {currentUser.cryptoCurrency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usdAmount} USD</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (GHS)</p>
+              <p className={modalStyles.values}>
+                {currentUser.rawAmount} {currentUser.localCurrency}
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Order time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.createdOn?.split("G")[0]}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Buy Rate</p>
+              <p className={modalStyles.label}>
+                Bought @ {currentUser.rate} - (Crypto Price: $
+                {currentUser.cryptoPrice})
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Fees</p>
+              <p className={modalStyles.values}>
+                {currentUser.netFee} {currentUser.localCurrency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Total amount paid</p>
+              <p className={modalStyles.values}>{currentUser.localCurrency}</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment account:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Account: {currentUser.paymentAccount?.name}
+                </p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Network: {currentUser.paymentAccount?.networkName}{" "}
+                  {currentUser.paymentAccount?.paymentMethodType}
+                </p>
+              </div>
+
+              <p className={modalStyles.values}>
+                Phone: {currentUser.paymentAccount?.phoneNumber}
+              </p>
+            </div>
+            <div className={modalStyles.antModalRightContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment tx id:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.uniq}</p>
+              </div>
+              <p className={modalStyles.values}>
+                @ {currentUser?.createdOn?.split("G")[0]}
+              </p>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Momo withdrawal"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -774,8 +1092,101 @@ export default function Search() {
             <p className={styles.value}>{currentUser.newDate}</p>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </Modal> */}
+      <AntdModal
+        open={openModal && searchType === "Momo topup"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.uniqId}
+              </p>
+              <Tag color="warning">Buy (Momo Top-Up)</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.crypto} {currentUser.cryptoSymbol}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usd} USD</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (GHS)</p>
+              <p className={modalStyles.values}>
+                {currentUser.amount} {currentUser.currency}
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Order time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Buy Rate</p>
+              <p className={modalStyles.label}>
+                Bought @ {currentUser.rate} - (Crypto Price: $
+                {currentUser.cryptoPrice})
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Fees</p>
+              <p className={modalStyles.values}>
+                {currentUser.netFee} {currentUser.currency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Total amount paid</p>
+              <p className={modalStyles.values}>{currentUser.currency}</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment account:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Account: {currentUser.paymentAccount?.name}
+                </p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Network: {currentUser.paymentAccount?.network}
+                </p>
+              </div>
+
+              <p className={modalStyles.values}>
+                Phone: {currentUser.paymentAccount?.phoneNumber}
+              </p>
+            </div>
+            <div className={modalStyles.antModalRightContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment tx id:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.txid}</p>
+              </div>
+              <p className={modalStyles.values}>
+                @ {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Momo topup"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -836,7 +1247,7 @@ export default function Search() {
             <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
       <Modal
         openModal={openModal && searchType === "User"}
         onClose={() => setOpenModal(false)}

@@ -10,6 +10,9 @@ import { useRouter } from "next/router";
 import formatDate from "@/utils/formatDate";
 import Pagination from "@/components/Pagination";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
+import { getStatusCode } from "@/utils/utils";
 
 export default function Transactions() {
   const router = useRouter();
@@ -126,8 +129,66 @@ export default function Transactions() {
   };
 
   return (
-    <PageLayout title="Hone">
-      <Modal
+    <PageLayout title="Home">
+      <AntdModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.transId}
+              </p>
+              <Tag color="warning">Giftcard transaction</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Card name</p>
+              <p className={modalStyles.values}>{currentUser?.cardType}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.amount} USD</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Fee</p>
+              <p className={modalStyles.values}> USD</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>{currentUser?.createdAt}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Recipient email</p>
+              <p className={modalStyles.label}>{currentUser.recipient}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentUser?.status)}>
+                {currentUser?.status}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent2}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Note</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.note}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -188,7 +249,7 @@ export default function Transactions() {
             </div>
           </div>
         </>
-      </Modal>
+      </Modal> */}
       <div className={styles.container}>
         <div
           style={{

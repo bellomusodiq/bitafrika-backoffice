@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/reports/users.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { DatePicker, Divider, Skeleton, Table } from "antd";
+import { DatePicker, Divider, Skeleton, Table, message } from "antd";
 import Modal from "@/components/Modal";
 import Dropdown from "@/components/Dropdown";
 import CustomPieChart from "@/components/Charts/PieChart";
@@ -13,7 +12,6 @@ import axios from "axios";
 import formatDate from "@/utils/formatDate";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import Pagination from "@/components/Pagination";
 
 const BALANCE_COLUMNS = [
@@ -105,6 +103,7 @@ const SELL_COLUMN = [
 ];
 
 export default function Search() {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const [search, setSearch] = useState<string>("");
   const [openModal, setOpenModal] = useState<any>(null);
@@ -153,7 +152,7 @@ export default function Search() {
         }
         setLoadingIndex(null);
         setLoadingDetails(false);
-        toast.error(e.response.data.message);
+        messageApi.error({ content: e.response.data.message, duration: 5 });
       });
   };
 
@@ -184,7 +183,7 @@ export default function Search() {
         }
         setLoadingIndex(null);
         setLoadingDetails(false);
-        toast.error(e.response.data.message);
+        messageApi.error({ content: e.response.data.message, duration: 5 });
       });
   };
 
@@ -215,7 +214,7 @@ export default function Search() {
         }
         setLoadingIndex(null);
         setLoadingDetails(false);
-        toast.error(e.response.data.message);
+        messageApi.error({ content: e.response.data.message, duration: 5 });
       });
   };
 
@@ -251,7 +250,7 @@ export default function Search() {
         }
         setLoadingIndex(null);
         setLoading(false);
-        toast.error(e.response.data.message);
+        messageApi.error({ content: e.response.data.message, duration: 5 });
       });
   };
 
@@ -287,7 +286,7 @@ export default function Search() {
         }
         setLoadingIndex(null);
         setLoading(false);
-        toast.error(e.response.data.message);
+        messageApi.error({ content: e.response.data.message, duration: 5 });
       });
   };
 
@@ -323,7 +322,7 @@ export default function Search() {
         }
         setLoadingIndex(null);
         setLoading(false);
-        toast.error(e.response.data.message);
+        messageApi.error({ content: e.response.data.message, duration: 5 });
       });
   };
 
@@ -363,7 +362,8 @@ export default function Search() {
   }, [currentPage]);
 
   return (
-    <PageLayout title="Hone">
+    <PageLayout title="Home">
+      {contextHolder}
       {openModal && searchType === "Balance" && (
         <Modal
           openModal={openModal && searchType === "Balance"}

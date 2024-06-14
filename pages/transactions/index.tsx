@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/transactions/transactions.module.css";
 import NavigationStep from "@/components/NavigationStep";
-import Button from "@/components/Button";
+// import Button from "@/components/Button";
+import { Button } from "antd";
+
 import { DatePicker, Skeleton, Table, Tag } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
@@ -15,6 +17,8 @@ import Loader from "@/components/Loader";
 import { useRouter } from "next/router";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
 import { getStatusCode } from "@/utils/utils";
 
 const COUNTRY_MAP: { [k: string]: string } = {
@@ -40,65 +44,65 @@ export default function Search() {
   const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
 
   const BUY_COLUMN = [
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <Link href={`/users/details/${username}`} className={styles.username}>
-          {username}
-        </Link>
-      ),
-    },
-    {
-      title: "Info",
-      dataIndex: "info",
-      key: "info",
-      render: (
-        _: any,
-        {
-          uniqId,
-          date,
-          usd,
+    // {
+    //   title: "Username",
+    //   dataIndex: "username",
+    //   key: "username",
+    //   render: (_: any, { username }: any) => (
+    //     <Link href={`/users/details/${username}`} className={styles.username}>
+    //       {username}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   title: "Info",
+    //   dataIndex: "info",
+    //   key: "info",
+    //   render: (
+    //     _: any,
+    //     {
+    //       uniqId,
+    //       date,
+    //       usd,
 
-          crypto,
-          cryptoSymbol,
-          status,
-          methodId,
-        }: any
-      ) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          <span>{uniqId}</span>
-          <span>{date}</span>
-          <span>
-            CASHOUT ({methodId}){" "}
-            <Tag color={getStatusCode(status)}>{status}</Tag>
-          </span>
-        </div>
-      ),
-    },
-    {
-      title: "Payment Details",
-      dataIndex: "info",
-      key: "info",
-      render: (
-        _: any,
-        { txid, currency, crypto, cryptoSymbol, amount, rate, usd }: any
-      ) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <span style={{ color: "green" }}>{txid}</span>
-          <span>
-            {amount} {currency} ({crypto} {cryptoSymbol})
-          </span>
-          <span>
-            - Bought @ {rate} (${usd})
-          </span>
-        </div>
-      ),
-    },
+    //       crypto,
+    //       cryptoSymbol,
+    //       status,
+    //       methodId,
+    //     }: any
+    //   ) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+    //         uniqId.length - 6
+    //       )}`}</span> */}
+    //       <span>{uniqId}</span>
+    //       <span>{date}</span>
+    //       <span>
+    //         CASHOUT ({methodId}){" "}
+    //         <Tag color={getStatusCode(status)}>{status}</Tag>
+    //       </span>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   title: "Payment Details",
+    //   dataIndex: "info",
+    //   key: "info",
+    //   render: (
+    //     _: any,
+    //     { txid, currency, crypto, cryptoSymbol, amount, rate, usd }: any
+    //   ) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       <span style={{ color: "green" }}>{txid}</span>
+    //       <span>
+    //         {amount} {currency} ({crypto} {cryptoSymbol})
+    //       </span>
+    //       <span>
+    //         - Bought @ {rate} (${usd})
+    //       </span>
+    //     </div>
+    //   ),
+    // },
     // {
     //   title: "Asset",
     //   dataIndex: "asset",
@@ -155,6 +159,78 @@ export default function Search() {
     //     </div>
     //   ),
     // },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Transaction ID",
+      dataIndex: "uniqId",
+      key: "uniqId",
+      render: (_: any, { uniqId }: any) => (
+        <p className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+          uniqId.length - 6
+        )}`}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Amount (GHS)",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "Amount (USD)",
+      dataIndex: "usd",
+      key: "usd",
+      render: (_: any, { usd }: any) => <>${usd}</>,
+    },
+    {
+      title: "Amount (CRYPTO)",
+      dataIndex: "crypto",
+      key: "crypto",
+      render: (_: any, { crypto, asset }: any) => (
+        <>
+          {crypto} {asset}
+        </>
+      ),
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+      render: (_: any, { date }: any) => (
+        <span style={{ fontSize: 12 }}>{date}</span>
+      ),
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any, index: number) => (
+        <div className={styles.actionButton}>
+          <Button loading={loadingIndex === index} onClick={action}>
+            View
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   const BUY_COLUMN2 = [
@@ -237,67 +313,57 @@ export default function Search() {
   ];
 
   const SELL_COLUMN = [
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <Link href={`/users/details/${username}`} className={styles.username}>
-          {username}
-        </Link>
-      ),
-    },
-    {
-      title: "Info",
-      dataIndex: "info",
-      key: "info",
-      render: (
-        _: any,
-        {
-          uniq,
-          createdOn,
-          usdAmount,
-          localCurrency,
-          rawAmount,
-          cryptoAmount,
-          cryptoCurrency,
-          netFee,
-        }: any
-      ) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          <span>{uniq}</span>
-          <span>Order Placed @ {createdOn}</span>
-          <span>
-            {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
-            {usdAmount} with fee of {localCurrency} {netFee}
-          </span>
-          <span>Completed by</span>
-        </div>
-      ),
-    },
-    {
-      title: "Payment Details",
-      dataIndex: "paymentAccount",
-      key: "paymentAccount",
-      render: (_: any, { paymentMethod, paymenthodMethodId }: any) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span>{uniq}</span>
-          <span>Order Placed @ {createdOn}</span>
-          <span>
-            {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
-            {usdAmount} with fee of {localCurrency} {netFee}
-          </span>
-          <span>Completed by</span> */}
-          <span>
-            {paymentMethod}
-            {/* {paymenthodMethodId} */}
-          </span>
-        </div>
-      ),
-    },
+    // {
+    //   title: "Username",
+    //   dataIndex: "username",
+    //   key: "username",
+    //   render: (_: any, { username }: any) => (
+    //     <Link href={`/users/details/${username}`} className={styles.username}>
+    //       {username}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   title: "Info",
+    //   dataIndex: "info",
+    //   key: "info",
+    //   render: (
+    //     _: any,
+    //     {
+    //       uniq,
+    //       createdOn,
+    //       usdAmount,
+    //       localCurrency,
+    //       rawAmount,
+    //       cryptoAmount,
+    //       cryptoCurrency,
+    //       netFee,
+    //     }: any
+    //   ) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+    //         uniqId.length - 6
+    //       )}`}</span> */}
+    //       <span>{uniq}</span>
+    //       <span>Order Placed @ {createdOn}</span>
+    //       <span>
+    //         {localCurrency} {rawAmount} ({cryptoAmount} {cryptoCurrency}) - $
+    //         {usdAmount} with fee of {localCurrency} {netFee}
+    //       </span>
+    //       <span>Completed by</span>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   title: "Payment Details",
+    //   dataIndex: "paymentAccount",
+    //   key: "paymentAccount",
+    //   render: (_: any, { paymentMethod, paymenthodMethodId }: any) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       <span>{paymentMethod}</span>
+    //     </div>
+    //   ),
+    // },
     // {
     //   title: "Transaction ID",
     //   dataIndex: "transactionId",
@@ -360,9 +426,135 @@ export default function Search() {
     //     </div>
     //   ),
     // },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Transaction ID",
+      dataIndex: "transactionId",
+      key: "transactionId",
+      render: (_: any, { transactionId }: any) => (
+        <p className={styles.username}>{`${transactionId.slice(
+          0,
+          6
+        )}...${transactionId.slice(transactionId.length - 6)}`}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Amount (USD)",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Amount (GHS)",
+      dataIndex: "total",
+      key: "total",
+    },
+    {
+      title: "Fee",
+      dataIndex: "netFee",
+      key: "netFee",
+    },
+    {
+      title: "Status/Date",
+      dataIndex: "status",
+      key: "status",
+      width: "25%",
+      render: (_: any, { status, createdOn }: any) => (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          {/* <div className={styles.statusContainer}>
+            <div className={styles.statusIndicator} /> {status}
+          </div> */}
+          <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+          <p style={{ marginLeft: 5 }}>{createdOn}</p>
+        </div>
+      ),
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any, index: number) => (
+        <div className={styles.actionButton}>
+          <Button loading={loadingIndex === index} onClick={action}>
+            View
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   const RECEIVE_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "txid",
+      key: "txid",
+      render: (_: any, { txid }: any) => (
+        <p className={styles.username}>{`${txid?.slice(0, 6)}...${txid?.slice(
+          txid?.length - 6
+        )}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Asset amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <Tag color={status === "confirmed" ? "success" : "warning"}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any, index: number) => (
+        <div className={styles.actionButton}>
+          <Button loading={loadingIndex === index} onClick={action}>
+            View
+          </Button>
+        </div>
+      ),
+    },
     // {
     //   title: "Transaction ID",
     //   dataIndex: "txid",
@@ -373,51 +565,51 @@ export default function Search() {
     //     )}`}</p>
     //   ),
     // },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <Link href={`/users/details/${username}`} className={styles.username}>
-          {username}
-        </Link>
-      ),
-    },
-    {
-      title: "Info",
-      dataIndex: "info",
-      key: "info",
-      render: (_: any, { txid, date }: any) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          <span>{txid}</span>
-          <span>{date}</span>
-        </div>
-      ),
-    },
-    {
-      title: "Details",
-      dataIndex: "details",
-      key: "details",
-      render: (_: any, { status, cryptoValue, currency, usdAmount }: any) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          <span>
-            {cryptoValue} {currency} (USD {usdAmount})
-          </span>
-          <span>
-            <Tag color={status === "confirmed" ? "success" : "warning"}>
-              {status}
-            </Tag>{" "}
-            ()
-          </span>
-        </div>
-      ),
-    },
+    // {
+    //   title: "Username",
+    //   dataIndex: "username",
+    //   key: "username",
+    //   render: (_: any, { username }: any) => (
+    //     <Link href={`/users/details/${username}`} className={styles.username}>
+    //       {username}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   title: "Info",
+    //   dataIndex: "info",
+    //   key: "info",
+    //   render: (_: any, { txid, date }: any) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+    //         uniqId.length - 6
+    //       )}`}</span> */}
+    //       <span>{txid}</span>
+    //       <span>{date}</span>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   title: "Details",
+    //   dataIndex: "details",
+    //   key: "details",
+    //   render: (_: any, { status, cryptoValue, currency, usdAmount }: any) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+    //         uniqId.length - 6
+    //       )}`}</span> */}
+    //       <span>
+    //         {cryptoValue} {currency} (USD {usdAmount})
+    //       </span>
+    //       <span>
+    //         <Tag color={status === "confirmed" ? "success" : "warning"}>
+    //           {status}
+    //         </Tag>{" "}
+    //         ()
+    //       </span>
+    //     </div>
+    //   ),
+    // },
     // {
     //   title: "Asset",
     //   dataIndex: "asset",
@@ -467,6 +659,59 @@ export default function Search() {
   ];
 
   const WITHDRAWAL_COLUMN = [
+    {
+      title: "Transaction ID",
+      dataIndex: "txid",
+      key: "txid",
+      render: (_: any, { txid }: any) => (
+        <p className={styles.username}>{`${txid?.slice(0, 6)}...${txid?.slice(
+          txid?.length - 6
+        )}`}</p>
+      ),
+    },
+    {
+      title: "Username",
+      dataIndex: "username",
+      key: "username",
+      render: (_: any, { username }: any) => (
+        <p className={styles.username}>{username}</p>
+      ),
+    },
+    {
+      title: "Asset",
+      dataIndex: "asset",
+      key: "asset",
+    },
+    {
+      title: "Asset amount",
+      dataIndex: "amount",
+      key: "amount",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_: any, { status }: any) => (
+        <Tag color={status === "success" ? "success" : "error"}>{status}</Tag>
+      ),
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      width: "20%",
+    },
+    {
+      title: "Actions",
+      dataIndex: "action",
+      render: (_: any, { action }: any, index: number) => (
+        <div className={styles.actionButton}>
+          <Button loading={loadingIndex === index} onClick={action}>
+            View
+          </Button>
+        </div>
+      ),
+    },
     // {
     //   title: "Transaction ID",
     //   dataIndex: "transactionId",
@@ -478,52 +723,52 @@ export default function Search() {
     //     )}...${transactionId.slice(transactionId.length - 6)}`}</p>
     //   ),
     // },
-    {
-      title: "Username",
-      dataIndex: "username",
-      key: "username",
-      render: (_: any, { username }: any) => (
-        <Link href={`/users/details/${username}`} className={styles.username}>
-          {username}
-        </Link>
-      ),
-    },
-    {
-      title: "Info",
-      dataIndex: "info",
-      key: "info",
-      render: (_: any, { txid, recipient, date }: any) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          <span>{txid}</span>
-          <span>sent to {recipient} </span>
-          <span>{date}</span>
-        </div>
-      ),
-    },
-    {
-      title: "Details",
-      dataIndex: "details",
-      key: "details",
-      render: (_: any, { status, cryptoValue, currency, usdAmount }: any) => (
-        <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
-            uniqId.length - 6
-          )}`}</span> */}
-          <span>
-            {cryptoValue} {currency} (USD {usdAmount})
-          </span>
-          <span>
-            <Tag color={status === "success" ? "success" : "warning"}>
-              {status}
-            </Tag>{" "}
-            ()
-          </span>
-        </div>
-      ),
-    },
+    // {
+    //   title: "Username",
+    //   dataIndex: "username",
+    //   key: "username",
+    //   render: (_: any, { username }: any) => (
+    //     <Link href={`/users/details/${username}`} className={styles.username}>
+    //       {username}
+    //     </Link>
+    //   ),
+    // },
+    // {
+    //   title: "Info",
+    //   dataIndex: "info",
+    //   key: "info",
+    //   render: (_: any, { txid, recipient, date }: any) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+    //         uniqId.length - 6
+    //       )}`}</span> */}
+    //       <span>{txid}</span>
+    //       <span>sent to {recipient} </span>
+    //       <span>{date}</span>
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   title: "Details",
+    //   dataIndex: "details",
+    //   key: "details",
+    //   render: (_: any, { status, cryptoValue, currency, usdAmount }: any) => (
+    //     <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    //       {/* <span className={styles.username}>{`${uniqId.slice(0, 6)}...${uniqId.slice(
+    //         uniqId.length - 6
+    //       )}`}</span> */}
+    //       <span>
+    //         {cryptoValue} {currency} (USD {usdAmount})
+    //       </span>
+    //       <span>
+    //         <Tag color={status === "success" ? "success" : "warning"}>
+    //           {status}
+    //         </Tag>{" "}
+    //         ()
+    //       </span>
+    //     </div>
+    //   ),
+    // },
     // {
     //   title: "To",
     //   dataIndex: "to",
@@ -892,10 +1137,103 @@ export default function Search() {
       onSearch();
     }
   }, [currentPage]);
-
   return (
-    <PageLayout title="Hone">
-      <Modal
+    <PageLayout title="Home">
+      <AntdModal
+        open={openModal && searchType === "Buy"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.uniqId}
+              </p>
+              <Tag color="warning">Buy (Momo Top-Up)</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.crypto} {currentUser.cryptoSymbol}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usd} USD</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (GHS)</p>
+              <p className={modalStyles.values}>
+                {currentUser.amount} {currentUser.currency}
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Order time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Buy Rate</p>
+              <p className={modalStyles.label}>
+                Bought @ {currentUser.rate} - (Crypto Price: $
+                {currentUser.cryptoPrice})
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Fees</p>
+              <p className={modalStyles.values}>
+                {currentUser.netFee}
+                {currentUser.currency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Total amount paid</p>
+              <p className={modalStyles.values}>{currentUser.currency}</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment account:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Account: {currentUser.paymentAccount?.name}
+                </p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Network: {currentUser.paymentAccount?.network}
+                </p>
+              </div>
+
+              <p className={modalStyles.values}>
+                Phone: {currentUser.paymentAccount?.phoneNumber}
+              </p>
+            </div>
+            <div className={modalStyles.antModalRightContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment tx id:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.txid}</p>
+              </div>
+              <p className={modalStyles.values}>
+                @ {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Buy"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -941,8 +1279,102 @@ export default function Search() {
             <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </Modal> */}
+      <AntdModal
+        open={openModal && searchType === "Sell"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.trxId}
+              </p>
+              <Tag color="warning">Sell (Momo withdrawal)</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.cryptoAmount} {currentUser.cryptoCurrency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usdAmount} USD</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (GHS)</p>
+              <p className={modalStyles.values}>
+                {currentUser.rawAmount} {currentUser.localCurrency}
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Order time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.createdOn?.split("G")[0]}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Buy Rate</p>
+              <p className={modalStyles.label}>
+                Bought @ {currentUser.rate} - (Crypto Price: $
+                {currentUser.cryptoPrice})
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Fees</p>
+              <p className={modalStyles.values}>
+                {currentUser.netFee} {currentUser.localCurrency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Total amount paid</p>
+              <p className={modalStyles.values}>{currentUser.localCurrency}</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment account:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Account: {currentUser.paymentAccount?.name}
+                </p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  Network: {currentUser.paymentAccount?.networkName}{" "}
+                  {currentUser.paymentAccount?.paymentMethodType}
+                </p>
+              </div>
+
+              <p className={modalStyles.values}>
+                Phone: {currentUser.paymentAccount?.phoneNumber}
+              </p>
+            </div>
+            <div className={modalStyles.antModalRightContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Payment tx id:</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.trxId}</p>
+              </div>
+              <p className={modalStyles.values}>
+                @ {currentUser?.createdOn?.split("G")[0]}
+              </p>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Sell"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -1006,8 +1438,67 @@ export default function Search() {
             <p className={styles.value}>{currentUser.dataSeven}</p>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </Modal> */}
+      <AntdModal
+        width={"650px"}
+        open={openModal && searchType === "Receive"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.txid}
+              </p>
+              <Tag color="warning">Receive</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.currencyValue} {currentUser.currency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usdAmount} USD</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Confirmations</p>
+              <p className={modalStyles.label}>{currentUser?.confirmations}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentUser?.status)}>
+                {currentUser?.status}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Blockchain Tx Hash</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.txid}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Receive"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -1076,8 +1567,85 @@ export default function Search() {
             <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </Modal> */}
+      <AntdModal
+        width={"650px"}
+        open={openModal && searchType === "Withdrawal"}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.txid}
+              </p>
+              <Tag color="warning">Send</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset</p>
+              <p className={modalStyles.values}>
+                {currentUser.asset} - {currentUser.currency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Asset value</p>
+              <p className={modalStyles.values}>
+                {currentUser.cryptoValue} {currentUser.currency}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>{currentUser.usdAmount} USD</p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.date?.split("G")[0]}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Network fees</p>
+              <p className={modalStyles.label}>
+                {currentUser?.fee} {currentUser?.feeSymbol}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Confirmations</p>
+              <p className={modalStyles.label}>{currentUser?.confirmations}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentUser?.status)}>
+                {currentUser?.status}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Recipient address</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.to}</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Blockchain Tx Hash</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.txid}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal && searchType === "Withdrawal"}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -1146,7 +1714,7 @@ export default function Search() {
             <p className={styles.value}>{currentUser.date}</p>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
       <Modal
         openModal={openModal && searchType === "Swap"}
         onClose={() => setOpenModal(false)}

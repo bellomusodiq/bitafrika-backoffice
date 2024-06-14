@@ -857,27 +857,6 @@ export default function Search() {
                   </p>
                   <p className={styles.date}>
                     Status: <Tag color={getStatusCode(status)}>{status}</Tag>
-                    {/* <span
-                      style={{
-                        padding: "2px 12px 4px 12px",
-                        borderRadius: 16,
-                        backgroundColor:
-                          status === "success"
-                            ? "#EDFCF2"
-                            : status === "pending"
-                            ? "#f7900953"
-                            : "#FBEAE9",
-                        color:
-                          status === "success"
-                            ? "#087443"
-                            : status === "pending"
-                            ? "#F79009"
-                            : "#F04438",
-                        textAlign: "center",
-                      }}
-                    >
-                      <span style={{ fontSize: 12 }}>{status}</span>
-                    </span> */}
                   </p>
 
                   {data?.orders && data?.orders.length === 0 ? (

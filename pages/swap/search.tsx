@@ -8,6 +8,9 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import { useRouter } from "next/router";
 import useCustomQuery from "@/hooks/useCustomQuery";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
+import { getStatusCode } from "@/utils/utils";
 
 const REQUESTS_COLUMNS = [
   {
@@ -129,10 +132,66 @@ export default function Search() {
     setCurrentDetails(temp);
     setOpenModal(true);
   };
-
+  console.log(currentDetails);
   return (
-    <PageLayout title="Hone">
-      <Modal
+    <PageLayout title="HoMe">
+      <AntdModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentDetails?.uniqId}
+              </p>
+              <Tag color="warning">Swap transaction</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Channel</p>
+              <p className={modalStyles.values}>
+                {currentDetails?.sourceCrypto} to{" "}
+                {currentDetails?.destinationCrypto}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>From</p>
+              <p className={modalStyles.values}>
+                {currentDetails.sourceAmount} {currentDetails?.sourceCrypto}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>To</p>
+              <p className={modalStyles.values}>
+                {currentDetails.destinationAmount}{" "}
+                {currentDetails?.destinationCrypto}
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>{currentDetails?.createdOn}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Rate</p>
+              <p className={modalStyles.label}>{currentDetails.rate}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentDetails?.status)}>
+                {currentDetails?.status}
+              </Tag>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal}
         onClose={() => setOpenModal(false)}
         headerCenter={
@@ -190,7 +249,7 @@ export default function Search() {
             <p className={styles.value}>{currentDetails?.createdOn}</p>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
       <div className={styles.container}>
         <div
           style={{

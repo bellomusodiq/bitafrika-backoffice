@@ -8,14 +8,13 @@ import React, { useRef, useState } from "react";
 import styles from "./signin.module.css";
 import axios from "axios";
 import { BASE_URL } from "../../CONFIG";
-import { toast } from "react-toastify";
 import { useRouter } from "next/router";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
-import { Input as AntdInput } from "antd";
+import { Input as AntdInput, message } from "antd";
 
 const Signin: React.FC<NextPage> = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-
   const code1 = useRef(null);
   const code2 = useRef(null);
   const code3 = useRef(null);
@@ -61,16 +60,7 @@ const Signin: React.FC<NextPage> = () => {
           setShowModal(true);
         } else {
           setLoading(false);
-          toast.error(res.data.message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -79,15 +69,9 @@ const Signin: React.FC<NextPage> = () => {
           router.replace("/", "/");
         }
         setLoading(false);
-        toast.error("Something went wrong, try again", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
+        messageApi.error({
+          content: "Something went wrong, try again",
+          duration: 5,
         });
       });
   };
@@ -108,16 +92,7 @@ const Signin: React.FC<NextPage> = () => {
           setShowModal(false);
         } else {
           setLoading(false);
-          toast.error(res.data.message, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-          });
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -126,15 +101,9 @@ const Signin: React.FC<NextPage> = () => {
           router.replace("/", "/");
         }
         setLoading(false);
-        toast.error("Something went wrong, try again", {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
+        messageApi.error({
+          content: "Something went wrong, try again",
+          duration: 5,
         });
       });
   };
@@ -166,6 +135,7 @@ const Signin: React.FC<NextPage> = () => {
 
   return (
     <div className={styles.container}>
+      {contextHolder}
       <Modal
         headerLeft={
           <div className={styles.lockContainer}>

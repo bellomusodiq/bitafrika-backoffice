@@ -4,12 +4,19 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/approvals/approvals.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Checkbox, DatePicker, Divider, Skeleton, Space, Table } from "antd";
+import {
+  Checkbox,
+  DatePicker,
+  Divider,
+  Skeleton,
+  Space,
+  Table,
+  message,
+} from "antd";
 import Modal from "@/components/Modal";
 import DropModal from "@/components/DropModal";
 import Input from "@/components/Input/Input";
 import Dropdown from "@/components/Dropdown";
-import { toast } from "react-toastify";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { BASE_URL } from "@/CONFIG";
 import axios from "axios";
@@ -75,6 +82,7 @@ const columns: any = [
 ];
 
 export default function Search() {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const code1 = useRef<HTMLInputElement | null>(null);
   const code2 = useRef<HTMLInputElement | null>(null);
@@ -155,9 +163,9 @@ export default function Search() {
         if (res.data.success) {
           refetch();
           setOpenCodeModal(false);
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -166,7 +174,10 @@ export default function Search() {
           localStorage.removeItem("auth");
           router.replace("/", "/");
         } else {
-          toast.error("Something went wrong, please try again");
+          messageApi.error({
+            content: "Something went wrong, please try again",
+            duration: 5,
+          });
         }
       });
   };
@@ -209,6 +220,7 @@ export default function Search() {
 
   return (
     <PageLayout title="Hone">
+      {contextHolder}
       <Modal
         // customStyles={{ width: "40%" }}
         headerCenter={

@@ -4,7 +4,7 @@ import PageLayout from "@/components/PageLayout";
 import styles from "@/pages/cards/search.module.css";
 import NavigationStep from "@/components/NavigationStep";
 import Button from "@/components/Button";
-import { Skeleton, Table, Tag, Button as AntdButton } from "antd";
+import { Skeleton, Table, Tag, Button as AntdButton, message } from "antd";
 import Modal from "@/components/Modal";
 import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
@@ -14,9 +14,11 @@ import { useRouter } from "next/router";
 import VirtualCard from "@/components/VirtualCard/VirtualCard";
 import Input from "@/components/Input/Input";
 import Loader from "@/components/Loader";
-import { toast } from "react-toastify";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { GetServerSideProps } from "next";
+import AntdModal from "@/components/Modal/DetailsModal";
+import modalStyles from "@/styles/modal.module.css";
+import { getStatusCode } from "@/utils/utils";
 
 const TRANSACTIONS_COLUMNS = [
   {
@@ -77,6 +79,7 @@ const TRANSACTIONS_COLUMNS = [
 ];
 
 const CardDetails = ({ cardId }: { cardId: string }) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -189,9 +192,9 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         setLoadingUpdate(false);
         if (res.data.success) {
           onClose();
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -223,12 +226,13 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         setLoadingUpdate(false);
         if (res.data.success) {
           onClose();
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
+        setLoadingUpdate(false);
         if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -257,12 +261,14 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         setLoadingUpdate(false);
         if (res.data.success) {
           onClose();
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
+        setLoadingUpdate(false);
+
         if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -291,9 +297,9 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         setLoadingUpdate(false);
         if (res.data.success) {
           onClose();
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
@@ -324,12 +330,14 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
         setLoadingUpdate(false);
         if (res.data.success) {
           setRequestId(res.data.data.requestId);
-          toast.success(res.data.message);
+          messageApi.success({ content: res.data.message, duration: 5 });
         } else {
-          toast.error(res.data.message);
+          messageApi.error({ content: res.data.message, duration: 5 });
         }
       })
       .catch((e) => {
+        setLoadingUpdate(false);
+
         if (e?.response?.status === 401) {
           localStorage.removeItem("auth");
           router.replace("/", "/");
@@ -368,11 +376,16 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
 
   return (
     <PageLayout title="Home">
-      <Modal
-        openModal={openModal === "terminate"}
+      {contextHolder}
+      <AntdModal
+        width={"500px"}
+        open={openModal === "terminate"}
         onClose={onClose}
-        customStyles={{ width: "30%" }}
-        headerLeft={<>Terminate card</>}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Terminate card</p>
+          </div>
+        }
       >
         <div className={styles.modalContainer}>
           <p className={styles.description}>
@@ -426,8 +439,125 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             </Button>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </AntdModal>
+      {/* <Modal
+        openModal={openModal === "terminate"}
+        onClose={onClose}
+        customStyles={{ width: "30%" }}
+        headerLeft={<>Terminate card</>}
+      >
+        <div className={styles.modalContainer}>
+          <p className={styles.description}>
+            You are about to terminate @Username virtual card. Card details will
+            be deleted and card would become invalid for use. To continue, enter
+            the keyword provided.
+          </p>
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Reason</p>
+          </div>
+          <Input
+            placeholder="Enter reason for termination"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => sendOtp("TERMINATE")}
+            >
+              Send OTP
+            </AntdButton>
+          </div>
+          <Input
+            placeholder=""
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          <div className={styles.modalFooter2}>
+            <Button
+              onClick={() => onClose()}
+              className={styles.modalButton}
+              color="white"
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={loadingUpdate}
+              onClick={() => {
+                if (reason.length > 0 && otp.length > 0) {
+                  terminateCard();
+                }
+              }}
+              className={styles.modalButton}
+            >
+              Terminate
+            </Button>
+          </div>
+        </div>
+      </Modal> */}
+      <AntdModal
+        width={"500px"}
+        open={openModal === "withdraw"}
+        onClose={onClose}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Withdraw user balance</p>
+          </div>
+        }
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Amount</p>
+          </div>
+          <Input
+            leftIcon={<div className={styles.leftIcon}>$</div>}
+            placeholder="0.00"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
+            {/* <p style={{ cursor: "pointer" }} className={styles.info}>
+              Send OTP
+            </p> */}
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => {
+                if (amount.length === 0) {
+                  messageApi.error({
+                    content: "Input is required!",
+                    duration: 5,
+                  });
+                } else {
+                  sendOtp("WITHDRAW");
+                }
+              }}
+            >
+              Send OTP
+            </AntdButton>
+          </div>
+          <Input value={otp} onChange={(e) => setOtp(e.target.value)} />
+
+          <div className={styles.modalFooter2}>
+            <Button
+              loading={loadingUpdate}
+              onClick={() => {
+                if (amount.length > 0 && otp.length > 0) {
+                  withdrawCard();
+                }
+              }}
+              className={styles.modalButtonFull}
+            >
+              Withdrawal
+            </Button>
+          </div>
+        </div>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal === "withdraw"}
         onClose={onClose}
         customStyles={{ width: "30%" }}
@@ -446,9 +576,6 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter otp code (Telegram)</p>
-            {/* <p style={{ cursor: "pointer" }} className={styles.info}>
-              Send OTP
-            </p> */}
             <AntdButton
               loading={loadingUpdate}
               size="small"
@@ -479,12 +606,16 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             </Button>
           </div>
         </div>
-      </Modal>
-      <Modal
-        openModal={openModal === "freeze"}
+      </Modal> */}
+      <AntdModal
+        width={"500px"}
+        open={openModal === "freeze"}
         onClose={onClose}
-        customStyles={{ width: "30%" }}
-        headerLeft={<>Freeze card</>}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Freeze card</p>
+          </div>
+        }
       >
         <div className={styles.modalContainer}>
           <div className={styles.labelContainer}>
@@ -497,7 +628,6 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
           />
           <div className={styles.labelContainer}>
             <p className={styles.label}>Enter otp code (Telegram)</p>
-            {/* <p className={styles.info}>freeze-0223</p> */}
             <AntdButton
               loading={loadingUpdate}
               size="small"
@@ -525,8 +655,109 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             </Button>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </AntdModal>
+      {/* <Modal
+        openModal={openModal === "freeze"}
+        onClose={onClose}
+        customStyles={{ width: "30%" }}
+        headerLeft={<>Freeze card</>}
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Reason</p>
+          </div>
+          <Input
+            placeholder="Enter reason for freezing card"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => sendOtp("FREEZE")}
+            >
+              Send OTP
+            </AntdButton>
+          </div>
+          <Input
+            placeholder=""
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+          <div className={styles.modalFooter2}>
+            <Button
+              loading={loadingUpdate}
+              onClick={() => {
+                if (reason.length > 0 && otp.length > 0) {
+                  freezeCard();
+                }
+              }}
+              className={styles.modalButtonFull}
+            >
+              Freeze card
+            </Button>
+          </div>
+        </div>
+      </Modal> */}
+
+      <AntdModal
+        width={"500px"}
+        open={openModal === "topup"}
+        onClose={onClose}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Top up user balance</p>
+          </div>
+        }
+      >
+        <div className={styles.modalContainer}>
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Amount</p>
+          </div>
+          <Input
+            leftIcon={<div className={styles.leftIcon}>$</div>}
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+          <div className={styles.labelContainer}>
+            <p className={styles.label}>Enter otp code (Telegram)</p>
+            <AntdButton
+              loading={loadingUpdate}
+              size="small"
+              onClick={() => {
+                if (amount.length === 0) {
+                  messageApi.error({
+                    content: "Input is required!",
+                    duration: 5,
+                  });
+                } else {
+                  sendOtp("topUp");
+                }
+              }}
+            >
+              Send OTP
+            </AntdButton>
+          </div>
+          <Input value={otp} onChange={(e) => setOtp(e.target.value)} />
+          <div className={styles.modalFooter2}>
+            <Button
+              loading={loadingUpdate}
+              onClick={() => {
+                if (amount.length > 0 && otp.length > 0) {
+                  topUpCard();
+                }
+              }}
+              className={styles.modalButtonFull}
+            >
+              Top up
+            </Button>
+          </div>
+        </div>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal === "topup"}
         onClose={onClose}
         customStyles={{ width: "30%" }}
@@ -573,8 +804,83 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             </Button>
           </div>
         </div>
-      </Modal>
-      <Modal
+      </Modal> */}
+
+      <AntdModal
+        open={openModal === "transaction"}
+        onClose={() => setOpenModal(null)}
+        title={
+          <div>
+            <p className={modalStyles.antModalTitle}>Transaction details</p>
+            <div className={modalStyles.antModalSubHeader}>
+              <p className={modalStyles.antModalSubtitle}>
+                Txn id: {currentUser.id}
+              </p>
+              <Tag color="warning">Card Transactions</Tag>
+            </div>
+          </div>
+        }
+      >
+        <>
+          <div className={modalStyles.antModalContainer}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Biller/Merchant</p>
+              <p className={modalStyles.values}>{currentUser?.merchantName}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Amount (USD)</p>
+              <p className={modalStyles.values}>
+                {currentUser.transactionAmount} USD
+              </p>
+            </div>
+          </div>
+          <div className={modalStyles.antModalSubContent}>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Transaction time</p>
+              <p className={modalStyles.label}>
+                {currentUser?.transactionTime}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Masked pan</p>
+              <p className={modalStyles.label}>{currentUser.maskPan}</p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>City/Country</p>
+              <p className={modalStyles.label}>
+                {currentUser.merchantCity} • {currentUser.merchantCountry}
+              </p>
+            </div>
+            <div className={modalStyles.item}>
+              <p className={modalStyles.label}>Status</p>
+              <Tag color={getStatusCode(currentUser?.transactionStatus)}>
+                {currentUser?.transactionStatus}
+              </Tag>
+            </div>
+          </div>
+          <div className={modalStyles.antModalFooterContent}>
+            <div className={modalStyles.antModalLeftContent2}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Transaction type</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>
+                  {currentUser?.transactionType}
+                </p>
+              </div>
+            </div>
+            <div className={modalStyles.antModalRightContent}>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.label}>Description</p>
+              </div>
+              <div className={modalStyles.item}>
+                <p className={modalStyles.values}>{currentUser?.description}</p>
+              </div>
+            </div>
+          </div>
+        </>
+      </AntdModal>
+      {/* <Modal
         openModal={openModal === "transaction"}
         onClose={() => setOpenModal(null)}
         customStyles={{ width: "40%" }}
@@ -630,7 +936,7 @@ const CardDetails = ({ cardId }: { cardId: string }) => {
             <p className={styles.label}>{currentUser?.transactionTime}</p>
           </div>
         </div>
-      </Modal>
+      </Modal> */}
 
       <div className={styles.container}>
         <div
