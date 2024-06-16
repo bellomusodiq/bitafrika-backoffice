@@ -132,7 +132,7 @@ export default function Search() {
     setCurrentDetails(temp);
     setOpenModal(true);
   };
-  console.log(currentDetails);
+
   return (
     <PageLayout title="HoMe">
       <AntdModal

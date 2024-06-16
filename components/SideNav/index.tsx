@@ -8,6 +8,8 @@ import axios from "axios";
 import { BASE_URL } from "@/CONFIG";
 import Button from "../Button";
 import { Avatar, message } from "antd";
+import { ADMIN_ROLES } from "@/utils/utils";
+import { COOKIE } from "@/utils/cookies";
 
 const SideNavItem: React.FC<{
   title: string;
@@ -79,6 +81,8 @@ const SideNav: React.FC = () => {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
 
+  const ROUTES = ADMIN_ROLES[auth?.user?.role || ""];
+
   const signOut = () => {
     if (auth) {
       axios
@@ -89,11 +93,13 @@ const SideNav: React.FC = () => {
         )
         .then(() => {
           localStorage.removeItem("auth");
+          COOKIE.REMOVE("auth");
           router.replace("/signin", "/signin");
         })
         .catch((res) => {
           if (res.response.status === 401) {
             localStorage.removeItem("auth");
+            COOKIE.REMOVE("auth");
             router.replace("/", "/");
           }
           messageApi.error({ content: res.data.message, duration: 5 });
@@ -113,76 +119,96 @@ const SideNav: React.FC = () => {
           className={styles.logo}
         />
       </div>
+      {ROUTES?.includes("dashboard") && (
+        <SideNavItem
+          title="Overview"
+          icon="/icons/overview.svg"
+          isActive={router.route === "/dashboard"}
+          url="/dashboard"
+        />
+      )}
+      {ROUTES?.includes("search") && (
+        <SideNavItem
+          title="Search"
+          icon="/icons/search.svg"
+          isActive={router.route.split("/")[1] === "search"}
+          url="/search"
+        />
+      )}
+      {ROUTES?.includes("transactions") && (
+        <SideNavItem
+          title="Transactions"
+          icon="/icons/transactions.svg"
+          isActive={router.route.split("/")[1] === "transactions"}
+          url="/transactions"
+        />
+      )}
+      {ROUTES?.includes("cards") && (
+        <SideNavItem
+          title="Cards"
+          icon="/icons/cards.svg"
+          isActive={router.route.split("/")[1] === "cards"}
+          url="/cards"
+        />
+      )}
+      {ROUTES?.includes("giftcards") && (
+        <SideNavItem
+          title="Giftcards"
+          icon="/icons/giftcard.svg"
+          isActive={router.route.split("/")[1] === "giftcards"}
+          url="/giftcards"
+        />
+      )}
+      {ROUTES?.includes("swap") && (
+        <SideNavItem
+          title="Swap"
+          icon="/icons/swap2.svg"
+          isActive={router.route.split("/")[1] === "swap"}
+          url="/swap"
+        />
+      )}
+      {ROUTES?.includes("authorizations") && (
+        <SideNavItem
+          title="Authorizations"
+          icon="/icons/approvals.svg"
+          isActive={router.route.split("/")[1] === "approvals"}
+          url="/approvals"
+        />
+      )}
+      {ROUTES?.includes("users") && (
+        <SideNavItem
+          title="Users"
+          icon="/icons/users-01.svg"
+          isActive={router.route.split("/")[1] === "users"}
+          url="/users"
+        />
+      )}
+      {ROUTES?.includes("approvals") && (
+        <SideNavItem
+          title="Approvals"
+          icon="/icons/manual-approvals.svg"
+          isActive={router.route.split("/")[1] === "manual-approvals"}
+          url="/manual-approvals"
+        />
+      )}
+      {ROUTES?.includes("reports") && (
+        <SideNavItem
+          title="Reports"
+          icon="/icons/reports.svg"
+          isActive={router.route.split("/")[1] === "reports"}
+          childrenItem={[
+            {
+              title: "User reports",
+              url: "/reports/users",
+            },
+            {
+              title: "Transactions reports",
+              url: "/reports/transactions",
+            },
+          ]}
+        />
+      )}
 
-      <SideNavItem
-        title="Overview"
-        icon="/icons/overview.svg"
-        isActive={router.route === "/dashboard"}
-        url="/dashboard"
-      />
-      <SideNavItem
-        title="Search"
-        icon="/icons/search.svg"
-        isActive={router.route.split("/")[1] === "search"}
-        url="/search"
-      />
-      <SideNavItem
-        title="Transactions"
-        icon="/icons/transactions.svg"
-        isActive={router.route.split("/")[1] === "transactions"}
-        url="/transactions"
-      />
-      <SideNavItem
-        title="Cards"
-        icon="/icons/cards.svg"
-        isActive={router.route.split("/")[1] === "cards"}
-        url="/cards"
-      />
-      <SideNavItem
-        title="Giftcards"
-        icon="/icons/giftcard.svg"
-        isActive={router.route.split("/")[1] === "giftcards"}
-        url="/giftcards"
-      />
-      <SideNavItem
-        title="Swap"
-        icon="/icons/swap2.svg"
-        isActive={router.route.split("/")[1] === "swap"}
-        url="/swap"
-      />
-      <SideNavItem
-        title="Authorizations"
-        icon="/icons/approvals.svg"
-        isActive={router.route.split("/")[1] === "approvals"}
-        url="/approvals"
-      />
-      <SideNavItem
-        title="Users"
-        icon="/icons/users-01.svg"
-        isActive={router.route.split("/")[1] === "users"}
-        url="/users"
-      />
-      <SideNavItem
-        title="Approvals"
-        icon="/icons/manual-approvals.svg"
-        isActive={router.route.split("/")[1] === "manual-approvals"}
-        url="/manual-approvals"
-      />
-      <SideNavItem
-        title="Reports"
-        icon="/icons/reports.svg"
-        isActive={router.route.split("/")[1] === "reports"}
-        childrenItem={[
-          {
-            title: "User reports",
-            url: "/reports/users",
-          },
-          {
-            title: "Transactions reports",
-            url: "/reports/transactions",
-          },
-        ]}
-      />
       {/* <SideNavItem
         title="Broadcasts"
         icon="/icons/broadcasts.svg"
@@ -202,19 +228,25 @@ const SideNav: React.FC = () => {
           },
         ]}
       /> */}
-      <SideNavItem
-        title="Country settings"
-        isActive={router.route.split("/")[1] === "country-settings"}
-        icon="/icons/country-settings.svg"
-        url="/country-settings"
-      />
+      {ROUTES?.includes("country-settings") && (
+        <SideNavItem
+          title="Country settings"
+          isActive={router.route.split("/")[1] === "country-settings"}
+          icon="/icons/country-settings.svg"
+          url="/country-settings"
+        />
+      )}
+
       <div style={{ marginBottom: 70 }} />
-      <SideNavItem
-        isActive={router.route.split("/")[1] === "site-settings"}
-        title="Site settings"
-        url="/site-settings"
-        icon="/icons/site-settings.svg"
-      />
+      {ROUTES?.includes("site-settings") && (
+        <SideNavItem
+          isActive={router.route.split("/")[1] === "site-settings"}
+          title="Site settings"
+          url="/site-settings"
+          icon="/icons/site-settings.svg"
+        />
+      )}
+
       <div className={styles.divider} />
       {auth?.user && (
         <div className={styles.profileContainer}>

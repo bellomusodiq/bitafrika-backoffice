@@ -11,6 +11,7 @@ import { BASE_URL } from "../../CONFIG";
 import { useRouter } from "next/router";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { Input as AntdInput, message } from "antd";
+import { COOKIE } from "@/utils/cookies";
 
 const Signin: React.FC<NextPage> = () => {
   const [messageApi, contextHolder] = message.useMessage();
@@ -88,6 +89,7 @@ const Signin: React.FC<NextPage> = () => {
         if (res.data.success) {
           setLoginRes(res.data.data);
           localStorage.setItem("auth", JSON.stringify(res.data.data));
+          COOKIE.SET("auth", JSON.stringify(res.data.data));
           router.replace("/dashboard", "/dashboard");
           setShowModal(false);
         } else {
