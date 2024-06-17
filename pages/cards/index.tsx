@@ -8,7 +8,6 @@ import { BASE_URL } from "@/CONFIG";
 import Loader from "@/components/Loader";
 import useCustomQuery from "@/hooks/useCustomQuery";
 import { Skeleton } from "antd";
-import { ADMIN_ROLES } from "@/utils/utils";
 
 const Cards: NextPage = () => {
   const router = useRouter();
@@ -17,8 +16,6 @@ const Cards: NextPage = () => {
   if (typeof window !== "undefined" && localStorage.getItem("auth")) {
     auth = JSON.parse(localStorage.getItem("auth") || "");
   }
-  // const ROUTES = ADMIN_ROLES[auth?.user?.role || ""];
-  console.log(auth?.user?.role);
 
   const { isLoading, data: result } = useCustomQuery({
     queryKey: [],
