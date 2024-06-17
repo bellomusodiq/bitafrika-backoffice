@@ -117,10 +117,10 @@ export default function Search() {
               total: `${item.rawAmount} ${item.localCurrency}`,
               date: item.newDate,
               action: () => {
-                // fetchManualApprovalDetail(item.uniq);
-                setDetailsId(item.uniq);
-                setCurrRecord(item);
-                setOpenModal(true);
+                // setDetailsId(item.uniq);
+                // setCurrRecord(item);
+                // setOpenModal(true);
+                markAsSuccess(item);
               },
             })),
             pageInfo: result?.pageInfo,

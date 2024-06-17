@@ -1157,35 +1157,39 @@ const UserDetails = ({ userId, userType }: IProps) => {
                 </h3>
                 <p>@{result?.data.username}</p>
               </div>
-              <div className={styles.profileActions}>
-                <div style={{ marginLeft: 10 }}>
-                  <AntButton
-                    size="large"
-                    // className={styles.profileActionBtnsDanger}
-                    danger={result?.data.isActive}
-                    onClick={() => setIsDisableModal(true)}
-                  >
-                    {result?.data.isActive ? "Disable" : "Enable"} Account
-                  </AntButton>
+              {["BLACKSWAN", "SUPER_ADMIN", "MANAGER_ADMIN"].includes(
+                auth?.user?.role
+              ) && (
+                <div className={styles.profileActions}>
+                  <div style={{ marginLeft: 10 }}>
+                    <AntButton
+                      size="large"
+                      // className={styles.profileActionBtnsDanger}
+                      danger={result?.data.isActive}
+                      onClick={() => setIsDisableModal(true)}
+                    >
+                      {result?.data.isActive ? "Disable" : "Enable"} Account
+                    </AntButton>
+                  </div>
+                  <div style={{ marginLeft: 10 }}>
+                    <Button
+                      className={styles.profileActionBtns}
+                      onClick={() => setIsSmsModalOpened(true)}
+                      color="white"
+                    >
+                      Send SMS
+                    </Button>
+                  </div>
+                  <div style={{ marginLeft: 10 }}>
+                    <Button
+                      onClick={() => setIsBuyModalOpened(true)}
+                      className={styles.profileActionBtns}
+                    >
+                      Update Buy Limits
+                    </Button>
+                  </div>
                 </div>
-                <div style={{ marginLeft: 10 }}>
-                  <Button
-                    className={styles.profileActionBtns}
-                    onClick={() => setIsSmsModalOpened(true)}
-                    color="white"
-                  >
-                    Send SMS
-                  </Button>
-                </div>
-                <div style={{ marginLeft: 10 }}>
-                  <Button
-                    onClick={() => setIsBuyModalOpened(true)}
-                    className={styles.profileActionBtns}
-                  >
-                    Update Buy Limits
-                  </Button>
-                </div>
-              </div>
+              )}
             </div>
             <div className={styles.container}>
               <div className={styles.profileDetailsContainer}>

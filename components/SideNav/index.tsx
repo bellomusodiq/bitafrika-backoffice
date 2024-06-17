@@ -183,7 +183,7 @@ const SideNav: React.FC = () => {
           url="/users"
         />
       )}
-      {ROUTES?.includes("approvals") && (
+      {ROUTES?.includes("manual-approvals") && (
         <SideNavItem
           title="Approvals"
           icon="/icons/manual-approvals.svg"
