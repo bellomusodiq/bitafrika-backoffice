@@ -47,40 +47,48 @@ const Cards: NextPage = () => {
         </p>
         <div className={styles.divider} />
         <div className={styles.cardsContainer}>
-          <div className={styles.card}>
-            <p className={styles.cardHeader}>No. of Cards</p>
-            {isLoading ? (
-              <Skeleton active paragraph={{ rows: 0 }} />
-            ) : (
-              <p className={styles.cardText}>{cardsData?.numberOfCards}</p>
-            )}
-          </div>
-          <div className={styles.card}>
-            <p className={styles.cardHeader}>Total active cards</p>
-            {isLoading ? (
-              <Skeleton active paragraph={{ rows: 0 }} />
-            ) : (
-              <p className={styles.cardText}>{cardsData?.totalActiveCards}</p>
-            )}
-          </div>
-          <div className={styles.card}>
-            <p className={styles.cardHeader}>Total terminated Cards</p>
-            {isLoading ? (
-              <Skeleton active paragraph={{ rows: 0 }} />
-            ) : (
-              <p className={styles.cardText}>
-                {cardsData?.totalTerminatedCards}
-              </p>
-            )}
-          </div>
-          <div className={styles.card}>
-            <p className={styles.cardHeader}>Total frozen Cards</p>
-            {isLoading ? (
-              <Skeleton active paragraph={{ rows: 0 }} />
-            ) : (
-              <p className={styles.cardText}>{cardsData?.totalFrozenCards}</p>
-            )}
-          </div>
+          {auth?.user?.role !== "NANO" && (
+            <>
+              <div className={styles.card}>
+                <p className={styles.cardHeader}>No. of Cards</p>
+                {isLoading ? (
+                  <Skeleton active paragraph={{ rows: 0 }} />
+                ) : (
+                  <p className={styles.cardText}>{cardsData?.numberOfCards}</p>
+                )}
+              </div>
+              <div className={styles.card}>
+                <p className={styles.cardHeader}>Total active cards</p>
+                {isLoading ? (
+                  <Skeleton active paragraph={{ rows: 0 }} />
+                ) : (
+                  <p className={styles.cardText}>
+                    {cardsData?.totalActiveCards}
+                  </p>
+                )}
+              </div>
+              <div className={styles.card}>
+                <p className={styles.cardHeader}>Total terminated Cards</p>
+                {isLoading ? (
+                  <Skeleton active paragraph={{ rows: 0 }} />
+                ) : (
+                  <p className={styles.cardText}>
+                    {cardsData?.totalTerminatedCards}
+                  </p>
+                )}
+              </div>
+              <div className={styles.card}>
+                <p className={styles.cardHeader}>Total frozen Cards</p>
+                {isLoading ? (
+                  <Skeleton active paragraph={{ rows: 0 }} />
+                ) : (
+                  <p className={styles.cardText}>
+                    {cardsData?.totalFrozenCards}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </div>
         <div className={styles.bodyContainer}>
           <div className={styles.cardsNav}>
@@ -109,34 +117,36 @@ const Cards: NextPage = () => {
               </div>
             </div>
           </div>
-          <div>
-            <div
-              style={{ width: "100%", marginBottom: 24 }}
-              className={styles.card}
-            >
-              <p className={styles.cardHeader}>
-                Platform Balance (Balance with provider)
-              </p>
-              {isLoading ? (
-                <Skeleton active paragraph={{ rows: 0 }} />
-              ) : (
-                <p className={styles.cardText}>
-                  ${cardsData?.totalPlatformBalance}
+          {auth?.user?.role !== "NANO" && (
+            <div>
+              <div
+                style={{ width: "100%", marginBottom: 24 }}
+                className={styles.card}
+              >
+                <p className={styles.cardHeader}>
+                  Platform Balance (Balance with provider)
                 </p>
-              )}
+                {isLoading ? (
+                  <Skeleton active paragraph={{ rows: 0 }} />
+                ) : (
+                  <p className={styles.cardText}>
+                    ${cardsData?.totalPlatformBalance}
+                  </p>
+                )}
+              </div>
+              <div
+                style={{ width: "100%", marginBottom: 24 }}
+                className={styles.card}
+              >
+                <p className={styles.cardHeader}>Total card Balances</p>
+                {isLoading ? (
+                  <Skeleton active paragraph={{ rows: 0 }} />
+                ) : (
+                  <p className={styles.cardText}>${cardsData?.totalBalance}</p>
+                )}
+              </div>
             </div>
-            <div
-              style={{ width: "100%", marginBottom: 24 }}
-              className={styles.card}
-            >
-              <p className={styles.cardHeader}>Total card Balances</p>
-              {isLoading ? (
-                <Skeleton active paragraph={{ rows: 0 }} />
-              ) : (
-                <p className={styles.cardText}>${cardsData?.totalBalance}</p>
-              )}
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </PageLayout>
